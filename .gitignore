@@ -1,0 +1,7 @@
+#ignore python virtualenv packages
+.Python
+bin/
+include/
+lib/
+
+
