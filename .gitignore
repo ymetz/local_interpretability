@@ -3,5 +3,7 @@
 bin/
 include/
 lib/
-
-
+project/static/node_modules/
+project/static/dist/
+package-lock.json
+.DS_Store
