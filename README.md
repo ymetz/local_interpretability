@@ -1,7 +1,8 @@
 # interVis
 Bachelor-Project
 
-___
+
+
 ## Project Code-Structure
 
 ```
@@ -29,7 +30,8 @@ project
 'server' contains all server-side python code, based on Flask.
 'static' contains all client-side code for the web interface. Used frameworks: React, d3.
 
-___
+
+
 ## Setup
 
 Prerequisite: Python 3.6 or higher (e.g. as virtualenv), Node.js + npm (Node Package Manager)
