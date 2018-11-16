@@ -41,5 +41,5 @@ Prerequisite: Python 3.6 or higher (e.g. as virtualenv), Node.js + npm (Node Pac
 3. switch into the project directory `cd project/static`
 4. run `npm run build` to build the project and create a single Javascript fie
 5. run `python ../server/app.py to run the webserver
-6. access the tool in your browser at `localhost:5000
+6. access the tool in your browser at `localhost:5000`
 
