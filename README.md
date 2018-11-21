@@ -6,25 +6,39 @@ Bachelor-Project
 ## Project Code-Structure
 
 ```
-requirements
-project
-├── server
-│   └── app.py
-└── static
-    ├── css
-    │   └── style.css
-    ├── dist
-    │   └── bundle.js
-    ├── images
-    ├── index.html
-    ├── js
-    │   ├── App.jsx
-    │   ├── d3-test.js
-    │   └── index.jsx
-    ├── package-lock.json
-    ├── package.json
-    ├── templates
-    └── webpack.config.js
+.
+├── LICENSE
+├── README.md
+├── datasets
+├── models
+├── project
+│   ├── server
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── dataservice.cpython-36.pyc
+│   │   │   ├── dataset.cpython-36.pyc
+│   │   │   └── model.cpython-36.pyc
+│   │   ├── app.py
+│   │   ├── dataservice.py
+│   │   ├── dataset.py
+│   │   ├── model.py
+│   │   └── tensorflow_connector.py
+│   └── static
+│       ├── css
+│       │   └── style.css
+│       ├── dist
+│       │   └── bundle.js
+│       ├── images
+│       ├── index.html
+│       ├── js
+│       │   ├── App.jsx
+│       │   ├── d3-test.js
+│       │   └── index.jsx
+│       ├── package-lock.json
+│       ├── package.json
+│       ├── templates
+│       └── webpack.config.js
+└── requirements
 ```
 
 'server' contains all server-side python code, based on Flask.
