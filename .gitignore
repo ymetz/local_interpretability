@@ -3,7 +3,20 @@
 bin/
 include/
 lib/
+venv/
+__pycache__
+
+#ignore npm packages
 project/static/node_modules/
-project/static/dist/
+project/static/dist/*
 package-lock.json
+
+#ignore visual studio code and pycharm files
 .DS_Store
+.idea/
+
+#ignore content of models folder
+!models/
+models/*
+!datasets/
+datasets/*
