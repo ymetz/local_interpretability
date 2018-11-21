@@ -33,7 +33,7 @@ Bachelor-Project
 │       ├── package.json
 │       ├── templates
 │       └── webpack.config.js
-└── requirements
+└── requirements.txt
 ```
 
 'server' contains all server-side python code, based on Flask.
