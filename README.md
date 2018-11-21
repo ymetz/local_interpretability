@@ -13,11 +13,6 @@ Bachelor-Project
 ├── models
 ├── project
 │   ├── server
-│   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── dataservice.cpython-36.pyc
-│   │   │   ├── dataset.cpython-36.pyc
-│   │   │   └── model.cpython-36.pyc
 │   │   ├── app.py
 │   │   ├── dataservice.py
 │   │   ├── dataset.py
