@@ -9,15 +9,21 @@ def get_dataset_list(path):
     try:
         dataset_id = 0
         for subdir in os.listdir(path):
-            dataset_path = os.path.join(path, subdir)
-            if subdir.split('_')[0] == 'image':
-                elem_nr = len(fnmatch.filter(os.listdir(dataset_path),'*.jpeg'))
-                datasets.append(ImageDataset(dataset_id, dataset_path, subdir.split('_')[1], elem_nr))
-            elif subdir.split('_')[0] == 'text':
-                datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1], elem_nr))
-            else:
-                raise Exception('Invalid or unsupported dataset found. Check the name of the folder.')
-            dataset_id = dataset_id + 1
+            if not subdir.startswith('.'):
+                dataset_path = os.path.join(path, subdir)
+                if subdir.split('_')[0] == 'image':
+                    file_list = []
+                    nr_images = 0
+                    for i in os.listdir(dataset_path):
+                        if i.endswith(('.JPEG','.jpg','.png')):
+                            nr_images += 1
+                            file_list.append(i)
+                    datasets.append(ImageDataset(dataset_id, dataset_path, subdir.split('_')[1], file_list, nr_images))
+                elif subdir.split('_')[0] == 'text':
+                    datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1]))
+                else:
+                    raise Exception('Invalid or unsupported dataset found. Check the name of the folder.')
+                dataset_id = dataset_id + 1
     except Exception as e:
         print(e)
     finally:
@@ -29,14 +35,15 @@ def get_model_list(path):
     try:
         model_id = 0
         for subdir in os.listdir(path):
-            model_path = os.path.join(path, subdir)
-            if subdir.split('_')[0] == 'keras':
-                models.append(KerasModel(model_id, model_path, subdir.split('_')[1]))
-            elif subdir.split('_')[0] == 'tensorflow':
-                models.append(TensorflowModel(model_id, model_path, subdir.split('_')[1]))
-            else:
-                raise Exception('Invalid or unsupported model found. Check the name of the folder.')
-            model_id = model_id + 1
+            if not subdir.startswith('.'):
+                model_path = os.path.join(path, subdir)
+                if subdir.split('_')[0] == 'keras':
+                    models.append(KerasModel(model_id, model_path, subdir.split('_')[1]))
+                elif subdir.split('_')[0] == 'tensorflow':
+                    models.append(TensorflowModel(model_id, model_path, subdir.split('_')[1]))
+                else:
+                    raise Exception('Invalid or unsupported model found. Check the name of the folder.')
+                model_id = model_id + 1
     except Exception as e:
         print(e)
     finally:

@@ -1,35 +1,26 @@
 import os
+import json
 
 
 # base class for datasets: a dataset always consists of a dataset and an assosiated dataset
 class DatasetPrototype(object):
 
-    def __init__(self, dataset_id, dataset_path, dataset_name, num_elements):
+    def __init__(self, dataset_id, dataset_path, dataset_name, file_list, num_elements):
         self.dataset_id = dataset_id
         self.dataset_path = dataset_path
         self.dataset_name = dataset_name
+        self.file_list = file_list
         self.num_elements = num_elements
-
-    # returns a summary statistics of an available dataset
-    def get_dataset_summary(dataset_id):
-        pass
-
-    # get summary statistics of available dataset
-    def get_dataset_summary(dataset_id):
-        pass
-
-    # get single_elements of the dataset
-    def get_dataset_elements(dataset_id):
-        pass
 
 
 class ImageDataset(DatasetPrototype):
 
-    def a(self):
-        pass
     def __init__(self, *args, **kwargs):
         super(ImageDataset, self).__init__(*args, **kwargs)
-        self.labels = os.path.join(self.dataset_path, 'labels')
+        self.label_path = os.path.join(self.dataset_path, 'labels.json')
+
+        with open(self.label_path) as lf:
+            self.labels = json.load(lf)
 
 
 class TextDataset(DatasetPrototype):
