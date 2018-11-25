@@ -28,3 +28,16 @@ class TextDataset(DatasetPrototype):
     def b(self):
         pass
 
+
+def encode_dataset(ds):
+    if isinstance(ds, DatasetPrototype):
+        ds_dict = {}
+        ds_dict['id'] = ds.dataset_id
+        ds_dict['dataset_name'] = ds.dataset_name
+        ds_dict['dataset_path'] = ds.dataset_path
+        ds_dict['num_elements'] = ds.num_elements
+        return ds_dict
+    else:
+        type_name = ds.__class__.__name__
+        raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
+
