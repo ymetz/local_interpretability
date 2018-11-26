@@ -1,4 +1,4 @@
-# interVis
+# local intepretability for global trust
 Bachelor-Project
 
 
