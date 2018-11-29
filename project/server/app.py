@@ -3,7 +3,7 @@ from flask import Flask, render_template
 from data_routing import get_data, init_data
 from PIL import Image
 
-app = Flask(__name__, static_folder="../static/dist", template_folder="../static/templates")
+app = Flask(__name__, static_folder="../frontend/public", template_folder="../frontend/templates")
 
 app.register_blueprint(get_data, url_prefix="/get_data")
 

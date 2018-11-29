@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 const config = {
   "mode": "development",
-  "entry":  __dirname + '/js/index.jsx',
+  "entry":  __dirname + '/src/index.jsx',
   "output": {
-      "path": __dirname + '/dist',
+      "path": __dirname + '/public/dist',
       "filename": 'bundle.js',
   },
   "module": {

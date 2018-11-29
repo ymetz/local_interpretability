@@ -7,8 +7,8 @@ venv/
 __pycache__
 
 #ignore npm packages
-project/static/node_modules/
-project/static/dist/*
+project/frontend/node_modules/
+project/frontend/public/dist/*
 package-lock.json
 
 #ignore visual studio code and pycharm files
