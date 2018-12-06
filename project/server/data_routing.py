@@ -20,9 +20,15 @@ def custom_static(filename):
 def get_image():
     iid = request.args.get('id', default=0, type=int)
     i_path = "dataset/" + datasets[0].file_list[iid]
-    iid2 = iid + 1
-    i2_path = "dataset/" + datasets[0].file_list[iid2]
-    return render_template("index.html", user_image=i_path, user_image2=i2_path)
+    return i_path
+
+@get_data.route("/get_image_list")
+def get_image_list():
+    return jsonify(datasets[0].file_list)
+
+@get_data.route("/get_labels")
+def get_labels():
+    return jsonify(datasets[0].labels)
 
 
 def init_data():

@@ -6,6 +6,18 @@ const config = {
       "path": __dirname + '/public/dist',
       "filename": 'bundle.js',
   },
+  "optimization": {
+    "splitChunks": {
+      "cacheGroups": {
+        "styles": {
+          "name": 'styles',
+          "test": /\.css$/,
+          "chunks": 'all',
+          "enforce": true
+        }
+      }
+    }
+  },
   "module": {
       "rules": [
           {
@@ -22,11 +34,8 @@ const config = {
               }
           },
           {
-              "test": /\.css$/,
-              "use": [
-                  "style-loader",
-                  "css-loader"
-              ]
+            test: /\.css$/,
+            use: ['style-loader', 'css-loader'],
           }
       ]
   },

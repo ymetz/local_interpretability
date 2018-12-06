@@ -14,6 +14,7 @@ package-lock.json
 #ignore visual studio code and pycharm files
 .DS_Store
 .idea/
+*.pyc
 
 #ignore content of models folder
 !models/

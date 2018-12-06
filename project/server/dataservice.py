@@ -2,6 +2,7 @@ import os
 import fnmatch
 from model import TensorflowModel, KerasModel
 from dataset import ImageDataset, TextDataset
+from PIL import Image
 
 #returns list of available datasets
 def get_dataset_list(path):
@@ -14,10 +15,12 @@ def get_dataset_list(path):
                 if subdir.split('_')[0] == 'image':
                     file_list = []
                     nr_images = 0
-                    for i in os.listdir(dataset_path):
-                        if i.endswith(('.JPEG','.jpg','.png')):
+                    for file in os.listdir(dataset_path):
+                        if file.endswith(('.JPEG','.jpg','.png')):
+                            im = Image.open(dataset_path+"/"+file)
                             nr_images += 1
-                            file_list.append(i)
+                            width, height = im.size
+                            file_list.append({"src" : "/get_data/dataset/"+file, "width" : width, "height" : height})
                     datasets.append(ImageDataset(dataset_id, dataset_path, subdir.split('_')[1], file_list, nr_images))
                 elif subdir.split('_')[0] == 'text':
                     datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1]))

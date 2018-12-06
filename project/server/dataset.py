@@ -7,6 +7,7 @@ class DatasetPrototype(object):
 
     def __init__(self, dataset_id, dataset_path, dataset_name, file_list, num_elements):
         self.dataset_id = dataset_id
+        self.dataset_type = 'unknown'
         self.dataset_path = dataset_path
         self.dataset_name = dataset_name
         self.file_list = file_list
@@ -18,6 +19,7 @@ class ImageDataset(DatasetPrototype):
     def __init__(self, *args, **kwargs):
         super(ImageDataset, self).__init__(*args, **kwargs)
         self.label_path = os.path.join(self.dataset_path, 'labels.json')
+        self.dataset_type = 'image'
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
@@ -25,8 +27,16 @@ class ImageDataset(DatasetPrototype):
 
 class TextDataset(DatasetPrototype):
 
-    def b(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        super(TextDataset, self).__init__(*args, **kwargs)
+        self.dataset_type = 'text'
+
+
+class TabularDataset(DatasetPrototype):
+
+    def __init__(self, *args, **kwargs):
+        super(TabularDataset, self).__init__(*args, **kwargs)
+        self.dataset_type = 'tabular'
 
 
 def encode_dataset(ds):
@@ -36,6 +46,7 @@ def encode_dataset(ds):
         ds_dict['dataset_name'] = ds.dataset_name
         ds_dict['dataset_path'] = ds.dataset_path
         ds_dict['num_elements'] = ds.num_elements
+        ds_dict['dataset_type'] = ds.dataset_type
         return ds_dict
     else:
         type_name = ds.__class__.__name__
