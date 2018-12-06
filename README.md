@@ -13,13 +13,9 @@ Bachelor-Project
 ├── models
 ├── project
 │   ├── frontend
-│   │   ├── package-lock.json
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   ├── css
-│   │   │   │   ├── App.css
-│   │   │   │   ├── materialize.min.css
-│   │   │   │   └── style.css
 │   │   │   ├── dist
 │   │   │   │   └── bundle.js
 │   │   │   ├── images
@@ -37,8 +33,6 @@ Bachelor-Project
 │   │   │   └── index.jsx
 │   │   └── webpack.config.js
 │   └── server
-│       ├── __init__.py
-│       ├── __pycache__
 │       ├── app.py
 │       ├── data_routing.py
 │       ├── dataservice.py
