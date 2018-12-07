@@ -75,7 +75,7 @@ export default class App extends Component {
         <div>
           <Gallery images={this.state.image_list} onClick={this.selectPhoto}/>
         </div>
-        {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.image_list.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)}/> : null}
+        {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.image_list.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} labels={this.state.labels}/> : null}
       </div>
     )
   }

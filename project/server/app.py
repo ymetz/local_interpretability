@@ -10,10 +10,6 @@ app.register_blueprint(get_data, url_prefix="/get_data")
 def index():
     return render_template("index.html")
 
-@app.route("/hello")
-def hello():
-    return "Hello World!"
-
 if __name__ == "__main__":
 
     init_data()

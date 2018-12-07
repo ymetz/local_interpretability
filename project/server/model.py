@@ -22,16 +22,6 @@ class ModelPrototype(object):
     def get_dataset_elements(model_id):
         pass
 
-
-class TensorflowModel(ModelPrototype):
-
-    def a(self):
-        pass
-    #def __init__(self, *args, **kwargs):
-    #    super(TensorflowModel, self).__init__(*args, **kwargs)
-    #    self.logdir = os.path.join(self.model_path, 'logdir')
-
-
 class KerasModel(ModelPrototype):
 
     def b(self):

@@ -6,7 +6,9 @@ ReactModal.setAppElement('#content');
 const overlayComponent = (props) => {
 
     let image = props.selectedElements[0];
-    console.log(image);
+    let image_name = image.src.split("/").pop();
+    let image_label = props.labels[image_name];
+    console.log(image_label);
 
     return (
         <ReactModal 
@@ -15,9 +17,20 @@ const overlayComponent = (props) => {
            style={{overlay:{zIndex:2}}}>
             <div>
                 <h2>Detail Interpretabilty View
-                <Button class="closeButton" onClick={props.close_it} style={{float : 'right'}}><Glyphicon glyph="remove" /></Button>
+                <Button className="closeButton" onClick={props.close_it} style={{float : 'right'}}><Glyphicon glyph="remove" /></Button>
                 </h2>
-                <img src={image.src}></img>
+                <hr></hr>
+            </div>
+            <div style={{overflow:'hidden'}}>
+                <div style={{display: 'inline-block'}}>
+                    <img src={image.src}></img>
+                </div>
+                <div style={{display: 'inline-block',verticalAlign:'top', marginLeft:'10px'}}>
+                    <p><b>{image_name}</b></p>
+                    <p>Class:{image_label[1]} ({image_label[0]})</p>
+                    <p>Original Width:{image.width}</p>
+                    <p>Original Height:{image.height}</p>
+                </div>
             </div>
         </ReactModal>
     );

@@ -1,6 +1,7 @@
 import os
 import fnmatch
-from model import TensorflowModel, KerasModel
+from model import KerasModel
+from tensorflow_models import InceptionModel
 from dataset import ImageDataset, TextDataset
 from PIL import Image
 
@@ -40,10 +41,13 @@ def get_model_list(path):
         for subdir in os.listdir(path):
             if not subdir.startswith('.'):
                 model_path = os.path.join(path, subdir)
-                if subdir.split('_')[0] == 'keras':
+                if subdir == 'preprocessing':
+                    print('preprocessing directory found')
+                elif subdir.split('_')[0] == 'keras':
                     models.append(KerasModel(model_id, model_path, subdir.split('_')[1]))
                 elif subdir.split('_')[0] == 'tensorflow':
-                    models.append(TensorflowModel(model_id, model_path, subdir.split('_')[1]))
+                    if subdir.split('_')[1] == 'inception':
+                        models.append(InceptionModel(model_id, model_path, subdir.split('_')[1]))
                 else:
                     raise Exception('Invalid or unsupported model found. Check the name of the folder.')
                 model_id = model_id + 1

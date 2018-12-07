@@ -19,10 +19,13 @@ class ImageDataset(DatasetPrototype):
     def __init__(self, *args, **kwargs):
         super(ImageDataset, self).__init__(*args, **kwargs)
         self.label_path = os.path.join(self.dataset_path, 'labels.json')
+        self.id_to_label_path = os.path.join(self.dataset_path, 'id_to_label.json')
         self.dataset_type = 'image'
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
+        with open(self.id_to_label_path) as itlf:
+            self.id_to_labels = json.load(itlf)
 
 
 class TextDataset(DatasetPrototype):

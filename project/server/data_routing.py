@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, send_from_directory
 from dataservice import *
 from dataset import encode_dataset
+from lime_explainer import create_explanation_images
 
 datasets = []
 models = []
@@ -41,12 +42,10 @@ def init_data():
     print("Available datasets: {}".format(len(datasets)))
     for dataset in datasets:
         print(dataset.dataset_id, dataset.dataset_name, dataset.num_elements, dataset.dataset_path, dataset.label_path)
-        #sel_img = dataset.file_list[6]
-        #img_path = os.path.join(dataset.dataset_path,sel_img)
-        #img = Image.open(img_path)
-        #img.show()
-        #print(dataset.labels[sel_img])
 
     print("Available models: {}".format(len(models)))
     for model in models:
         print(model.model_id, model.model_name, model.model_path, model.logdir)
+
+    print("Creating Lime explanations")
+    create_explanation_images(datasets[0],models[0])
