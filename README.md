@@ -12,27 +12,33 @@ Bachelor-Project
 ├── datasets
 ├── models
 ├── project
-│   ├── server
-│   │   ├── app.py
-│   │   ├── dataservice.py
-│   │   ├── dataset.py
-│   │   ├── model.py
-│   │   └── tensorflow_connector.py
-│   └── static
-│       ├── css
-│       │   └── style.css
-│       ├── dist
-│       │   └── bundle.js
-│       ├── images
-│       ├── index.html
-│       ├── js
-│       │   ├── App.jsx
-│       │   ├── d3-test.js
-│       │   └── index.jsx
-│       ├── package-lock.json
-│       ├── package.json
-│       ├── templates
-│       └── webpack.config.js
+│   ├── frontend
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   ├── css
+│   │   │   ├── dist
+│   │   │   │   └── bundle.js
+│   │   │   ├── images
+│   │   │   └── templates
+│   │   │       └── index.html
+│   │   ├── src
+│   │   │   ├── AnalysisOverlay
+│   │   │   │   └── OverlayComponent.jsx
+│   │   │   ├── App.jsx
+│   │   │   ├── ImageGallery
+│   │   │   │   ├── ImageComponent.jsx
+│   │   │   │   └── ImageGallery.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── app_config.js
+│   │   │   └── index.jsx
+│   │   └── webpack.config.js
+│   └── server
+│       ├── app.py
+│       ├── data_routing.py
+│       ├── dataservice.py
+│       ├── dataset.py
+│       ├── model.py
+│       └── tensorflow_connector.py
 └── requirements.txt
 ```
 
