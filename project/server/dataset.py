@@ -24,8 +24,8 @@ class ImageDataset(DatasetPrototype):
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
-        with open(self.id_to_label_path) as itlf:
-            self.id_to_labels = json.load(itlf)
+        with open(self.id_to_label_path) as ifile:
+            self.id_to_label = json.load(ifile, object_hook=jsonKeys2int)
 
 
 class TextDataset(DatasetPrototype):
@@ -54,4 +54,10 @@ def encode_dataset(ds):
     else:
         type_name = ds.__class__.__name__
         raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
+
+
+def jsonKeys2int(x):
+    if isinstance(x, dict):
+            return {int(k):v for k,v in x.items()}
+    return x
 

@@ -10,7 +10,7 @@ sys.path.insert(0, "../../models")
 from model import ModelPrototype
 
 from tensorflow_inception_v3 import inception_v3 as inception
-from preprocessing import inception_preprocessing
+from preprocessing import inception_preprocessing, imagenet
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -52,3 +52,6 @@ class InceptionModel(ModelPrototype):
 
     def predict_images(self, images):
         return self.session.run(self.probabilities, feed_dict={self.processed_images: images})
+
+    def get_label_names(self):
+        return imagenet.create_readable_names_for_imagenet_labels()
