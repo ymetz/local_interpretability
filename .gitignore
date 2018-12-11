@@ -4,6 +4,8 @@ bin/
 include/
 lib/
 venv/
+share/
+src/
 __pycache__
 
 #ignore npm packages
@@ -19,5 +21,6 @@ package-lock.json
 #ignore content of models folder
 !models/
 models/*
+!models/preprocessing/
 !datasets/
 datasets/*
