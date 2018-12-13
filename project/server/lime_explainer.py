@@ -8,15 +8,17 @@ def create_explanation_images(dataset, model):
 
     file_list = []
     for file in dataset.file_list:
-        file_list.append(os.path.join(dataset.dataset_path, file['src'].split('/')[-1]))
-    transformed_images = model.transform_images(file_list)
+        file_list.append(file['src'].split('/')[-1])
+    transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
 
+    top_preds = {}
     # I'm dividing by 2 and adding 0.5 because of how this Inception represents images
     preds = model.predict_images(transformed_images)
     for idxPred in range(len(preds)):
-        print(file_list[idxPred])
+        top_5_labels = []
         for x in preds.argsort()[idxPred][-5:]:
-            print(x, dataset.id_to_label[x], preds[idxPred, x])
+            top_5_labels.append((x, preds[idxPred, x]))
+        top_preds[file_list[idxPred]] = top_5_labels
 
     for idxExpl in range(len(transformed_images)):
         explainer = lime_image.LimeImageExplainer()

@@ -25,7 +25,9 @@ def get_image():
 
 @get_data.route("/get_image_list")
 def get_image_list():
-    return jsonify(datasets[0].file_list)
+    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"],
+                              "height": file["height"]} for file in datasets[0].file_list]
+    return jsonify(out_image_list)
 
 @get_data.route("/get_labels")
 def get_labels():
@@ -47,5 +49,5 @@ def init_data():
     for model in models:
         print(model.model_id, model.model_name, model.model_path, model.logdir)
 
-    print("Creating Lime explanations")
-    create_explanation_images(datasets[0],models[0])
+    # print("Creating Lime explanations")
+    # create_explanation_images(datasets[0],models[0])

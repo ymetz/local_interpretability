@@ -1,6 +1,7 @@
 import os
 import fnmatch
 from model import KerasModel
+# noinspection PyPackageRequirements
 from tensorflow_models import InceptionModel
 from dataset import ImageDataset, TextDataset
 from PIL import Image
@@ -21,13 +22,14 @@ def get_dataset_list(path):
                             im = Image.open(dataset_path+"/"+file)
                             nr_images += 1
                             width, height = im.size
-                            file_list.append({"src" : "/get_data/dataset/"+file, "width" : width, "height" : height})
+                            file_list.append({"src": file, "width": width, "height": height})
                     datasets.append(ImageDataset(dataset_id, dataset_path, subdir.split('_')[1], file_list, nr_images))
+                    dataset_id = dataset_id + 1
                 elif subdir.split('_')[0] == 'text':
                     datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1]))
+                    dataset_id = dataset_id + 1
                 else:
-                    raise Exception('Invalid or unsupported dataset found. Check the name of the folder.')
-                dataset_id = dataset_id + 1
+                    print("{0} is not a valid dataset directory".format(subdir))
     except Exception as e:
         print(e)
     finally:
