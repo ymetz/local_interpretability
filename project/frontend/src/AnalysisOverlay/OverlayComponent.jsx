@@ -1,6 +1,7 @@
 import ReactModal from 'react-modal';
 import React from 'react';
 import {Button, Glyphicon} from 'react-bootstrap';
+import '../../public/css/Overlay.css';
 ReactModal.setAppElement('#content');
 
 const overlayComponent = (props) => {
@@ -17,7 +18,7 @@ const overlayComponent = (props) => {
            style={{overlay:{zIndex:2}}}>
             <div>
                 <h2>Detail Interpretabilty View
-                <Button className="closeButton" onClick={props.close_it} style={{float : 'right'}}><Glyphicon glyph="remove" /></Button>
+                <Button styleName="closeButton" onClick={props.close_it}><Glyphicon glyph="remove" /></Button>
                 </h2>
                 <hr></hr>
             </div>

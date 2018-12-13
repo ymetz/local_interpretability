@@ -5,6 +5,8 @@ from lime_explainer import create_explanation_images
 
 datasets = []
 models = []
+active_dataset = None
+active_model = None
 
 get_data = Blueprint('get_data', __name__)
 
@@ -15,26 +17,34 @@ def get_models():
 # Custom static data
 @get_data.route('/dataset/<path:filename>')
 def custom_static(filename):
-    return send_from_directory(datasets[0].dataset_path, filename)
+    return send_from_directory(active_dataset.dataset_path, filename)
 
 @get_data.route("/get_image")
 def get_image():
     iid = request.args.get('id', default=0, type=int)
-    i_path = "dataset/" + datasets[0].file_list[iid]
+    i_path = "dataset/" + active_dataset.file_list[iid]
     return i_path
 
 @get_data.route("/get_image_list")
 def get_image_list():
-    return jsonify(datasets[0].file_list)
+    return jsonify(active_dataset.file_list)
 
 @get_data.route("/get_labels")
 def get_labels():
-    return jsonify(datasets[0].labels)
+    return jsonify(active_dataset.labels)
+
+@get_data.route("/get_top_classifications")
+def get_top_classification():
+    iname = request.args.get('id', default=0, type=str)
+    class_result = active_model.classify_single_image(active_dataset.dataset_path, iname)
+    return jsonify(class_result)
 
 
 def init_data():
     global datasets
     global models
+    global active_dataset
+    global active_model
 
     datasets = get_dataset_list("../../datasets/")
     models = get_model_list("../../models/")
@@ -43,9 +53,13 @@ def init_data():
     for dataset in datasets:
         print(dataset.dataset_id, dataset.dataset_name, dataset.num_elements, dataset.dataset_path, dataset.label_path)
 
+    active_dataset = datasets[0]
+
     print("Available models: {}".format(len(models)))
     for model in models:
         print(model.model_id, model.model_name, model.model_path, model.logdir)
 
-    print("Creating Lime explanations")
-    create_explanation_images(datasets[0],models[0])
+    active_models = models[0]
+
+    #print("Creating Lime explanations")
+    #create_explanation_images(datasets[0],models[0])

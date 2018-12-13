@@ -55,3 +55,10 @@ class InceptionModel(ModelPrototype):
 
     def get_label_names(self):
         return imagenet.create_readable_names_for_imagenet_labels()
+
+    def classify_single_image(self, dataset_path, image_name):
+        image_raw = os.path.join(dataset_path, image_name)
+        preprossed_image = inception_preprocessing.preprocess_image(image_raw,
+                                                             self.image_size, self.image_size, is_training=False)
+        return self.session.run(self.probabilities, feed_dict={self.processed_images: preprossed_image})
+

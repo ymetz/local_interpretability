@@ -1,7 +1,7 @@
 import time
 import os
 import matplotlib.pyplot as plt
-from skimage.segmentation import mark_boundaries
+from skimage.segmentation import mark_boundaries, find_boundaries
 from lime import lime_image
 
 def create_explanation_images(dataset, model):
@@ -23,11 +23,13 @@ def create_explanation_images(dataset, model):
         top_index = preds.argsort()[idxExpl][-1]
         print(top_index, dataset.id_to_label[top_index], preds[idxExpl, top_index])
         explanation = explainer.explain_instance(transformed_images[idxExpl], model.predict_images,
-                                                 top_labels=5, hide_color=0, num_samples=1000)
+                                                 top_labels=3, hide_color=0, num_samples=10)
 
         temp, mask = explanation.get_image_and_mask(top_index, positive_only=False, num_features=10, hide_rest=False)
+        #print(find_boundaries(mask))
 
-        plt.imshow(mark_boundaries(temp / 2 + 0.5, mask))
+        #plt.imshow(mark_boundaries(temp / 2 + 0.5, mask))
+        plt.imshow(mask)
         plt.show()
 
         break

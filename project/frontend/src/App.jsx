@@ -64,12 +64,12 @@ export default class App extends Component {
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
         />
-        <div className="intro_text">
+        <div>
           <p>This web application let's you browse local explanation for a classifier preddiction.</p>
           <p>
             Select a <b>single</b> image for a detailed explanation or <b>two</b> for a comparison:
-            <Button bsStyle="primary" className="action_btn" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 1}>Explanation</Button> 
-            <Button bsStyle="primary" className="action_btn" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 2}>Comparison</Button>
+            <Button bsStyle="primary" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 1}>Explanation</Button> 
+            <Button bsStyle="primary" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 2}>Comparison</Button>
           </p>
         </div>
         <div>
