@@ -12,6 +12,7 @@ __pycache__
 project/frontend/node_modules/
 project/frontend/public/dist/*
 package-lock.json
+*.lock
 
 #ignore visual studio code and pycharm files
 .DS_Store

@@ -30,7 +30,7 @@ export default class App extends Component {
       .then(res => {
         const image_paths = res.data;
         this.setState( {image_list: image_paths} );
-      })
+      }
 
     axios.get('/get_data/get_labels')
       .then(res => {
@@ -53,7 +53,6 @@ export default class App extends Component {
     let showOverlay = !this.state.show_overlay;
     this.setState({show_overlay: showOverlay});
   }
-
 
   render () {
     //return <p> Hello React! It actually works!</p>;
