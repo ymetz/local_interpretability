@@ -30,7 +30,7 @@ export default class App extends Component {
       .then(res => {
         const image_paths = res.data;
         this.setState( {image_list: image_paths} );
-      }
+      })
 
     axios.get('/get_data/get_labels')
       .then(res => {
@@ -40,7 +40,6 @@ export default class App extends Component {
   }
 
   componentWillUnmount() {
-    this.serverRequest.abort();
   }
 
   selectPhoto(event, obj) {
@@ -52,6 +51,15 @@ export default class App extends Component {
   toogleOverlay() {
     let showOverlay = !this.state.show_overlay;
     this.setState({show_overlay: showOverlay});
+  }
+
+  getImagePredictions() {
+    let image_name = this.state.current_image_name;
+    axios.get('/get_data/get_prediction?name='+ image_name)
+    .then(res => {
+      const pred = res.data;
+      this.setState( {current_image_prediction: pred} );
+    })
   }
 
   render () {
