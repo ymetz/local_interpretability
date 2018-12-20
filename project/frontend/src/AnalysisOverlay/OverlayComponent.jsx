@@ -1,10 +1,15 @@
 import ReactModal from 'react-modal';
 import React, {Component} from 'react';
-import {Button, Glyphicon} from 'react-bootstrap';
+import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
 import '../../public/css/Overlay.css';
 import axios from "axios";
+import TopPredictionTable from './Top_Prediction_Table';
+import InfoFooter from './InfoFooter';
 ReactModal.setAppElement('#content');
 
+/**
+ * Overlay Compoment that is displayed to analyse a single image.
+ */
 export default class overlayComponent extends Component {
     constructor(props) {
         super(props);
@@ -12,17 +17,34 @@ export default class overlayComponent extends Component {
         this.state = {
           current_image : this.props.selectedElements[0],
           current_image_name : this.props.selectedElements[0].src.split("/").pop(),
-          current_image_label: this.props.labels[this.props.selectedElements[0].src.split("/").pop()]
+          current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
+          method: 'lime',
+          show_explanation_image: false
        }
+
+       console.log(this.state.current_image)
     }
 
     componentDidMount() {
-        axios.get('/get_data/get_top_classifications?image='+this.state.current_image_name)
+        /*axios.get('/get_data/get_single_classification?image='+this.state.current_image_name)
         .then(res => {
           const preds = res.data;
           this.setState( {current_image_predictions: preds} );
+        })*/
+    }
+
+    methodChange(e) {
+        this.setState({ method: e });
+    }
+
+    toggleExplanationImage(imgClass) {
+        axios.get('/get_data/get_explanation_image?image='+this.state.current_image_name
+                   +'&method='+this.state.method
+                   +'&class='+imgClass)
+        .then(res => {
+          const preds = res.data;
+          this.setState( {current_explanation_src: preds, show_explanation_image: true} );
         })
-        console.log(this.state.current_image_predictions);
     }
 
 
@@ -30,24 +52,38 @@ export default class overlayComponent extends Component {
         return (
             <ReactModal 
                 isOpen={true}
-            contentLabel="onRequestClose Example"
+                contentLabel="onRequestClose Example"
             style={{overlay:{zIndex:2}}}>
                 <div>
                     <h2>Detail Interpretabilty View
-                    <Button styleName="closeButton" onClick={this.props.close_it}><Glyphicon glyph="remove" /></Button>
+                    <Button styleName="close_button" onClick={this.props.close_it}><Glyphicon glyph="remove" /></Button>
                     </h2>
                     <hr></hr>
                 </div>
-                <div style={{overflow:'hidden'}}>
-                    <div style={{display: 'inline-block'}}>
-                        <img src={this.state.current_image.src}></img>
+                <div styleName='overlay_content'>
+                    <div styleName='image_container'>
+                        <div styleName='method_selection'>
+                            <ButtonToolbar>
+                                <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
+                                <ToggleButton value={'lime'}>LIME</ToggleButton>
+                                <ToggleButton value={'lrp'}>LRP</ToggleButton>
+                                <ToggleButton value={'tcav'}>TCAV</ToggleButton>
+                                </ToggleButtonGroup>
+                            </ButtonToolbar>
+                        </div>
+                        <img styleName='image_display' src={this.state.show_explanation_image ? 
+                                                            this.state.current_explanation_src : this.state.current_image.src}></img>
                     </div>
-                    <div style={{display: 'inline-block',verticalAlign:'top', marginLeft:'10px'}}>
+                    <div styleName='image_details'>
                         <p><b>{this.state.current_image_name}</b></p>
-                        <p>Class:{this.state.current_image_label[1]} ({this.state.current_image_label[0]})</p>
-                        <p>Original Width:{this.state.current_image.width}</p>
-                        <p>Original Height:{this.state.current_image.height}</p>
+                        <p>Class: {this.state.current_image_label[1]} ({this.state.current_image_label[0]})</p>
+                        <p>Original Dimensions: {this.state.current_image.width} x {this.state.current_image.height} (Width x Height)</p>
+                        <TopPredictionTable data={this.props.appState.top_classes[this.state.current_image_name]} 
+                                            id_to_label={this.props.appState.id_to_label}
+                                            correct_class={this.state.current_image_label[0]}
+                                            onSelect={this.toggleExplanationImage.bind(this)}/>
                     </div>
+                    <InfoFooter method={this.state.method}/>
                 </div>
             </ReactModal>
         )

@@ -1,3 +1,30 @@
-.closeButton {
+.close_button {
     float : right;
+}
+
+.image_details {
+    display: inline-block;
+    vertical-align: top;
+    margin-left:20px;
+}
+
+.image_container {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.image_display {
+    display: block;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.overlay_content {
+    overflow:hidden;
+}
+
+.method_selection {
+    margin: auto;
+    margin-bottom: 10px;
+    width: 200px;
 }

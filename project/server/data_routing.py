@@ -19,10 +19,23 @@ def get_models():
 def custom_static(filename):
     return send_from_directory(active_dataset.dataset_path, filename)
 
+@get_data.route('/dataset_explanation/<path:filename>')
+def custom_explanation_static(filename):
+    print(os.path.join(active_dataset.dataset_path, 'current_explanations'))
+    return send_from_directory(os.path.join(active_dataset.dataset_path, 'current_explanations'), filename)
+
 @get_data.route("/get_image")
 def get_image():
     iid = request.args.get('id', default=0, type=int)
-    i_path = "dataset/" + active_dataset.file_list[iid]
+    i_path = "get_data/dataset/" + active_dataset.file_list[iid]
+    return i_path
+
+@get_data.route("/get_explanation_image")
+def get_explanation_image():
+    iid = request.args.get('id', default=0, type=str)
+    method = request.args.get('method', default=0, type=str)
+    imgClass = request.args.get('class', default=0, type=int)
+    i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + active_dataset.file_list[iid]["src"]
     return i_path
 
 @get_data.route("/get_image_list")
@@ -35,11 +48,19 @@ def get_image_list():
 def get_labels():
     return jsonify(active_dataset.labels)
 
-@get_data.route("/get_top_classifications")
-def get_top_classification():
+@get_data.route("/get_id_to_label")
+def get_id_to_label():
+    return jsonify(active_dataset.id_to_label)
+
+@get_data.route("/get_single_classification")
+def get_single_classifications():
     iname = request.args.get('id', default=0, type=str)
     class_result = active_model.classify_single_image(active_dataset.dataset_path, iname)
     return jsonify(class_result)
+
+@get_data.route("/get_top_classifications")
+def get_top_classifications():
+    return jsonify(active_dataset.top_predictions)
 
 
 def init_data():
@@ -61,12 +82,7 @@ def init_data():
     for model in models:
         print(model.model_id, model.model_name, model.model_path, model.logdir)
 
-<<<<<<< HEAD
     active_models = models[0]
 
-    #print("Creating Lime explanations")
-    #create_explanation_images(datasets[0],models[0])
-=======
-    # print("Creating Lime explanations")
-    # create_explanation_images(datasets[0],models[0])
->>>>>>> 75ff8418839decef72672228e0fecdfb3f657a4b
+    print("Creating Lime explanations")
+    create_explanation_images(datasets[0],models[0])

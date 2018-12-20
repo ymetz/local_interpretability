@@ -28,6 +28,8 @@ def get_dataset_list(path):
                 elif subdir.split('_')[0] == 'text':
                     datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1]))
                     dataset_id = dataset_id + 1
+                elif subdir == 'current_explanations':
+                    print("found existing directory for explanation images. Images in the directory may be owerwritten.")
                 else:
                     print("{0} is not a valid dataset directory".format(subdir))
     except Exception as e:
