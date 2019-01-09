@@ -38,7 +38,7 @@ export default class overlayComponent extends Component {
     }
 
     toggleExplanationImage(imgClass) {
-        axios.get('/get_data/get_explanation_image?image='+this.state.current_image_name
+        axios.get('/get_data/get_explanation_image?id='+this.state.current_image_name
                    +'&method='+this.state.method
                    +'&class='+imgClass)
         .then(res => {

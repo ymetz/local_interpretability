@@ -32,10 +32,10 @@ def get_image():
 
 @get_data.route("/get_explanation_image")
 def get_explanation_image():
-    iid = request.args.get('id', default=0, type=str)
+    iid = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
     imgClass = request.args.get('class', default=0, type=int)
-    i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + active_dataset.file_list[iid]["src"]
+    i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + iid
     return i_path
 
 @get_data.route("/get_image_list")
