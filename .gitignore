@@ -5,7 +5,8 @@ include/
 lib/
 venv/
 share/
-src/
+/src/
+
 __pycache__
 
 #ignore npm packages
