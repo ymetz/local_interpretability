@@ -21,11 +21,13 @@ class ImageDataset(DatasetPrototype):
         self.label_path = os.path.join(self.dataset_path, 'labels.json')
         self.id_to_label_path = os.path.join(self.dataset_path, 'id_to_label.json')
         self.dataset_type = 'image'
+        self.top_predictions = None
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
         with open(self.id_to_label_path) as ifile:
             self.id_to_label = json.load(ifile, object_hook=jsonKeys2int)
+            self.num_of_labels = len(self.id_to_label)
 
 
 class TextDataset(DatasetPrototype):

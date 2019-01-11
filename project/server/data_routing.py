@@ -1,7 +1,10 @@
 from flask import Blueprint, jsonify, request, render_template, send_from_directory
 from dataservice import *
 from dataset import encode_dataset
+import tensorflow as tf
+from classifier import create_top_5_predictions
 from lime_explainer import create_explanation_images
+from lrp_explainer import create_lrp_explanation
 
 datasets = []
 models = []
@@ -35,6 +38,9 @@ def get_explanation_image():
     iid = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
     imgClass = request.args.get('class', default=0, type=int)
+    if method == 'lrp':
+        # Create the LRP explanation image on the fly
+        create_lrp_explanation(datasets[0], iid, imgClass)
     i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + iid
     return i_path
 
@@ -70,6 +76,8 @@ def init_data():
     global active_model
 
     datasets = get_dataset_list("../../datasets/")
+
+    global_tensorflow_session = tf.Session()
     models = get_model_list("../../models/")
 
     print("Available datasets: {}".format(len(datasets)))
@@ -84,5 +92,7 @@ def init_data():
 
     active_models = models[0]
 
+    create_top_5_predictions(datasets[0], models[0])
+
     print("Creating Lime explanations")
-    create_explanation_images(datasets[0],models[0])
+    #create_explanation_images(datasets[0], models[0])

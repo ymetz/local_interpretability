@@ -22,7 +22,6 @@ export default class overlayComponent extends Component {
           show_explanation_image: false
        }
 
-       console.log(this.state.current_image)
     }
 
     componentDidMount() {
