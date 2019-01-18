@@ -144,7 +144,7 @@ export default class App extends Component {
         />        
         <FilteringOptions onAnalysisButtonClick={this.toogleOverlay.bind(this)} selectedList={this.state.image_list.filter(im => im.selected)} labels={this.state.id_to_label}/>
         <div styleName="content_main">
-          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto}/>
+          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto} topPredictions={this.state.top_classes} labels={this.state.labels}/>
           <Button styleName='show_more_button' bsStyle="default" onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
         </div>
         {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.image_list.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} appState={this.state}/> : null}

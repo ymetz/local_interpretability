@@ -46,12 +46,15 @@ const SelectedImage = ({
   margin,
   direction,
   top,
-  left
+  left,
+  labels
 }) => {
   //calculate x,y scale
   const sx = (100 - (30 / photo.width) * 100) / 100;
   const sy = (100 - (30 / photo.height) * 100) / 100;
   selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
+
+  console.log(labels);
 
   if (direction === "column") {
     cont.position = "absolute";
