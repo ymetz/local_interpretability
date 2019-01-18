@@ -41,11 +41,13 @@
   "dependencies": {
     "babel-plugin-react-css-modules": "^5.0.0",
     "d3": "^5.7.0",
+    "rc-slider": "^8.6.4",
     "react": "^16.6.3",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-table-next": "^1.4.2",
     "react-dom": "^16.6.3",
     "react-photo-gallery": "^6.2.2",
+    "react-select": "^2.2.0",
     "webpack": "^4.25.1"
   }
 }

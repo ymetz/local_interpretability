@@ -1,11 +1,13 @@
 // App.jsx
 import React, { Component } from "react";
 import Navbar from './Navbar';
+import FilteringOptions from './FilteringOptions';
 import Gallery from './ImageGallery/ImageGallery';
 import {Button} from 'react-bootstrap';
 import axios from "axios";
 import OverlayComponent from './AnalysisOverlay/OverlayComponent';
 import '../public/css/App.css';
+import {config} from './app_config'; 
 
 /**
  * App Component of the React App.
@@ -21,7 +23,9 @@ export default class App extends Component {
     /**
      * The App state contains:
      * - Information about the dataset we are analysing
-     * - A list of images, which we may want to display includign their path and dimensions
+     * - A list of all available images
+     * - A list of images that we actually want to display (e.g. because some are filtered out)
+     * - Image Display Options defines the filtering options for said images
      * - labels is a list of the correct class for each individual image in the dataset
      * - show_overlay defines whether we want to show the overlay for detail analysis
      * - top_classes contains the five classes with the 
@@ -31,7 +35,10 @@ export default class App extends Component {
     this.state = {
       dataset: {},
       image_list: [],
+      images_on_display: [],
+      image_display_options: {},
       labels: [],
+      id_to_label: [],
       show_overlay : false
     }
   }
@@ -50,7 +57,9 @@ export default class App extends Component {
     axios.get('/get_data/get_image_list')
       .then(res => {
         const image_paths = res.data;
-        this.setState( {image_list: image_paths} );
+        this.setState( {image_list: image_paths, images_on_display: image_paths.slice(0,config.nr_of_displayed_images),
+                        image_display_options : {indices : [0,config.nr_of_displayed_images]}
+                       });
       })
 
     axios.get('/get_data/get_labels')
@@ -107,6 +116,18 @@ export default class App extends Component {
     })
   }
 
+  toggleDisplayedImages(event,obj) {
+    //creating copy of object
+    let image_display_options = Object.assign({}, this.state.image_display_options);
+    let images_on_display = this.state.images_on_display;
+    //updating value
+    image_display_options.indices[1] = image_display_options.indices[1] + config.show_more_expansion_size;
+    images_on_display = this.state.image_list.slice(image_display_options.indices[0],
+                                                    image_display_options.indices[1])
+    this.setState({image_display_options, images_on_display: images_on_display});
+
+  }
+
   /**
    * Main rendering method that each React Component has to provide.
    * Defines what actually is displayed on the web page.
@@ -120,17 +141,11 @@ export default class App extends Component {
           dataset_name={this.state.dataset.dataset_name} 
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
-        />
-        <div styleName='intro_text'>
-          <p>This web application let's you browse local explanation for a classifier prediction.</p>
-          <p>
-            Select a <b>single</b> image for a detailed explanation or <b>two</b> for a comparison:
-            <Button styleName='action_btn' bsStyle="primary" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 1}>Explanation</Button> 
-            <Button styleName='action_btn' bsStyle="primary" onClick={this.toogleOverlay.bind(this)} disabled={this.state.image_list.filter(im => im.selected).length != 2}>Comparison</Button>
-          </p>
-        </div>
-        <div>
-          <Gallery images={this.state.image_list} onClick={this.selectPhoto}/>
+        />        
+        <FilteringOptions onAnalysisButtonClick={this.toogleOverlay.bind(this)} selectedList={this.state.image_list.filter(im => im.selected)} labels={this.state.id_to_label}/>
+        <div styleName="content_main">
+          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto}/>
+          <Button styleName='show_more_button' bsStyle="default" onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
         </div>
         {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.image_list.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} appState={this.state}/> : null}
       </div>

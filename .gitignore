@@ -6,6 +6,7 @@ lib/
 venv/
 share/
 /src/
+/etc/
 
 __pycache__
 

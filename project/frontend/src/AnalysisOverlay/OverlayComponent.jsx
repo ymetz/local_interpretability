@@ -18,6 +18,7 @@ export default class overlayComponent extends Component {
           current_image : this.props.selectedElements[0],
           current_image_name : this.props.selectedElements[0].src.split("/").pop(),
           current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
+          current_image_class: -1,
           method: 'lime',
           show_explanation_image: false
        }
@@ -32,19 +33,21 @@ export default class overlayComponent extends Component {
         })*/
     }
 
-    methodChange(e) {
-        this.setState({ method: e });
+    methodChange(method) {
+        this.setState({ method: method });
     }
 
     toggleExplanationImage(imgClass) {
         axios.get('/get_data/get_explanation_image?id='+this.state.current_image_name
-                   +'&method='+this.state.method
-                   +'&class='+imgClass)
+        +'&method='+ this.state.method
+        +'&class='+ imgClass)
         .then(res => {
-          const preds = res.data;
-          this.setState( {current_explanation_src: preds, show_explanation_image: true} );
+            const preds = res.data;
+            this.setState( {current_explanation_src: preds, show_explanation_image: true, 
+                current_image_class: imgClass } );
         })
     }
+
 
 
     render() {
@@ -52,7 +55,7 @@ export default class overlayComponent extends Component {
             <ReactModal 
                 isOpen={true}
                 contentLabel="onRequestClose Example"
-            style={{overlay:{zIndex:2}}}>
+                style={{overlay:{zIndex:1040}}}>
                 <div>
                     <h2>Detail Interpretabilty View
                     <Button styleName="close_button" onClick={this.props.close_it}><Glyphicon glyph="remove" /></Button>
@@ -65,7 +68,7 @@ export default class overlayComponent extends Component {
                             <ButtonToolbar>
                                 <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
                                 <ToggleButton value={'lime'}>LIME</ToggleButton>
-                                <ToggleButton value={'lrp'}>LRP</ToggleButton>
+                                <ToggleButton value={'elrp'}>LRP</ToggleButton>
                                 <ToggleButton value={'tcav'}>TCAV</ToggleButton>
                                 </ToggleButtonGroup>
                             </ButtonToolbar>

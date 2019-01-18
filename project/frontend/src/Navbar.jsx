@@ -1,13 +1,16 @@
 import React from "react";
-import {Navbar} from 'react-bootstrap';
-import {config} from './app_config'; 
+import {Navbar, Button, FormControl, FormGroup} from 'react-bootstrap';
+import Select from 'react-select';
+import {config} from './app_config';
+import '../public/css/Navbar.css';  
 
-const navbar = (props) => {
+
+const Top_Navbar = (props) => {
     return (
-        <Navbar>
+        <Navbar fixedTop inverse styleName='top_navbar'>
             <Navbar.Header>
                 <Navbar.Brand>
-                <a href="#home">{config.app_name}</a>
+                <a href="/">{config.app_name}</a>
                 </Navbar.Brand>
                 <Navbar.Toggle />
             </Navbar.Header>
@@ -28,4 +31,6 @@ const navbar = (props) => {
     );
 };
 
-export default navbar;
+
+
+export default Top_Navbar;

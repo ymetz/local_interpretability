@@ -1,8 +1,9 @@
 /* custom styles */
-.intro_text {
-    margin-left: 20px;
+.content_main{
+    margin-top:110px;
 }
 
-.action_btn {
-    margin-left: 10px;
+.show_more_button {
+    margin:30 auto;
+    display:block;
 }

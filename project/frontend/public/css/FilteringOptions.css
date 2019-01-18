@@ -1,0 +1,22 @@
+.second_navbar {
+    margin-top: 50px;
+    height: 20px;
+    fill-opacity: 5%;
+}
+
+.filtering_label {
+    font-weight: bold;
+}
+
+.action_btn {
+    margin-left: 10px;
+}
+
+.class_select {
+    width: 300px;
+}
+
+.range_slider {
+    width: 400;
+    margin: auto;
+}

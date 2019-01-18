@@ -10,7 +10,7 @@ const infoFooter = (props) => {
                     as explained by Ribeiro, Sing and Guestrin (2016)</p>
             </div>
         )
-    if (props.method === 'lrp')
+    if (props.method === 'elrp')
         return(
             <div styleName='overlay_footer'>
                 <p>This view provides an explanation image created by <b>LRP</b> (Layerwise-Relevance Propagation), initially described by Bach, Binder et. Al. (2015)</p>

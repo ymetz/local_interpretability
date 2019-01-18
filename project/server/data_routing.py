@@ -38,7 +38,7 @@ def get_explanation_image():
     iid = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
     imgClass = request.args.get('class', default=0, type=int)
-    if method == 'lrp':
+    if method == 'elrp':
         # Create the LRP explanation image on the fly
         create_lrp_explanation(datasets[0], iid, imgClass)
     i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + iid

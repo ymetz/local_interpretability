@@ -3,3 +3,4 @@ requests
 numpy
 tensorflow
 lime
+icrawler

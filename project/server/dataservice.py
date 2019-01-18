@@ -29,6 +29,8 @@ def get_dataset_list(path):
                 elif subdir.split('_')[0] == 'text':
                     datasets.append(TextDataset(dataset_id, dataset_path, subdir.split('_')[1]))
                     dataset_id = dataset_id + 1
+                elif subdir == "tcav_concepts":
+                    print("found concept directory for tcav")
                 elif subdir == 'current_explanations':
                     print("found existing directory for explanation images. Images in the directory may be owerwritten.")
                 else:
