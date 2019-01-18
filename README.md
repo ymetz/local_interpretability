@@ -13,32 +13,50 @@ Bachelor-Project
 ├── models
 ├── project
 │   ├── frontend
+│   │   ├── package-lock.json
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   ├── css
+│   │   │   │   ├── App.css
+│   │   │   │   ├── FilteringOptions.css
+│   │   │   │   ├── InfoFooter.css
+│   │   │   │   ├── Navbar.css
+│   │   │   │   ├── Overlay.css
+│   │   │   │   ├── materialize.min.css
+│   │   │   │   └── style.css
 │   │   │   ├── dist
+│   │   │   │   ├── bundle.css
 │   │   │   │   └── bundle.js
 │   │   │   ├── images
 │   │   │   └── templates
 │   │   │       └── index.html
-│   │   ├── src
-│   │   │   ├── AnalysisOverlay
-│   │   │   │   └── OverlayComponent.jsx
-│   │   │   ├── App.jsx
-│   │   │   ├── ImageGallery
-│   │   │   │   ├── ImageComponent.jsx
-│   │   │   │   └── ImageGallery.jsx
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── app_config.js
-│   │   │   └── index.jsx
 │   │   └── webpack.config.js
 │   └── server
+│       ├── __init__.py
+│       ├── __pycache__
 │       ├── app.py
+│       ├── classifier.py
 │       ├── data_routing.py
 │       ├── dataservice.py
 │       ├── dataset.py
+│       ├── image_crawler.py
+│       ├── lime_explainer.py
+│       ├── lrp_explainer.py
 │       ├── model.py
-│       └── tensorflow_connector.py
+│       ├── tcav
+│       │   ├── README.md
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   ├── activation_generator.py
+│       │   ├── cav.py
+│       │   ├── custom_model.py
+│       │   ├── model.py
+│       │   ├── run_params.py
+│       │   ├── tcav.py
+│       │   ├── utils.py
+│       ├── tcav_explainer.py
+│       ├── tensorflow_models.py
+│       └── test_images
 └── requirements.txt
 ```
 
