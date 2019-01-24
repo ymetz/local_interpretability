@@ -1,4 +1,6 @@
 import React from "react";
+import {config} from "../app_config";
+import '../../public/css/ImageComponent.css';
 
 const Checkmark = ({ selected }) => (
   <div
@@ -26,7 +28,8 @@ const Checkmark = ({ selected }) => (
 );
 
 const imgStyle = {
-  transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
+  transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s",
+  outline: "15px solid black"
 };
 const selectedImgStyle = {
   transform: "translateZ(0px) scale3d(0.9, 0.9, 1)",
@@ -47,6 +50,7 @@ const SelectedImage = ({
   direction,
   top,
   left,
+  classResult,
   labels
 }) => {
   //calculate x,y scale
@@ -54,7 +58,15 @@ const SelectedImage = ({
   const sy = (100 - (30 / photo.height) * 100) / 100;
   selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
 
-  console.log(labels);
+  let classifier_result = {};
+  if (!(classResult.length === 0 || labels.length === 0)){
+    let photo_name = photo.src.split('/').pop();
+    let prediction = classResult[photo_name];
+    if (prediction[config.nr_of_top_predictions-1].class === labels[photo_name][0]){
+      classifier_result = prediction[config.nr_of_top_predictions-1];
+      classifier_result.top_one = true;
+    }
+  }
 
   if (direction === "column") {
     cont.position = "absolute";
@@ -64,6 +76,7 @@ const SelectedImage = ({
   return (
     <div
       style={{ margin, height: photo.height, width: photo.width, ...cont }}
+      styleName="standard_image"
       className={!photo.selected ? "not-selected" : ""}
     >
       <Checkmark selected={photo.selected ? true : false} />

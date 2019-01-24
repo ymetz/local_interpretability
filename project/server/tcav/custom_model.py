@@ -152,16 +152,18 @@ class PublicImageModelWrapper(ImageModelWrapper):
                  labels,
                  image_shape,
                  endpoints_dict,
+                 external_endpoints_dict,
                  scope):
         super(PublicImageModelWrapper, self).__init__(image_shape)
         self.labels = labels
         self.ends = PublicImageModelWrapper.extract_endpoints(model,
-                                                         endpoints_dict,
-                                                         self.image_value_range,
-                                                         scope=scope)
+                                                              endpoints_dict,
+                                                              external_endpoints_dict,
+                                                              self.image_value_range,
+                                                              scope=scope)
         self.bottlenecks_tensors = PublicImageModelWrapper.get_bottleneck_tensors(
-            scope)
-        graph = tf.get_default_graph()
+            model, scope)
+        graph = model.graph
 
         # Construct gradient ops.
         with graph.as_default():
@@ -169,7 +171,7 @@ class PublicImageModelWrapper(ImageModelWrapper):
 
             self.pred = tf.expand_dims(self.ends['prediction'][0], 0)
             self.loss = tf.reduce_mean(
-                tf.nn.softmax_cross_entropy_with_logits(
+                tf.nn.softmax_cross_entropy_with_logits_v2(
                     labels=tf.one_hot(
                         self.y_input,
                         self.ends['prediction'].get_shape().as_list()[1]),
@@ -201,31 +203,30 @@ class PublicImageModelWrapper(ImageModelWrapper):
 
     # From Alex's code.
     @staticmethod
-    def get_bottleneck_tensors(scope):
+    def get_bottleneck_tensors(model, scope):
         """Add Inception bottlenecks and their pre-Relu versions to endpoints dict."""
-        graph = tf.get_default_graph()
+        graph = model.graph
         bn_endpoints = {}
         for op in graph.get_operations():
-            if op.name.startswith(scope + '/') and 'Concat' in op.type:
-                name = op.name.split('/')[1]
+            if op.name.startswith(scope + '/') and 'ConcatV2' in op.type:
+                name = op.name.split('/')[2]
                 bn_endpoints[name] = op.outputs[0]
         return bn_endpoints
 
     @staticmethod
-    def extract_endpoints(model, endpoints, image_value_range, scope='init'):
-        t_input = tf.placeholder(np.float32, [None, None, None, 3])
+    def extract_endpoints(model, endpoints, external_endpoints, image_value_range, scope='init'):
         graph = model.graph
-        assert graph.unique_name(scope, False) == scope, (
-                                                             'Scope "%s" already exists. Provide explicit scope names when '
-                                                             'importing multiple instances of the model.') % scope
+        with graph.as_default():
+            t_input = tf.placeholder(np.float32, [None, None, None, 3])
 
-        with tf.name_scope(scope) as sc:
             t_input, t_prep_input = PublicImageModelWrapper.create_input(
                 t_input, image_value_range)
 
             graph_inputs = {}
             graph_inputs[endpoints['input']] = t_prep_input
             my_endpoints = {}
+            for endpoint in external_endpoints:
+                my_endpoints[endpoint] = external_endpoints[endpoint]
             try:
                 for ep in endpoints:
                         # the operation name is given without the output specifier (:0 corresponds to an output tensor)
@@ -235,6 +236,7 @@ class PublicImageModelWrapper(ImageModelWrapper):
             except KeyError:
                 print("A specified endpoint was not found")
             my_endpoints['input'] = t_input
+
         return my_endpoints
 
 
@@ -272,18 +274,21 @@ class InceptionV3Wrapper_custom(PublicImageModelWrapper):
         image_shape_v3 = [299, 299, 3]
         endpoints_v3 = dict(
             input='Mul:0',
-            logit='softmax/logits:0',
-            prediction='softmax:0',
-            pre_avgpool='mixed_10/join:0',
-            logit_weight='softmax/weights:0',
-            logit_bias='softmax/biases:0',
+            pre_avgpool='Mixed_7c/join:0',
+            #logit_weight='softmax/weights:0',
+            #logit_bias='softmax/biases:0',
         )
-
+        endpoint_external = dict(
+            logit=model.end_points['Logits'],
+            prediction=model.end_points['Predictions']
+        )
         self.sess = sess
+        self.scope = model.scope
         super(InceptionV3Wrapper_custom, self).__init__(sess,
                                                         model,
                                                         labels,
                                                         image_shape_v3,
                                                         endpoints_v3,
-                                                        scope='v3')
+                                                        endpoint_external,
+                                                        scope=self.scope)
         self.model_name = 'InceptionV3_custom'

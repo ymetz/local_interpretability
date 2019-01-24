@@ -19,7 +19,9 @@ def create_top_5_predictions(dataset,model):
         for idxPred in range(len(preds)):
             top_5_labels = []
             for x in preds.argsort()[idxPred][-5:]:
-                top_5_labels.append({'class': int(x), 'score': float(preds[idxPred, x])})
+                # we have to subtract one from the predicted class as prediction 0 corresponds to unknown/background
+                # class which does not correspond to the ground truth labels
+                top_5_labels.append({'class': int(x)-1, 'score': float(preds[idxPred, x])})
             top_preds[file_list[idxPred]] = top_5_labels
             setattr(dataset, 'top_predictions', top_preds)
         with open(top_pred_file_name, 'wb') as f:

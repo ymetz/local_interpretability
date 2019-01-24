@@ -1,0 +1,9 @@
+.standard_image {
+    outline: 5px solid rgba(0, 255, 0, 0.858);
+    outline-offset: -5px;
+}
+
+.not-selected:hover {
+    outline:5px solid #06befa;
+    outline-offset: 5px;
+}

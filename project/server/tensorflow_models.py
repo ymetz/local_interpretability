@@ -24,6 +24,7 @@ class InceptionModel(ModelPrototype):
             self.session = tf.Session(graph=self.graph)
         else:
             self.session = session
+        self.scope = "InceptionV3"
         self.using_lrp = using_lrp
         self.image_size = inception.inception_v3.default_image_size
 
@@ -51,12 +52,13 @@ class InceptionModel(ModelPrototype):
                 self.logits = end_points['Logits']
                 self.probabilities = tf.argmax(logits, 1)
             else:
+                self.end_points = end_points
                 self.probabilities = tf.nn.softmax(logits)
 
             checkpoints_dir = '../../models/'
             init_fn = slim.assign_from_checkpoint_fn(
                 os.path.join(checkpoints_dir, 'tensorflow_inception_v3/inception_v3.ckpt'),
-                slim.get_model_variables('InceptionV3'))
+                slim.get_model_variables(self.scope))
             init_fn(self.session)
 
     def predict_images(self, images):

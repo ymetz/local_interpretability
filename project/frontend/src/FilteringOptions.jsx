@@ -44,10 +44,10 @@ const Second_Navbar = (props) => {
                 </Navbar.Form>
                 <Navbar.Form pullRight>
                     <Button styleName='style.action_btn' bsStyle="primary" onClick={props.onAnalysisButtonClick} 
-                                                                     disabled={props.selectedList.filter(im => im.selected).length != 1}>Explanation
+                                                                     disabled={props.selectedList.length != 1}>Explanation
                     </Button> 
                     <Button styleName='style.action_btn' bsStyle="primary" onClick={props.onAnalysisButtonClick} 
-                                                                     disabled={props.selectedList.filter(im => im.selected).length != 2}>Comparison
+                                                                     disabled={props.selectedList.length != 2}>Comparison
                     </Button>
                 </Navbar.Form>
                 <Navbar.Text pullRight>Show Detailed Analysis:</Navbar.Text>

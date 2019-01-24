@@ -24,9 +24,9 @@ import time
 from tcav.cav import CAV
 from tcav.cav import get_or_train_cav
 import numpy as np
-import tcav.run_params
+import tcav.run_params as run_params
 import tensorflow as tf
-import tcav.utils
+import tcav.utils as utils
 
 try:
     xrange          # Python 2

@@ -1,5 +1,5 @@
 import tcav
-import tcav.tcav
+from tcav.tcav import TCAV
 import tcav.custom_model as cm
 import tcav.utils as utils
 import json
@@ -26,7 +26,7 @@ def run_tcav():
 
     concept_directory = "../../datasets/tcav_concepts"
     target_directory = "../../datasets/targets"
-    bottlenecks = ['mixed4d']  # @param
+    bottlenecks = ['Mixed_5d']  # @param
 
     utils.make_dir_if_not_exists(activation_dir)
     utils.make_dir_if_not_exists(cav_dir)
@@ -53,7 +53,7 @@ def run_tcav():
 
     tf.logging.set_verbosity(0)
 
-    mytcav = tcav.TCAV(model.sess,
+    mytcav = TCAV(model.session,
                        target,
                        concepts,
                        bottlenecks,
@@ -64,6 +64,8 @@ def run_tcav():
                        num_random_exp=10)
 
     results = mytcav.run()
+
+    utils.print_results(results)
 
 
 def jsonKeys2int(x):

@@ -38,6 +38,7 @@ export default class App extends Component {
       images_on_display: [],
       image_display_options: {},
       labels: [],
+      top_classes: [],
       id_to_label: [],
       show_overlay : false
     }
@@ -87,9 +88,9 @@ export default class App extends Component {
    * @param {Object} obj Contains information about the selected image.
    */
   selectPhoto(event, obj) {
-    let image_list = this.state.image_list;
-    image_list[obj.index].selected = !image_list[obj.index].selected;
-    this.setState({ image_list: image_list });
+    let images_on_display = this.state.images_on_display;
+    images_on_display[obj.index].selected = !images_on_display[obj.index].selected;
+    this.setState({ images_on_display: images_on_display });
   }
 
   /**
@@ -99,9 +100,9 @@ export default class App extends Component {
    */
   toogleOverlay() {
     if (this.state.show_overlay === true){
-      let image_list = this.state.image_list;
-      image_list.map((elem) => {elem.selected = false; return elem;})
-      this.setState({ image_list: image_list });      
+      let images_on_display = this.state.images_on_display;
+      images_on_display.map((elem) => {elem.selected = false; return elem;})
+      this.setState({ images_on_display: images_on_display });      
     }
     let showOverlay = !this.state.show_overlay;
     this.setState({show_overlay: showOverlay});
@@ -142,12 +143,12 @@ export default class App extends Component {
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
         />        
-        <FilteringOptions onAnalysisButtonClick={this.toogleOverlay.bind(this)} selectedList={this.state.image_list.filter(im => im.selected)} labels={this.state.id_to_label}/>
+        <FilteringOptions onAnalysisButtonClick={this.toogleOverlay.bind(this)} selectedList={this.state.images_on_display.filter(im => im.selected)} labels={this.state.id_to_label}/>
         <div styleName="content_main">
-          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto} topPredictions={this.state.top_classes} labels={this.state.labels}/>
+          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto.bind(this)} topPredictions={this.state.top_classes} labels={this.state.labels}/>
           <Button styleName='show_more_button' bsStyle="default" onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
         </div>
-        {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.image_list.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} appState={this.state}/> : null}
+        {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.images_on_display.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} appState={this.state}/> : null}
       </div>
     )
   }
