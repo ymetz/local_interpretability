@@ -15,7 +15,7 @@ from preprocessing import inception_preprocessing, imagenet
 
 class InceptionModel(ModelPrototype):
 
-    def __init__(self, *args, graph=tf.Graph(), session=None, using_lrp=False, **kwargs):
+    def __init__(self, *args, graph=tf.Graph(), session=None, mode='prediction', **kwargs):
         super(InceptionModel, self).__init__(*args, **kwargs)
         self.logdir = os.path.join(self.model_path, 'logdir')
 
@@ -25,7 +25,7 @@ class InceptionModel(ModelPrototype):
         else:
             self.session = session
         self.scope = "InceptionV3"
-        self.using_lrp = using_lrp
+        self.mode = mode
         self.image_size = inception.inception_v3.default_image_size
 
         self.prepare_model()
@@ -48,7 +48,7 @@ class InceptionModel(ModelPrototype):
             with slim.arg_scope(inception.inception_v3_arg_scope()):
                 logits, end_points = inception.inception_v3(self.processed_images, num_classes=1001, is_training=False)
 
-            if self.using_lrp:
+            if self.mode == 'lrp':
                 self.logits = end_points['Logits']
                 self.probabilities = tf.argmax(logits, 1)
             else:

@@ -182,7 +182,7 @@ class PublicImageModelWrapper(ImageModelWrapper):
         return self.labels[idx]
 
     def label_to_id(self, label):
-        return self.labels.index(label)
+        return list(self.labels.values()).index(label)
 
     @staticmethod
     def create_input(t_input, image_value_range):
@@ -222,8 +222,6 @@ class PublicImageModelWrapper(ImageModelWrapper):
             t_input, t_prep_input = PublicImageModelWrapper.create_input(
                 t_input, image_value_range)
 
-            graph_inputs = {}
-            graph_inputs[endpoints['input']] = t_prep_input
             my_endpoints = {}
             for endpoint in external_endpoints:
                 my_endpoints[endpoint] = external_endpoints[endpoint]
@@ -235,7 +233,7 @@ class PublicImageModelWrapper(ImageModelWrapper):
                         my_endpoints[op.name] = op.outputs[0]  # this returns the output tensor we want
             except KeyError:
                 print("A specified endpoint was not found")
-            my_endpoints['input'] = t_input
+
 
         return my_endpoints
 
@@ -279,6 +277,7 @@ class InceptionV3Wrapper_custom(PublicImageModelWrapper):
             #logit_bias='softmax/biases:0',
         )
         endpoint_external = dict(
+            input=model.processed_images,
             logit=model.end_points['Logits'],
             prediction=model.end_points['Predictions']
         )

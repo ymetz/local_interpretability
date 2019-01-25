@@ -73,7 +73,7 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
                 acts_path = os.path.join(self.acts_dir, 'acts_{}_{}'.format(
                     concept, bottleneck_name)) if self.acts_dir else None
                 if acts_path and tf.gfile.Exists(acts_path):
-                    with tf.gfile.Open(acts_path) as f:
+                    with tf.gfile.Open(acts_path, 'rb') as f:
                         acts[concept][bottleneck_name] = np.load(f).squeeze()
                         tf.logging.info('Loaded {} shape {}'.format(
                             acts_path, acts[concept][bottleneck_name].shape))
@@ -83,7 +83,7 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
                     if acts_path:
                         tf.logging.info('{} does not exist, Making one...'.format(
                             acts_path))
-                        with tf.gfile.Open(acts_path, 'w') as f:
+                        with tf.gfile.Open(acts_path, 'wb') as f:
                             np.save(f, acts[concept][bottleneck_name], allow_pickle=False)
         return acts
 
@@ -98,6 +98,7 @@ class ImageActivationGenerator(ActivationGeneratorBase):
 
     def get_examples_for_concept(self, concept):
         concept_dir = os.path.join(self.source_dir, concept)
+        print(concept_dir,concept)
         img_paths = [os.path.join(concept_dir, d)
                      for d in tf.gfile.ListDirectory(concept_dir)]
         imgs = self.load_images_from_files(img_paths, self.max_examples,
@@ -136,7 +137,7 @@ class ImageActivationGenerator(ActivationGeneratorBase):
         return img
 
     def load_images_from_files(self, filenames, max_imgs=500,
-                               do_shuffle=True, run_parallel=False,
+                               do_shuffle=True, run_parallel=True,
                                shape=(299, 299),
                                num_workers=100):
         """Return image arrays from filenames.
@@ -173,5 +174,4 @@ class ImageActivationGenerator(ActivationGeneratorBase):
                 if len(imgs) >= max_imgs:
                     break
 
-        print(len(imgs))
         return np.array(imgs)

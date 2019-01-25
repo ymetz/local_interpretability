@@ -42,6 +42,8 @@ def run_tcav():
     for concept in concepts:
         if not os.path.isdir(os.path.join(concept_directory, concept)):
             image_crawler.crawl_images(concept_directory, concept)
+        # if not os.path.isdir(os.path.join(concept_directory, random_counterpart)):
+        #    image_crawler.crawl_images(concept_directory, 'image', N=500)
     if not os.path.isdir(os.path.join(target_directory, target)):
         image_crawler.crawl_images(target_directory, target)
 
@@ -61,7 +63,7 @@ def run_tcav():
                        alphas,
                        random_counterpart,
                        cav_dir=cav_dir,
-                       num_random_exp=10)
+                       num_random_exp=4)
 
     results = mytcav.run()
 

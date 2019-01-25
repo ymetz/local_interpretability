@@ -14,7 +14,7 @@ def create_lrp_explanation(dataset,filename,class_id):
     lrp_session = tf.Session()
 
     with DeepExplain(session=lrp_session, graph=lrp_session.graph) as de:
-        theModel = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, using_lrp=True)
+        theModel = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, mode='lrp')
 
         #file_list = []
         #for file in dataset.file_list:
