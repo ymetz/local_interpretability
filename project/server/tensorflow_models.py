@@ -1,11 +1,16 @@
 import tensorflow as tf
+from sys import platform
 slim = tf.contrib.slim
 
 import os
 import sys
 
 #add model directory to import path
-sys.path.insert(0, "../../models")
+from sys import platform
+if platform == "win32":
+    sys.path.insert(0, "..\..\models")
+else:
+    sys.path.insert(0, "../../models")
 
 from model import ModelPrototype
 
