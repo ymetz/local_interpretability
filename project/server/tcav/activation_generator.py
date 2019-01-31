@@ -34,38 +34,34 @@ class ActivationGeneratorInterface(object):
         pass
 
     @abstractmethod
-    def get_model(self):
+    def get_model():
         pass
 
 
 class ActivationGeneratorBase(ActivationGeneratorInterface):
     """Basic abstract activation generator for a model"""
 
-    def __init__(self, model, acts_dir, max_examples=500, use_file_lists=False):
+    def __init__(self, model, acts_dir, max_examples=500):
         self.model = model
         self.acts_dir = acts_dir
         self.max_examples = max_examples
-        self.use_file_lists= use_file_lists
 
     def get_model(self):
         return self.model
 
     @abstractmethod
-    def get_examples_for_concept(self, concept, file_list=[]):
+    def get_examples_for_concept(self, concept):
         pass
 
-    def get_activations_for_concept(self, concept, bottleneck, file_list=[]):
-        if file_list:
-            examples = self.get_examples_for_concept(concept, file_list)
-        else:
-            examples = self.get_examples_for_concept(concept)
+    def get_activations_for_concept(self, concept, bottleneck):
+        examples = self.get_examples_for_concept(concept)
         return self.get_activations_for_examples(examples, bottleneck)
 
     def get_activations_for_examples(self, examples, bottleneck):
         acts = self.model.run_examples(examples, bottleneck)
         return self.model.reshape_activations(acts).squeeze()
 
-    def process_and_load_activations(self, bottleneck_names, concepts, file_lists={}):
+    def process_and_load_activations(self, bottleneck_names, concepts):
         acts = {}
         if self.acts_dir and not tf.gfile.Exists(self.acts_dir):
             tf.gfile.MakeDirs(self.acts_dir)
@@ -82,16 +78,8 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
                         tf.logging.info('Loaded {} shape {}'.format(
                             acts_path, acts[concept][bottleneck_name].shape))
                 else:
-                    if self.use_file_lists:
-                        if concept in file_lists.keys():
-                            acts[concept][bottleneck_name] = self.get_activations_for_concept(
-                                concept, bottleneck_name, file_lists[concept])
-                        else:
-                            acts[concept][bottleneck_name] = self.get_activations_for_concept(
-                                concept, bottleneck_name)
-                    else:
-                        acts[concept][bottleneck_name] = self.get_activations_for_concept(
-                            concept, bottleneck_name)
+                    acts[concept][bottleneck_name] = self.get_activations_for_concept(
+                        concept, bottleneck_name)
                     if acts_path:
                         tf.logging.info('{} does not exist, Making one...'.format(
                             acts_path))
@@ -103,22 +91,18 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
 class ImageActivationGenerator(ActivationGeneratorBase):
     """Activation generator for a basic image model"""
 
-    def __init__(self, model, source_dir, acts_dir, max_examples=10, use_file_lists=False):
+    def __init__(self, model, source_dir, acts_dir, max_examples=10):
         self.source_dir = source_dir
         super(ImageActivationGenerator, self).__init__(
             model, acts_dir, max_examples)
 
-    def get_examples_for_concept(self, concept, file_list=[]):
-        if not (self.use_file_lists and file_list):
-            concept_dir = os.path.join(self.source_dir, concept)
-            print(concept_dir, concept)
-            img_paths = [os.path.join(concept_dir, d)
-                         for d in tf.gfile.ListDirectory(concept_dir)]
-        else:
-            img_paths = file_list
+    def get_examples_for_concept(self, concept):
+        concept_dir = os.path.join(self.source_dir, concept)
+        print(concept_dir,concept)
+        img_paths = [os.path.join(concept_dir, d)
+                     for d in tf.gfile.ListDirectory(concept_dir)]
         imgs = self.load_images_from_files(img_paths, self.max_examples,
                                            shape=self.model.get_image_shape()[:2])
-
         return imgs
 
     def load_image_from_file(self, filename, shape):
