@@ -22,8 +22,9 @@ package-lock.json
 *.pyc
 
 #ignore content of models folder
-!models/
-models/*
-!models/preprocessing/
+*.ckpt
+activations
+cavs
+
 !datasets/
 datasets/*

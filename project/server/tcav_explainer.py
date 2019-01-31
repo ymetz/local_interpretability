@@ -36,16 +36,17 @@ def run_tcav():
     # a folder that random images are stored
     random_counterpart = 'random_images'
     target = 'zebra'
-    concepts = ["dotted", "striped", "zigzagged"]
+    concepts = ["dotted", "striped", "zigzagged", "irregular pattern", "gradient", "single color"]
+    test_concepts = [concepts[0]]
 
     #crawl images for concepts and target class
     for concept in concepts:
         if not os.path.isdir(os.path.join(concept_directory, concept)):
-            image_crawler.crawl_images(concept_directory, concept)
+            image_crawler.crawl_images(concept_directory, concept, N=50)
         # if not os.path.isdir(os.path.join(concept_directory, random_counterpart)):
         #    image_crawler.crawl_images(concept_directory, 'image', N=500)
     if not os.path.isdir(os.path.join(target_directory, target)):
-        image_crawler.crawl_images(target_directory, target)
+        image_crawler.crawl_images(target_directory, target, N=50)
 
     the_model = cm.InceptionV3Wrapper_custom(model.session,
                                              model,
@@ -56,14 +57,14 @@ def run_tcav():
     tf.logging.set_verbosity(0)
 
     mytcav = TCAV(model.session,
-                       target,
-                       concepts,
-                       bottlenecks,
-                       act_generator,
-                       alphas,
-                       random_counterpart,
-                       cav_dir=cav_dir,
-                       num_random_exp=4)
+                  target,
+                  test_concepts,
+                  bottlenecks,
+                  act_generator,
+                  alphas,
+                  random_counterpart,
+                  cav_dir=cav_dir,
+                  num_random_exp=15)
 
     results = mytcav.run()
 
