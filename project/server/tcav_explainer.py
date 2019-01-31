@@ -67,6 +67,7 @@ def run_tcav():
 
     results = mytcav.run()
 
+    print(results)
     utils.print_results(results)
 
 

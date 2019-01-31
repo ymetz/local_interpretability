@@ -6,6 +6,7 @@ import Gallery from './ImageGallery/ImageGallery';
 import {Button} from 'react-bootstrap';
 import axios from "axios";
 import OverlayComponent from './AnalysisOverlay/OverlayComponent';
+import SettingsView from './SettingsView';
 import '../public/css/App.css';
 import {config} from './app_config'; 
 
@@ -31,6 +32,7 @@ export default class App extends Component {
      * - top_classes contains the five classes with the 
      *   highest prediction probability by the classifier for each image
      * - id_to_label is used to translate the numeric class id to a human readable name
+     * - app_settings contains settings that may be used across components in the app
      */
     this.state = {
       dataset: {},
@@ -40,7 +42,12 @@ export default class App extends Component {
       labels: [],
       top_classes: [],
       id_to_label: [],
-      show_overlay : false
+      show_overlay : false,
+      app_settings: {
+        show_tcav_tree: true
+      },
+      tcav_concept_hierarchy: {},
+      show_settings: false
     }
   }
 
@@ -108,6 +115,11 @@ export default class App extends Component {
     this.setState({show_overlay: showOverlay});
   }
 
+  toggleSettings() {
+    let showSettings = !this.state.show_settings;
+    this.setState({show_settings: showSettings});
+  }
+
   getImagePredictions() {
     let image_name = this.state.current_image_name;
     axios.get('/get_data/get_prediction?name='+ image_name)
@@ -142,13 +154,33 @@ export default class App extends Component {
           dataset_name={this.state.dataset.dataset_name} 
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
+          onSettingButtonClick={this.toggleSettings.bind(this)}
         />        
-        <FilteringOptions onAnalysisButtonClick={this.toogleOverlay.bind(this)} selectedList={this.state.images_on_display.filter(im => im.selected)} labels={this.state.id_to_label}/>
+        <FilteringOptions 
+          onAnalysisButtonClick={this.toogleOverlay.bind(this)} 
+          selectedList={this.state.images_on_display.filter(im => im.selected)} 
+          labels={this.state.id_to_label}
+        />
         <div styleName="content_main">
-          <Gallery images={this.state.images_on_display} onClick={this.selectPhoto.bind(this)} topPredictions={this.state.top_classes} labels={this.state.labels}/>
-          <Button styleName='show_more_button' bsStyle="default" onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
+          <Gallery 
+            images={this.state.images_on_display} 
+            onClick={this.selectPhoto.bind(this)} 
+            topPredictions={this.state.top_classes} 
+            labels={this.state.labels}
+          />
+          <Button 
+            styleName='show_more_button' 
+            bsStyle="default" 
+            onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
         </div>
-        {this.state.show_overlay ? <OverlayComponent selectedElements={this.state.images_on_display.filter(im => im.selected)} close_it={this.toogleOverlay.bind(this)} appState={this.state}/> : null}
+        {this.state.show_overlay ? <OverlayComponent 
+                                      selectedElements={this.state.images_on_display.filter(im => im.selected)} 
+                                      close_it={this.toogleOverlay.bind(this)} 
+                                      appState={this.state}/> : null}
+        {this.state.show_settings ? <SettingsView 
+                                        appSettings={this.state.app_settings}
+                                        close_it={this.toggleSettings.bind(this)}
+                                        conceptHierarchy={this.state.tcav_concept_hierarchy}/> : null}
       </div>
     )
   }

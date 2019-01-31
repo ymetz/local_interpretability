@@ -1,5 +1,5 @@
 import React from "react";
-import {Navbar, Button, FormControl, FormGroup} from 'react-bootstrap';
+import {Navbar, Button, Glyphicon, FormControl, FormGroup} from 'react-bootstrap';
 import Select from 'react-select';
 import {config} from './app_config';
 import '../public/css/Navbar.css';  
@@ -26,6 +26,11 @@ const Top_Navbar = (props) => {
                 Dataset Path: <Navbar.Link href="#">{props.dataset_path}</Navbar.Link>
                 </Navbar.Text>
                 <Navbar.Text pullRight>Demo v{config.version_number}</Navbar.Text>
+                <Navbar.Form pullRight>
+                    <Button styleName='action_btn' bsStyle="default" onClick={props.onSettingButtonClick}>
+                        <Glyphicon glyph="cog" /> Settings
+                    </Button>
+                </Navbar.Form>
             </Navbar.Collapse>
         </Navbar>
     );

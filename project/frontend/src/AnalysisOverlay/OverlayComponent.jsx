@@ -5,6 +5,7 @@ import '../../public/css/Overlay.css';
 import axios from "axios";
 import TopPredictionTable from './Top_Prediction_Table';
 import InfoFooter from './InfoFooter';
+import TcavChart from './TcavChart';
 ReactModal.setAppElement('#content');
 
 /**
@@ -20,7 +21,8 @@ export default class overlayComponent extends Component {
           current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
           current_image_class: -1,
           method: 'lime',
-          show_explanation_image: false
+          show_explanation_image: false,
+          concept_data : {}
        }
 
     }
@@ -46,6 +48,18 @@ export default class overlayComponent extends Component {
             this.setState( {current_explanation_src: preds, show_explanation_image: true, 
                 current_image_class: imgClass } );
         })
+    }
+
+    getConceptData(image, imgClass, selectedConcepts) {
+        axios.get('/get_data/get_tcav_explanation', {params:{
+            id : image,
+            class: imgClass,
+            concepts: selectedConcepts
+        }})
+        .then(res => {
+            const preds = res.data;
+            this.setState( {image_scores: preds, class_scores: true} );
+        })    
     }
 
 
@@ -85,6 +99,7 @@ export default class overlayComponent extends Component {
                                             correct_class={this.state.current_image_label[0]}
                                             onSelect={this.toggleExplanationImage.bind(this)}/>
                     </div>
+                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.state.concept_data}/> : null}
                     <InfoFooter method={this.state.method}/>
                 </div>
             </ReactModal>
