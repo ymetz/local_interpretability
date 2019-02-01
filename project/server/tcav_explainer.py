@@ -4,16 +4,31 @@ import tcav.custom_model as cm
 import tcav.utils as utils
 import json
 import os
+import pickle
 import image_crawler
-from dataservice import get_model_list
+from dataservice import get_model_list, get_dataset_list
 import tcav.activation_generator as act_gen
 import tensorflow as tf
 
 
+def load_tcavs(model, dataset):
+
+    tcav_scores = {}
+    tcav_file_name = os.path.join(model.model_path, dataset.dataset_name + model.model_name
+                                      + '-tcavscores' + '.pkl')
+    if os.path.isfile(tcav_file_name):
+        with open(tcav_file_name, 'rb') as f:
+            tcav_scores = pickle.load(f)
+
+    return tcav_scores
+
+
 def run_tcav():
     model = get_model_list("../../models/")[0]
-    with open("../../datasets/image_imagenet_sample/id_to_label.json") as ifile:
-        labels = json.load(ifile, object_hook=jsonKeys2int)
+    dataset = get_dataset_list("../../datasets")[0]
+
+    dataset_name = dataset.dataset_name
+    id_to_labels = dataset.id_to_label
 
     model_to_run = 'inception_v3'
     tcav_dir = "../../models/tensorflow_inception_v3"
@@ -35,9 +50,8 @@ def run_tcav():
     alphas = [0.1]
     # a folder that random images are stored
     random_counterpart = 'random_images'
-    target = 'zebra'
+    targets = ['zebra']
     concepts = ["dotted", "striped", "zigzagged", "irregular pattern", "gradient", "single color"]
-    test_concepts = [concepts[0]]
 
     #crawl images for concepts and target class
     for concept in concepts:
@@ -45,31 +59,41 @@ def run_tcav():
             image_crawler.crawl_images(concept_directory, concept, N=50)
         # if not os.path.isdir(os.path.join(concept_directory, random_counterpart)):
         #    image_crawler.crawl_images(concept_directory, 'image', N=500)
-    if not os.path.isdir(os.path.join(target_directory, target)):
-        image_crawler.crawl_images(target_directory, target, N=50)
+    for target in targets:
+        if not os.path.isdir(os.path.join(target_directory, target)):
+            image_crawler.crawl_images(target_directory, target, N=50)
 
     the_model = cm.InceptionV3Wrapper_custom(model.session,
                                              model,
-                                             labels)
+                                             id_to_labels)
 
     act_generator = act_gen.ImageActivationGenerator(the_model, concept_directory, activation_dir, max_examples=100)
 
     tf.logging.set_verbosity(0)
 
-    mytcav = TCAV(model.session,
-                  target,
-                  test_concepts,
-                  bottlenecks,
-                  act_generator,
-                  alphas,
-                  random_counterpart,
-                  cav_dir=cav_dir,
-                  num_random_exp=15)
+    tcav_dict = {}
 
-    results = mytcav.run()
+    for target in targets:
+        mytcav = TCAV(model.session,
+                      target,
+                      concepts,
+                      bottlenecks,
+                      act_generator,
+                      alphas,
+                      random_counterpart,
+                      cav_dir=cav_dir,
+                      num_random_exp=5)
 
-    print(results)
-    utils.print_results(results)
+        results = mytcav.run()
+
+        # we have to subtract 1 from the target class, as it corresponds with our groundtruth labels,
+        # internally the network outputs are shifted by one, as 0 represents the background class instead of -1
+        summary = utils.print_results(results, class_id=the_model.label_to_id(target)-1, result_dict=tcav_dict)
+
+    tcav_file_path = os.path.join(model.model_path, dataset_name + model.model_name + '-tcavscores' + '.pkl')
+    with open(tcav_file_path, 'wb') as f:
+        pickle.dump(tcav_dict, f, pickle.HIGHEST_PROTOCOL)
+
 
 
 def jsonKeys2int(x):
@@ -77,8 +101,6 @@ def jsonKeys2int(x):
             return {int(k):v for k,v in x.items()}
     return x
 
-
-run_tcav()
 
 
 

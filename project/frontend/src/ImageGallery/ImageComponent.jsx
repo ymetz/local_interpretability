@@ -36,7 +36,7 @@ const selectedImgStyle = {
   transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
 };
 const cont = {
-  backgroundColor: "#eee",
+  backgroundColor: "#eeeeee",
   cursor: "pointer",
   overflow: "hidden",
   position: "relative"
@@ -59,6 +59,7 @@ const SelectedImage = ({
   selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
 
   let classifier_result = {};
+  /*
   if (!(classResult.length === 0 || labels.length === 0)){
     let photo_name = photo.src.split('/').pop();
     let prediction = classResult[photo_name];
@@ -66,7 +67,7 @@ const SelectedImage = ({
       classifier_result = prediction[config.nr_of_top_predictions-1];
       classifier_result.top_one = true;
     }
-  }
+  }*/
 
   if (direction === "column") {
     cont.position = "absolute";

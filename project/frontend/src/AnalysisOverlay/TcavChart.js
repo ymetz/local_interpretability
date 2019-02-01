@@ -6,10 +6,10 @@ export default class TcavChart extends Component {
     componentDidMount() {
         this.draw(this.props)
     }
+
     componentDidUpdate(prevProps){
-      //this makes sure we don't redraw unnecessarily --
-      //only when we add a new shape
-      if(this.props.conceptData !== prevProps.conceptData){
+      //this makes sure we don't redraw unnecessarily
+      if((this.props.conceptData !== prevProps.conceptData) && this.props.conceptData !== undefined){
         d3.select('.viz > *').remove();
         this.draw(this.props)
       }
@@ -24,7 +24,7 @@ export default class TcavChart extends Component {
     }
 
     draw = (props) => {
-        console.log("drawing");
+        console.log(props);
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const width = 1550, height = 300;
@@ -45,20 +45,28 @@ export default class TcavChart extends Component {
             .tickSizeOuter(0));
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max([3,4,8,12,15])]).nice()
+            .domain([0.0, 1.0]).nice()
             .range([height - margin.bottom, margin.top]);
 
         const x = d3.scaleBand()
-            .domain(['concept_A','concept_B','concept_C'])
+            .domain(props.conceptData.map(x => x['concept']))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
         svg.append("g")
+            .attr("fill", "orange")
+          .selectAll("rect").data(props.conceptData).enter().append("rect")
+            .attr("x", d => (x(d.concept)+10))
+            .attr("y", d => y(d.random_score))
+            .attr("height", d => y(0) - y(d.random_score))
+            .attr("width", x.bandwidth());
+
+        svg.append("g")
             .attr("fill", "steelblue")
           .selectAll("rect").data(props.conceptData).enter().append("rect")
-            .attr("x", d => x(d.name))
-            .attr("y", d => y(d.value))
-            .attr("height", d => y(0) - y(d.value))
+            .attr("x", d => x(d.concept))
+            .attr("y", d => y(d.score))
+            .attr("height", d => y(0) - y(d.score))
             .attr("width", x.bandwidth());
         
         svg.append("g")

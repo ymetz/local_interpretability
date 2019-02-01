@@ -40,6 +40,8 @@ export default class overlayComponent extends Component {
     }
 
     toggleExplanationImage(imgClass) {
+        if (this.state.method === 'tcav')
+            return;
         axios.get('/get_data/get_explanation_image?id='+this.state.current_image_name
         +'&method='+ this.state.method
         +'&class='+ imgClass)
@@ -49,20 +51,6 @@ export default class overlayComponent extends Component {
                 current_image_class: imgClass } );
         })
     }
-
-    getConceptData(image, imgClass, selectedConcepts) {
-        axios.get('/get_data/get_tcav_explanation', {params:{
-            id : image,
-            class: imgClass,
-            concepts: selectedConcepts
-        }})
-        .then(res => {
-            const preds = res.data;
-            this.setState( {image_scores: preds, class_scores: true} );
-        })    
-    }
-
-
 
     render() {
         return (
@@ -99,7 +87,7 @@ export default class overlayComponent extends Component {
                                             correct_class={this.state.current_image_label[0]}
                                             onSelect={this.toggleExplanationImage.bind(this)}/>
                     </div>
-                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.state.concept_data}/> : null}
+                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> : null}
                     <InfoFooter method={this.state.method}/>
                 </div>
             </ReactModal>

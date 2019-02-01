@@ -101,7 +101,7 @@ export default class ConceptTreeView extends Component {
               ]
             };
 
-          let width = 1550;
+          let width = 960;
           let dy = width / 6, dx = 30;
 
           const diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
@@ -165,7 +165,7 @@ export default class ConceptTreeView extends Component {
 
                 // Enter any new nodes at the parent's previous position.
                 const nodeEnter = node.enter().append("g")
-                    .attr("class","node")
+                    .attr("class","style.node")
                     .attr("transform", d => `translate(${source.y0},${source.x0})`)
                     .attr("fill-opacity", 0)
                     .attr("stroke-opacity", 0)
@@ -179,7 +179,7 @@ export default class ConceptTreeView extends Component {
                     .attr("fill", d => d._children ? "#555" : "#999");
 
                 nodeEnter.append("text")
-                    .attr("dy", "0.31em")
+                    .attr("dy", "0.35em")
                     .attr("x", d => d._children ? -6 : 6)
                     .attr("text-anchor", d => d._children ? "end" : "start")
                     .text(d => d.data.name)

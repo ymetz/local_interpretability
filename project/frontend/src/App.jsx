@@ -9,6 +9,7 @@ import OverlayComponent from './AnalysisOverlay/OverlayComponent';
 import SettingsView from './SettingsView';
 import '../public/css/App.css';
 import {config} from './app_config'; 
+import GlobalView from "./GlobalView";
 
 /**
  * App Component of the React App.
@@ -42,6 +43,8 @@ export default class App extends Component {
       labels: [],
       top_classes: [],
       id_to_label: [],
+      tcav_scores: {},
+      show_gallery: true,
       show_overlay : false,
       app_settings: {
         show_tcav_tree: true
@@ -87,6 +90,12 @@ export default class App extends Component {
         const id_to_label = res.data;
         this.setState( {id_to_label: id_to_label} );
       })
+
+    axios.get('/get_data/get_tcav_scores')
+    .then(res => {
+        const scores = res.data;
+        this.setState( {tcav_scores: scores} );
+    })    
   }
 
   /**
@@ -141,6 +150,11 @@ export default class App extends Component {
 
   }
 
+  toggleViewMode() {
+    let showGallery = !this.state.show_gallery;
+    this.setState({show_gallery: showGallery});
+  }
+
   /**
    * Main rendering method that each React Component has to provide.
    * Defines what actually is displayed on the web page.
@@ -160,18 +174,22 @@ export default class App extends Component {
           onAnalysisButtonClick={this.toogleOverlay.bind(this)} 
           selectedList={this.state.images_on_display.filter(im => im.selected)} 
           labels={this.state.id_to_label}
+          onViewModeChange={this.toggleViewMode.bind(this)}
         />
         <div styleName="content_main">
-          <Gallery 
-            images={this.state.images_on_display} 
-            onClick={this.selectPhoto.bind(this)} 
-            topPredictions={this.state.top_classes} 
-            labels={this.state.labels}
-          />
-          <Button 
-            styleName='show_more_button' 
-            bsStyle="default" 
-            onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
+          { (this.state.show_gallery) ? 
+          <div>
+            <Gallery 
+              images={this.state.images_on_display} 
+              onClick={this.selectPhoto.bind(this)} 
+              topPredictions={this.state.top_classes} 
+              labels={this.state.labels}
+            />
+            <Button 
+              styleName='show_more_button' 
+              bsStyle="default" 
+              onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
+          </div> : <GlobalView/> }
         </div>
         {this.state.show_overlay ? <OverlayComponent 
                                       selectedElements={this.state.images_on_display.filter(im => im.selected)} 

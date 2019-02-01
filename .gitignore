@@ -23,6 +23,7 @@ package-lock.json
 
 #ignore content of models folder
 *.ckpt
+*.pkl
 activations
 cavs
 

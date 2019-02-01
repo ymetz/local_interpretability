@@ -3,6 +3,7 @@ from dataservice import *
 from dataset import encode_dataset
 import tensorflow as tf
 from classifier import create_top_5_predictions
+from tcav_explainer import load_tcavs
 from lime_explainer import create_explanation_images
 from lrp_explainer import create_lrp_explanation
 
@@ -10,6 +11,7 @@ datasets = []
 models = []
 active_dataset = None
 active_model = None
+tcav_scores = None
 
 get_data = Blueprint('get_data', __name__)
 
@@ -33,15 +35,19 @@ def get_image():
     i_path = "get_data/dataset/" + active_dataset.file_list[iid]
     return i_path
 
+@get_data.route("/get_tcav_scores")
+def tcav_scores_for_class():
+    return jsonify(tcav_scores)
+
 @get_data.route("/get_explanation_image")
 def get_explanation_image():
     iid = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
-    imgClass = request.args.get('class', default=0, type=int)
+    img_class = request.args.get('class', default=0, type=int)
     if method == 'elrp':
         # Create the LRP explanation image on the fly
-        create_lrp_explanation(datasets[0], iid, imgClass)
-    i_path = "get_data/dataset_explanation/" + method + '_' + str(imgClass) + '_' + iid
+        create_lrp_explanation(datasets[0], iid, img_class)
+    i_path = "get_data/dataset_explanation/" + method + '_' + str(img_class) + '_' + iid
     return i_path
 
 @get_data.route("/get_image_list")
@@ -74,6 +80,7 @@ def init_data():
     global models
     global active_dataset
     global active_model
+    global tcav_scores
 
     datasets = get_dataset_list("../../datasets/")
 
@@ -90,9 +97,12 @@ def init_data():
     for model in models:
         print(model.model_id, model.model_name, model.model_path, model.logdir)
 
-    active_models = models[0]
+    active_model = models[0]
 
-    create_top_5_predictions(datasets[0], models[0])
+    create_top_5_predictions(active_dataset, active_model)
+
+    tcav_scores = load_tcavs(active_model, active_dataset)
+    print(tcav_scores)
 
     print("Creating Lime explanations")
     #create_explanation_images(datasets[0], models[0])

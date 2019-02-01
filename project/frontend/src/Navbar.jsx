@@ -26,11 +26,6 @@ const Top_Navbar = (props) => {
                 Dataset Path: <Navbar.Link href="#">{props.dataset_path}</Navbar.Link>
                 </Navbar.Text>
                 <Navbar.Text pullRight>Demo v{config.version_number}</Navbar.Text>
-                <Navbar.Form pullRight>
-                    <Button styleName='action_btn' bsStyle="default" onClick={props.onSettingButtonClick}>
-                        <Glyphicon glyph="cog" /> Settings
-                    </Button>
-                </Navbar.Form>
             </Navbar.Collapse>
         </Navbar>
     );
@@ -39,3 +34,10 @@ const Top_Navbar = (props) => {
 
 
 export default Top_Navbar;
+
+/*
+                <Navbar.Form pullRight>
+                    <Button styleName='action_btn' bsStyle="default" onClick={props.onSettingButtonClick}>
+                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                    </Button>
+                </Navbar.Form>*/

@@ -1,5 +1,5 @@
 import React from "react";
-import {Navbar, Button, FormControl, FormGroup} from 'react-bootstrap';
+import {Navbar, Button, Glyphicon, label} from 'react-bootstrap';
 import Select from 'react-select';
 import Slider, { Range } from 'rc-slider';
 import {config} from './app_config';
@@ -37,12 +37,18 @@ const Second_Navbar = (props) => {
                     />
                 </Navbar.Form>
                 <Navbar.Form pullLeft>
-                    <div>
+                    <div styleName="style.range_slider">
                         <Slider styleName='rc_style.rc-slider' />
                         <Range />
                     </div>
                 </Navbar.Form>
                 <Navbar.Form pullRight>
+                    <Button styleName='style.action_btn' bsStyle="default" onClick={props.onViewModeChange}>
+                        <Glyphicon glyph="stats" /> Global View
+                    </Button>   
+                </Navbar.Form>
+                <Navbar.Form pullRight>
+                    <label styleName="style.filtering_label">Show Detailed Analysis:</label>
                     <Button styleName='style.action_btn' bsStyle="primary" onClick={props.onAnalysisButtonClick} 
                                                                      disabled={props.selectedList.length != 1}>Explanation
                     </Button> 
@@ -50,7 +56,6 @@ const Second_Navbar = (props) => {
                                                                      disabled={props.selectedList.length != 2}>Comparison
                     </Button>
                 </Navbar.Form>
-                <Navbar.Text pullRight>Show Detailed Analysis:</Navbar.Text>
             </Navbar.Collapse>
         </Navbar>
     );
