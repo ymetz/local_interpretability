@@ -1,0 +1,7 @@
+/* Global Style Properties e.g. for Non-React Elements TODO: Add dynamic style resolution */
+.d3-tip {
+    color: #3e3e3e;
+    background-color: rgba(80, 168, 223, 0.6);
+    border-radius: 3px;
+    z-index: 1041;
+  }

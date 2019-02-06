@@ -1,7 +1,11 @@
 import React, {Component} from 'react';
 import * as d3 from 'd3';
+import d3Tip from 'd3-tip';
 
 export default class TcavChart extends Component {
+
+    tooltips = null;
+    random_tooltip = null;
 
     componentDidMount() {
         this.draw(this.props)
@@ -15,16 +19,23 @@ export default class TcavChart extends Component {
       }
   
     }
-  
+
+    componentWillUnmount() {
+    
+        if (this.tooltips)
+            this.tooltips.destroy();
+        if (this.random_tooltip)
+            this.random_tooltip.destroy(); 
+    }
   
     render() {
       return (
-        <div className="viz" />
+        <div className="viz"/>
       )
     }
 
     draw = (props) => {
-        console.log(props);
+
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const width = 1550, height = 300;
@@ -33,6 +44,18 @@ export default class TcavChart extends Component {
         .attr('height', height)
         .attr('width', width)
         .attr('id', 'svg-viz');
+
+        this.tooltip = d3Tip()
+                    .attr('class', 'd3-tip')
+                    .html(function(d) { return "Score:" + d.score; });
+
+        this.random_tooltip = d3Tip()
+            .attr('class', 'd3-tip')
+            .html(function(d) { return "Random Score:" + d.random_score; });
+
+        svg.append("g")
+            .call(this.tooltip)
+            .call(this.random_tooltip);
     
        const  yAxis = g => g
             .attr("transform", `translate(${margin.left},0)`)
@@ -59,7 +82,9 @@ export default class TcavChart extends Component {
             .attr("x", d => (x(d.concept)+10))
             .attr("y", d => y(d.random_score))
             .attr("height", d => y(0) - y(d.random_score))
-            .attr("width", x.bandwidth());
+            .attr("width", x.bandwidth())
+            .on('mouseover', this.random_tooltip.show)
+            .on('mouseout', this.random_tooltip.hide);
 
         svg.append("g")
             .attr("fill", "steelblue")
@@ -67,7 +92,9 @@ export default class TcavChart extends Component {
             .attr("x", d => x(d.concept))
             .attr("y", d => y(d.score))
             .attr("height", d => y(0) - y(d.score))
-            .attr("width", x.bandwidth());
+            .attr("width", x.bandwidth())
+             .on('mouseover', this.tooltip.show)
+             .on('mouseout', this.tooltip.hide);
         
         svg.append("g")
             .call(xAxis);
