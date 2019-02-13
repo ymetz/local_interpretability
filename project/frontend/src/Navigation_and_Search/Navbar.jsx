@@ -1,8 +1,8 @@
 import React from "react";
 import {Navbar, Button, Glyphicon, FormControl, FormGroup} from 'react-bootstrap';
 import Select from 'react-select';
-import {config} from './app_config';
-import '../public/css/Navbar.css';  
+import {config} from '../app_config';
+import '../../public/css/Navbar.css';  
 
 
 const Top_Navbar = (props) => {

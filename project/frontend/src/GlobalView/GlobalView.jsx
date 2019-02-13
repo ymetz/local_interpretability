@@ -1,9 +1,9 @@
 // App.jsx
 import React, { Component } from "react";
 import Tree from 'react-d3-tree';
-import treeData from '../public/local_data/temp_tree_data';
+import treeData from '../../public/local_data/temp_tree_data';
 import {Button} from 'react-bootstrap';
-import {config} from './app_config'; 
+import {config} from '../app_config'; 
 
 /**
  * View showing global statistics.

@@ -1,15 +1,15 @@
 // App.jsx
 import React, { Component } from "react";
-import Navbar from './Navbar';
-import FilteringOptions from './FilteringOptions';
+import Navbar from './Navigation_and_Search/Navbar';
+import FilteringOptions from './Navigation_and_Search/FilteringOptions';
 import Gallery from './ImageGallery/ImageGallery';
 import {Button} from 'react-bootstrap';
 import axios from "axios";
 import OverlayComponent from './AnalysisOverlay/OverlayComponent';
-import SettingsView from './SettingsView';
+import SettingsView from './GlobalView/SettingsView';
 import '../public/css/App.css';
 import {config} from './app_config'; 
-import GlobalView from "./GlobalView";
+import GlobalView from "./GlobalView/GlobalView";
 
 /**
  * App Component of the React App.

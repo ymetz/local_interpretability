@@ -1,9 +1,9 @@
 import React from "react";
 import {Button, Glyphicon, FormControl, FormGroup} from 'react-bootstrap';
 import ReactModal from 'react-modal';
-import ConceptTreeView from './ConceptTreeView';
-import {config} from './app_config';
-import '../public/css/SettingsView.css';  
+import ConceptTreeView from '../ConceptTreeView';
+import {config} from '../app_config';
+import '../../public/css/SettingsView.css';  
 
 const SettingsView = (props) => {
 

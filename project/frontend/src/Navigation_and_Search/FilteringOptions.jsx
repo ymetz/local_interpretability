@@ -2,8 +2,8 @@ import React from "react";
 import {Navbar, Button, Glyphicon, label} from 'react-bootstrap';
 import Select from 'react-select';
 import Slider, { Range } from 'rc-slider';
-import {config} from './app_config';
-import style from '../public/css/FilteringOptions.css';
+import {config} from '../app_config';
+import style from '../../public/css/FilteringOptions.css';
 import rc_style from 'rc-slider/assets/index.css'; 
 
 const getClasses = (labels) => {
