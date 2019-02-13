@@ -1,4 +1,4 @@
-# local intepretability for global trust
+# Local intepretability for global trust
 Bachelor-Project
 
 
@@ -12,52 +12,53 @@ Bachelor-Project
 ├── datasets
 ├── models
 ├── project
-│   ├── frontend
-│   │   ├── package-lock.json
-│   │   ├── package.json
-│   │   ├── public
-│   │   │   ├── css
-│   │   │   │   ├── App.css
-│   │   │   │   ├── FilteringOptions.css
-│   │   │   │   ├── InfoFooter.css
-│   │   │   │   ├── Navbar.css
-│   │   │   │   ├── Overlay.css
-│   │   │   │   ├── materialize.min.css
-│   │   │   │   └── style.css
-│   │   │   ├── dist
-│   │   │   │   ├── bundle.css
-│   │   │   │   └── bundle.js
-│   │   │   ├── images
-│   │   │   └── templates
-│   │   │       └── index.html
-│   │   └── webpack.config.js
-│   └── server
-│       ├── __init__.py
-│       ├── __pycache__
-│       ├── app.py
-│       ├── classifier.py
-│       ├── data_routing.py
-│       ├── dataservice.py
-│       ├── dataset.py
-│       ├── image_crawler.py
-│       ├── lime_explainer.py
-│       ├── lrp_explainer.py
-│       ├── model.py
-│       ├── tcav
-│       │   ├── README.md
-│       │   ├── __init__.py
-│       │   ├── __pycache__
-│       │   ├── activation_generator.py
-│       │   ├── cav.py
-│       │   ├── custom_model.py
-│       │   ├── model.py
-│       │   ├── run_params.py
-│       │   ├── tcav.py
-│       │   ├── utils.py
-│       ├── tcav_explainer.py
-│       ├── tensorflow_models.py
-│       └── test_images
-└── requirements.txt
+  ├── frontend
+  │   ├── public
+  │   │   ├── css
+  │   │   │   ├── App.css
+  │   │   │   ├── ConceptTree.css
+  │   │   │   ├── FilteringOptions.css
+  │   │   │   ├── ImageComponent.css
+  │   │   │   ├── InfoFooter.css
+  │   │   │   ├── Navbar.css
+  │   │   │   ├── Overlay.css
+  │   │   │   ├── SettingsView.css
+  │   │   │   ├── global_style.css
+  │   │   │   └── materialize.min.css
+  │   │   ├── dist
+  │   │   │   ├── bundle.css
+  │   │   │   └── bundle.js
+  │   │   ├── images
+  │   │   ├── local_data
+  │   │   │   └── temp_tree_data.js
+  │   │   └── templates
+  │   │       └── index.html
+  │   └── webpack.config.js
+  └── server
+    ├── app.py
+    ├── data_handling
+    │   ├── data_routing.py
+    │   ├── dataservice.py
+    │   └── dataset.py
+    ├── explanations
+    │   ├── lime_explainer.py
+    │   ├── lrp_explainer.py
+    │   └── tcav_explainer.py
+    ├── models
+    │   ├── classifier.py
+    │   ├── model.py
+    │   └── tensorflow_models.py
+    ├── tcav
+    │   ├── activation_generator.py
+    │   ├── cav.py
+    │   ├── custom_model.py
+    │   ├── model.py
+    │   ├── run_params.py
+    │   ├── tcav.py
+    │   └── utils.py
+    ├── test_images
+    └── utils
+        └── image_crawler.py
 ```
 
 'server' contains all server-side python code, based on Flask.
