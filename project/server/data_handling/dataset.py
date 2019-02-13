@@ -25,6 +25,11 @@ class ImageDataset(DatasetPrototype):
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
+        self.label_to_elements = {}
+        for item in self.labels.items():
+            if item[1][0] not in self.label_to_elements.keys():
+                self.label_to_elements[item[1][0]] = []
+            self.label_to_elements[item[1][0]].append(item[0])
         with open(self.id_to_label_path) as ifile:
             self.id_to_label = json.load(ifile, object_hook=jsonKeys2int)
             self.num_of_labels = len(self.id_to_label)

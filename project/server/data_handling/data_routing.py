@@ -1,11 +1,10 @@
-from flask import Blueprint, jsonify, request, render_template, send_from_directory
-from dataservice import *
-from dataset import encode_dataset
+from flask import Blueprint, jsonify, request, send_from_directory
+from data_handling.dataservice import *
+from data_handling.dataset import encode_dataset
 import tensorflow as tf
-from classifier import create_top_5_predictions
-from tcav_explainer import load_tcavs
-from lime_explainer import create_explanation_images
-from lrp_explainer import create_lrp_explanation
+from models.classifier import create_top_5_predictions
+from explanations.tcav_explainer import load_tcavs
+from explanations.lrp_explainer import create_lrp_explanation
 
 datasets = []
 models = []
@@ -44,9 +43,9 @@ def get_explanation_image():
     iid = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
     img_class = request.args.get('class', default=0, type=int)
-    if method == 'elrp':
+    # if method == 'elrp':
         # Create the LRP explanation image on the fly
-        create_lrp_explanation(datasets[0], iid, img_class)
+    #     create_lrp_explanation(datasets[0], iid, img_class)
     i_path = "get_data/dataset_explanation/" + method + '_' + str(img_class) + '_' + iid
     return i_path
 
@@ -73,6 +72,15 @@ def get_single_classifications():
 @get_data.route("/get_top_classifications")
 def get_top_classifications():
     return jsonify(active_dataset.top_predictions)
+
+@get_data.route("/get_related_images")
+def get_related_images():
+    image = request.args.get('image', default="", type=str)
+    label = active_dataset.labels[image][0]
+    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"],
+                              "height": file["height"]} for file in datasets[0].file_list
+                      if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
+    return jsonify(out_image_list)
 
 
 def init_data():

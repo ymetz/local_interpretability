@@ -2,10 +2,9 @@ from deepexplain.tensorflow import DeepExplain
 from matplotlib import pyplot as plt
 from skimage import feature, transform
 import tensorflow as tf
-from operator import itemgetter
 
 import os
-from tensorflow_models import InceptionModel
+from models.tensorflow_models import InceptionModel
 import numpy as np
 
 def create_lrp_explanation(dataset,filename,class_id):
@@ -57,13 +56,13 @@ def create_lrp_explanation(dataset,filename,class_id):
                    attr, xi=xi, dilation=.5, percentile=99, alpha=.2)
 
 
-def save_as_img(image_path, data, xi=None, cmap='RdBu_r', percentile=100, dilation=3.0, alpha=0.8):
+def save_as_img(image_path, data, xi=None, cmap='RdYLGr', percentile=100, dilation=3.0, alpha=0.8):
     dx, dy = 0.05, 0.05
     xx = np.arange(0.0, data.shape[1], dx)
     yy = np.arange(0.0, data.shape[0], dy)
     xmin, xmax, ymin, ymax = np.amin(xx), np.amax(xx), np.amin(yy), np.amax(yy)
     extent = xmin, xmax, ymin, ymax
-    cmap_xi = plt.get_cmap('Greys_r')
+    cmap_xi = plt.get_cmap('Greys')
     cmap_xi.set_bad(alpha=0)
     overlay = None
     if xi is not None:

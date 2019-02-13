@@ -6,6 +6,9 @@ import axios from "axios";
 import TopPredictionTable from './Top_Prediction_Table';
 import InfoFooter from './InfoFooter';
 import TcavChart from './TcavChart';
+import RelatedImageBrowser from './RelatedImageBrowser';
+import DetailConceptTree from './DetailConceptTree';
+import ClassPerformance from './ClassPerformance';
 ReactModal.setAppElement('#content');
 
 /**
@@ -27,12 +30,13 @@ export default class overlayComponent extends Component {
 
     }
 
-    componentDidMount() {
-        /*axios.get('/get_data/get_single_classification?image='+this.state.current_image_name)
-        .then(res => {
-          const preds = res.data;
-          this.setState( {current_image_predictions: preds} );
-        })*/
+    setNewImage(event, image) {
+        this.setState({
+            current_image: image.photo,
+            current_image_name: image.photo.src.split("/").pop(),
+            current_image_label: this.props.appState.labels[image.photo.src.split("/").pop()],
+            current_image_class: -1
+        })
     }
 
     methodChange(method) {
@@ -59,35 +63,45 @@ export default class overlayComponent extends Component {
                 contentLabel="onRequestClose Example"
                 style={{overlay:{zIndex:1040}}}>
                 <div>
-                    <h2>Detail Interpretabilty View
+                    <h2 styleName="top_heading">Detail Interpretabilty View
                     <Button styleName="close_button" onClick={this.props.close_it}><Glyphicon glyph="remove" /></Button>
                     </h2>
-                    <hr></hr>
+                    <hr style={{marginTop : '4px'}}></hr>
                 </div>
                 <div styleName='overlay_content'>
-                    <div styleName='image_container'>
-                        <div styleName='method_selection'>
-                            <ButtonToolbar>
-                                <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
-                                <ToggleButton value={'lime'}>LIME</ToggleButton>
-                                <ToggleButton value={'elrp'}>LRP</ToggleButton>
-                                <ToggleButton value={'tcav'}>TCAV</ToggleButton>
-                                </ToggleButtonGroup>
-                            </ButtonToolbar>
+                    <div styleName="top_row">
+                        <div styleName='image_container'>
+                            <div styleName='method_selection'>
+                                <ButtonToolbar>
+                                    <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
+                                    <ToggleButton value={'lime'}>LIME</ToggleButton>
+                                    <ToggleButton value={'elrp'}>LRP</ToggleButton>
+                                    <ToggleButton value={'tcav'}>TCAV</ToggleButton>
+                                    </ToggleButtonGroup>
+                                </ButtonToolbar>
+                            </div>
+                            <img styleName='image_display' src={this.state.show_explanation_image ? 
+                                                                this.state.current_explanation_src : this.state.current_image.src}></img>
                         </div>
-                        <img styleName='image_display' src={this.state.show_explanation_image ? 
-                                                            this.state.current_explanation_src : this.state.current_image.src}></img>
+                        <div styleName='image_details'>
+                            <p><b>{this.state.current_image_name}</b></p>
+                            <p>Class: {this.state.current_image_label[1]} ({this.state.current_image_label[0]})</p>
+                            <p>Original Dimensions: {this.state.current_image.width} x {this.state.current_image.height} (Width x Height)</p>
+                            <TopPredictionTable data={this.props.appState.top_classes[this.state.current_image_name]} 
+                                                id_to_label={this.props.appState.id_to_label}
+                                                correct_class={this.state.current_image_label[0]}
+                                                onSelect={this.toggleExplanationImage.bind(this)}/>
+                        </div>
+                        <div styleName="addtional_info_vis">
+                            {(this.state.method === 'tcav') ? <DetailConceptTree/>: <ClassPerformance/>}
+                        </div>
                     </div>
-                    <div styleName='image_details'>
-                        <p><b>{this.state.current_image_name}</b></p>
-                        <p>Class: {this.state.current_image_label[1]} ({this.state.current_image_label[0]})</p>
-                        <p>Original Dimensions: {this.state.current_image.width} x {this.state.current_image.height} (Width x Height)</p>
-                        <TopPredictionTable data={this.props.appState.top_classes[this.state.current_image_name]} 
-                                            id_to_label={this.props.appState.id_to_label}
-                                            correct_class={this.state.current_image_label[0]}
-                                            onSelect={this.toggleExplanationImage.bind(this)}/>
-                    </div>
-                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> : null}
+                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> :
+                                                       <RelatedImageBrowser key={this.state.current_image_name}
+                                                                            imageName={this.state.current_image_name} 
+                                                                            imageLabel={this.state.current_image_label} 
+                                                                            explanationClass={this.state.current_image_class}
+                                                                            onClick={this.setNewImage.bind(this)}/>}
                     <InfoFooter method={this.state.method}/>
                 </div>
             </ReactModal>

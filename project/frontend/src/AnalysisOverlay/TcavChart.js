@@ -8,7 +8,9 @@ export default class TcavChart extends Component {
     random_tooltip = null;
 
     componentDidMount() {
-        this.draw(this.props)
+        //in case we dont provide concept data for this class, dont't render a diagram
+        if (this.props.conceptData !== undefined)
+          this.draw(this.props)
     }
 
     componentDidUpdate(prevProps){
@@ -35,6 +37,8 @@ export default class TcavChart extends Component {
     }
 
     draw = (props) => {
+
+      let data = props.conceptData.sort(function(a,b){return b.score - a.score});
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -72,13 +76,13 @@ export default class TcavChart extends Component {
             .range([height - margin.bottom, margin.top]);
 
         const x = d3.scaleBand()
-            .domain(props.conceptData.map(x => x['concept']))
+            .domain(data.map(x => x['concept']))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
         svg.append("g")
             .attr("fill", "orange")
-          .selectAll("rect").data(props.conceptData).enter().append("rect")
+          .selectAll("rect").data(data).enter().append("rect")
             .attr("x", d => (x(d.concept)+10))
             .attr("y", d => y(d.random_score))
             .attr("height", d => y(0) - y(d.random_score))
@@ -88,7 +92,7 @@ export default class TcavChart extends Component {
 
         svg.append("g")
             .attr("fill", "steelblue")
-          .selectAll("rect").data(props.conceptData).enter().append("rect")
+          .selectAll("rect").data(data).enter().append("rect")
             .attr("x", d => x(d.concept))
             .attr("y", d => y(d.score))
             .attr("height", d => y(0) - y(d.score))

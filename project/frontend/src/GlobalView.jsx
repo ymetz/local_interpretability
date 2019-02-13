@@ -1,6 +1,7 @@
 // App.jsx
 import React, { Component } from "react";
 import Tree from 'react-d3-tree';
+import treeData from '../public/local_data/temp_tree_data';
 import {Button} from 'react-bootstrap';
 import {config} from './app_config'; 
 
@@ -23,88 +24,18 @@ export default class GlobalView extends Component {
   }
 
   render() {
-    let treeData = {
-        "name": "root",
-        "children": [
-            {
-              "name": "textures",
-              "children": [
-                {
-                  "name": "smooth",
-                  "children": [
-                      {
-                          "name": "planar"
-                      },
-                      {
-                          "name": "gradient"
-                      }
-                  ]
-                },
-                {
-                  "name": "pattern",
-                  "children": [
-                      {"name": "dotted"},
-                      {"name": "striped"},
-                      {"name": "zigzagged"},
-                  ]
-                },
-                {
-                    "name": "irregular",
-                    "children": [
-                      {"name": "noisy"}
-                    ]
-                  }
-              ]
-            },
-            {
-              "name": "(color balance)",
-              "children": [
-                {"name": "colorful"},
-                {"name": "flat colors"},
-                {"name": "muted"}
-              ]
-            },
-            {
-                "name": "(conturs)",
-                "children": [
-                  {"name": "defined"},
-                  {"name": "washed out"}
-                ]
-            },
-            {
-                "name": "(image type)",
-                "children": [
-                  {"name": "realistic"},
-                  {"name": "drawing"},
-                  {"name": "animation"}
-                ]
-            },
-            {
-                "name": "(category)",
-                "children": [
-                  {"name": "Object",
-                   "children":[
-                    {"name": "(material)",
-                     "children": [
-                         {"name":"wood"},
-                         {"name":"metal"},
-                         {"name":"plastic"},
-                         {"name":"concrete"}
-                     ]}
-                   ]
-                  },
-                  {"name": "Creature"},
-                  {"name": "Abstract Shape"}
-                ]
-            }
-          ]
-        };
 
       return(
           <div>
               <h3>Classifier Performance & TCAV</h3>
               <div id="treeWrapper" style={{width: '960px', height:'750px'}}>
-                <Tree data={treeData} />
+                <Tree 
+                  data={treeData} 
+                  zoom={4} 
+                  translate={{x: 50, y: 375}}
+                  initialDepth={1} 
+                  nodeSize={{x: 150, y: 50}}
+                  transitionDuration={250}/>
               </div>
           </div>
       )

@@ -1,10 +1,8 @@
 import os
-import fnmatch
-from model import KerasModel
-import tensorflow as tf
+from models.model import KerasModel
 # noinspection PyPackageRequirements
-from tensorflow_models import InceptionModel
-from dataset import ImageDataset, TextDataset
+from models.tensorflow_models import InceptionModel
+from data_handling.dataset import ImageDataset, TextDataset
 from PIL import Image
 
 #returns list of available datasets

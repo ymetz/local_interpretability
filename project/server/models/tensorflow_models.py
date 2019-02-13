@@ -1,5 +1,5 @@
 import tensorflow as tf
-from sys import platform
+
 slim = tf.contrib.slim
 
 import os
@@ -12,7 +12,7 @@ if platform == "win32":
 else:
     sys.path.insert(0, "../../models")
 
-from model import ModelPrototype
+from models.model import ModelPrototype
 
 from tensorflow_inception_v3 import inception_v3 as inception
 from preprocessing import inception_preprocessing, imagenet

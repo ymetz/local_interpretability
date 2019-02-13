@@ -1,12 +1,10 @@
-import tcav
 from tcav.tcav import TCAV
 import tcav.custom_model as cm
 import tcav.utils as utils
-import json
 import os
 import pickle
-import image_crawler
-from dataservice import get_model_list, get_dataset_list
+from utils import image_crawler
+from data_handling.dataservice import get_model_list, get_dataset_list
 import tcav.activation_generator as act_gen
 import tensorflow as tf
 
@@ -86,7 +84,7 @@ def run_tcav():
 
         results = mytcav.run()
 
-        # we have to subtract 1 from the target class, as it corresponds with our groundtruth labels,
+        # we have to subtract 1 from the target class, as it corresponds with our ground truth labels,
         # internally the network outputs are shifted by one, as 0 represents the background class instead of -1
         summary = utils.print_results(results, class_id=the_model.label_to_id(target)-1, result_dict=tcav_dict)
 

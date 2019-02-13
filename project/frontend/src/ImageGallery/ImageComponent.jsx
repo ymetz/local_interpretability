@@ -6,7 +6,7 @@ const Checkmark = ({ selected }) => (
   <div
     style={
       selected
-        ? { left: "4px", top: "4px", position: "absolute", zIndex: "1" }
+        ? { left: "4px", top: "4px", position: "absolute", zIndex: "2" }
         : { display: "none" }
     }
   >
@@ -27,19 +27,41 @@ const Checkmark = ({ selected }) => (
   </div>
 );
 
+const ClassificationIndicator = ({classificationResult, width, height, display}) => (
+  <div
+    style={
+      display ?
+      {left: "0px", top:(height*0.95), position:"absolute", zIndex: "1"} : {display: "none"}
+    }
+  >
+    <svg
+      style={{ fill: "white", position:"absolute"}}
+      width={width}
+      height={height/20}
+    >
+      <rect width={width} height={height/20} fill={
+          (classificationResult.label_correct) ?
+            "rgba(0,255,0," + classificationResult.score + ")" :
+          (classificationResult.score === 0.0) ?
+            "rgba(255,0,0,0.5)" :
+            "rgba(209, 244, 66," + classificationResult.score + ")"
+      }/>
+    </svg>
+  </div>
+);
+
 const imgStyle = {
-  transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s",
-  outline: "15px solid black"
+  transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
 };
 const selectedImgStyle = {
   transform: "translateZ(0px) scale3d(0.9, 0.9, 1)",
   transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
 };
 const cont = {
-  backgroundColor: "#eeeeee",
+  backgroundColor: "#ffffff",
   cursor: "pointer",
   overflow: "hidden",
-  position: "relative"
+  position: "relative",
 };
 
 const SelectedImage = ({
@@ -50,24 +72,12 @@ const SelectedImage = ({
   direction,
   top,
   left,
-  classResult,
-  labels
+  classificationResults
 }) => {
   //calculate x,y scale
   const sx = (100 - (30 / photo.width) * 100) / 100;
   const sy = (100 - (30 / photo.height) * 100) / 100;
   selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
-
-  let classifier_result = {};
-  /*
-  if (!(classResult.length === 0 || labels.length === 0)){
-    let photo_name = photo.src.split('/').pop();
-    let prediction = classResult[photo_name];
-    if (prediction[config.nr_of_top_predictions-1].class === labels[photo_name][0]){
-      classifier_result = prediction[config.nr_of_top_predictions-1];
-      classifier_result.top_one = true;
-    }
-  }*/
 
   if (direction === "column") {
     cont.position = "absolute";
@@ -77,10 +87,14 @@ const SelectedImage = ({
   return (
     <div
       style={{ margin, height: photo.height, width: photo.width, ...cont }}
-      styleName="standard_image"
       className={!photo.selected ? "not-selected" : ""}
     >
       <Checkmark selected={photo.selected ? true : false} />
+      <ClassificationIndicator 
+        classificationResult={classificationResults[index]} 
+        width={photo.width} 
+        height={photo.height}
+        display={photo.selected ? false : true}/>
       <img
         style={
           photo.selected

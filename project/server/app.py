@@ -1,6 +1,6 @@
 # server.py
 from flask import Flask, render_template
-from data_routing import get_data, init_data
+from data_handling.data_routing import get_data, init_data
 
 app = Flask(__name__, static_folder="../frontend/public", template_folder="../frontend/public/templates")
 app.config['TEMPLATES_AUTO_RELOAD'] = True
