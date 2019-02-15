@@ -4,7 +4,7 @@ from skimage import feature, transform
 import tensorflow as tf
 
 import os
-from models.tensorflow_models import InceptionModel
+from model_handling.tensorflow_models import InceptionModel
 import numpy as np
 
 def create_lrp_explanation(dataset,filename,class_id):

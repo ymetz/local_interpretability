@@ -93,7 +93,8 @@ export default class overlayComponent extends Component {
                                                 onSelect={this.toggleExplanationImage.bind(this)}/>
                         </div>
                         <div styleName="addtional_info_vis">
-                            {(this.state.method === 'tcav') ? <DetailConceptTree/>: <ClassPerformance/>}
+                            {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/>
+                                                            : <ClassPerformance/>}
                         </div>
                     </div>
                     { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> :

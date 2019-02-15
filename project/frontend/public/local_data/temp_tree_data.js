@@ -24,7 +24,7 @@ const treeData = {
               ]
             },
             {
-                "name": "irregular",
+                "name": "irregular pattern",
                 "children": [
                   {"name": "noisy"}
                 ]
@@ -35,7 +35,7 @@ const treeData = {
           "name": "(color balance)",
           "children": [
             {"name": "colorful"},
-            {"name": "flat colors"},
+            {"name": "single colors"},
             {"name": "muted"}
           ]
         },

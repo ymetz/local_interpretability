@@ -1,7 +1,6 @@
 import os
-from models.model import KerasModel
-# noinspection PyPackageRequirements
-from models.tensorflow_models import InceptionModel
+from model_handling.model import KerasModel
+from model_handling.tensorflow_models import InceptionModel
 from data_handling.dataset import ImageDataset, TextDataset
 from PIL import Image
 

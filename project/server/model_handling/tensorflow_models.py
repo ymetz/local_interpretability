@@ -12,7 +12,7 @@ if platform == "win32":
 else:
     sys.path.insert(0, "../../models")
 
-from models.model import ModelPrototype
+from model_handling.model import ModelPrototype
 
 from tensorflow_inception_v3 import inception_v3 as inception
 from preprocessing import inception_preprocessing, imagenet

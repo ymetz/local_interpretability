@@ -17,7 +17,7 @@ export default class TcavChart extends Component {
       //this makes sure we don't redraw unnecessarily
       if((this.props.conceptData !== prevProps.conceptData) && this.props.conceptData !== undefined){
         d3.select('.viz > *').remove();
-        this.draw(this.props)
+        this.draw(this.props);
       }
   
     }

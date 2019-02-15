@@ -16,21 +16,21 @@
 }
 
 .image_details {
-    width: 25%;
+    width: 30%;
     display: inline-block;
     vertical-align: top;
     margin-left:20px;
 }
 
 .addtional_info_vis {
-    width: 32%;
+    width: 30%;
     display: inline-block;
     vertical-align: top;
     margin-left:20px;  
 }
 
 .image_container {
-    width: 32%;
+    width: 30%;
     display: inline-block;
     vertical-align: middle;
 }

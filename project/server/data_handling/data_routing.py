@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, send_from_directory
 from data_handling.dataservice import *
 from data_handling.dataset import encode_dataset
 import tensorflow as tf
-from models.classifier import create_top_5_predictions
+from model_handling.classifier import create_top_5_predictions
 from explanations.tcav_explainer import load_tcavs
 from explanations.lrp_explainer import create_lrp_explanation
 

@@ -57,9 +57,9 @@ def run_tcav():
             image_crawler.crawl_images(concept_directory, concept, N=50)
         # if not os.path.isdir(os.path.join(concept_directory, random_counterpart)):
         #    image_crawler.crawl_images(concept_directory, 'image', N=500)
-    for target in targets:
-        if not os.path.isdir(os.path.join(target_directory, target)):
-            image_crawler.crawl_images(target_directory, target, N=50)
+    # for target in targets:
+    #    if not os.path.isdir(os.path.join(target_directory, target)):
+    #        image_crawler.crawl_images(target_directory, target, N=50)
 
     the_model = cm.InceptionV3Wrapper_custom(model.session,
                                              model,
@@ -91,6 +91,9 @@ def run_tcav():
     tcav_file_path = os.path.join(model.model_path, dataset_name + model.model_name + '-tcavscores' + '.pkl')
     with open(tcav_file_path, 'wb') as f:
         pickle.dump(tcav_dict, f, pickle.HIGHEST_PROTOCOL)
+
+
+# run_tcav()
 
 
 

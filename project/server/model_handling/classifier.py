@@ -3,16 +3,18 @@ import os
 
 
 def create_top_5_predictions(dataset,model):
-    file_list = []
-    for file in dataset.file_list:
-        file_list.append(file['src'].split('/')[-1])
-    transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
 
     top_pred_file_name = os.path.join(dataset.dataset_path, dataset.dataset_name+model.model_name+'-top_preds'+'.pkl')
     if os.path.isfile(top_pred_file_name):
         with open(top_pred_file_name, 'rb') as f:
             setattr(dataset, 'top_predictions', pickle.load(f))
+
     else:
+        file_list = []
+        for file in dataset.file_list:
+            file_list.append(file['src'].split('/')[-1])
+        transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
+
         top_preds = {}
         # I'm dividing by 2 and adding 0.5 because of how this Inception represents images
         preds = model.predict_images(transformed_images)
