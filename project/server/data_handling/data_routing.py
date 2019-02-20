@@ -82,6 +82,14 @@ def get_related_images():
                       if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
     return jsonify(out_image_list)
 
+@get_data.route("/get_all_class_images")
+def get_all_class_images():
+    img_class = request.args.get('class', default=0, type=int)
+    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"],
+                              "height": file["height"]} for file in datasets[0].file_list
+                      if file["src"] in datasets[0].label_to_elements[img_class]]
+    return jsonify(out_image_list)
+
 
 def init_data():
     global datasets

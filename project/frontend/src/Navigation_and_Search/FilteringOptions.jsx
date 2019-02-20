@@ -4,7 +4,6 @@ import Select from 'react-select';
 import Slider, { Range } from 'rc-slider';
 import {config} from '../app_config';
 import style from '../../public/css/FilteringOptions.css';
-import rc_style from 'rc-slider/assets/index.css'; 
 
 const getClasses = (labels) => {
     let classes = [];
@@ -31,6 +30,7 @@ const Second_Navbar = (props) => {
                         isMulti
                         name="class_selection"
                         options={class_list}
+                        onChange={props.onSearchSubmit}
                         className="style.basic-multi-select"
                         classNamePrefix="style.select"
                         styleName="style.class_select"
@@ -38,8 +38,7 @@ const Second_Navbar = (props) => {
                 </Navbar.Form>
                 <Navbar.Form pullLeft>
                     <div styleName="style.range_slider">
-                        <Slider styleName='rc_style.rc-slider' />
-                        <Range />
+                        <Range min={0} max={1.0} step={0.05} defaultValue={[0, 1.0]} marks={{0.0:0.0, 0.2 : 0.2 ,0.4 : 0.4, 0.6:0.6, 0.8:0.8, 1.0:1.0}}/>
                     </div>
                 </Navbar.Form>
                 <Navbar.Form pullRight>

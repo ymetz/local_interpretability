@@ -44,7 +44,7 @@
     "d3-tip": "^0.9.1",
     "install": "^0.12.2",
     "npm": "^6.7.0",
-    "rc-slider": "^8.6.4",
+    "rc-slider": "^8.6.5",
     "react": "^16.6.3",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-table-next": "^1.4.2",

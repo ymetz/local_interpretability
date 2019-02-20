@@ -15,7 +15,6 @@ const DetailConceptTree = (props) => {
         }
       }
 
-      console.log(props.conceptData.map(x => x.concept));
     // Recursively itterate through the concept tree and tcav values at available nodes
     function loopConceptData(obj)
     {
@@ -41,13 +40,11 @@ const DetailConceptTree = (props) => {
     }
 
     // clone() creates a deep clone of the tree object, so we don't modify the original tree
-    let newTreeData = loopConceptData(clone(treeData));
-
     return(
         <div>
             <div id="treeWrapper" style={{width: '100%', height:'100%'}}>
               <Tree 
-                data={newTreeData} 
+                data={(props.conceptData) ? loopConceptData(clone(treeData)) : treeData} 
                 zoom={4} 
                 translate={{x: 250, y: 200}}
                 initialDepth={2} 
