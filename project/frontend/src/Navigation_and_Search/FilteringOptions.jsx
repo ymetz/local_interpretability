@@ -1,7 +1,8 @@
 import React from "react";
 import {Navbar, Button, Glyphicon, label} from 'react-bootstrap';
 import Select from 'react-select';
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
+import Tooltip from 'rc-tooltip';
 import {config} from '../app_config';
 import style from '../../public/css/FilteringOptions.css';
 
@@ -12,6 +13,9 @@ const getClasses = (labels) => {
     }
     return classes;
 };
+
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
+const Range = createSliderWithTooltip(Slider.Range);
 
 const Second_Navbar = (props) => {
     const class_list = getClasses(props.labels);
@@ -38,7 +42,14 @@ const Second_Navbar = (props) => {
                 </Navbar.Form>
                 <Navbar.Form pullLeft>
                     <div styleName="style.range_slider">
-                        <Range min={0} max={1.0} step={0.05} defaultValue={[0, 1.0]} marks={{0.0:0.0, 0.2 : 0.2 ,0.4 : 0.4, 0.6:0.6, 0.8:0.8, 1.0:1.0}}/>
+                        <Range
+                            min={0} 
+                            max={1.0} 
+                            step={0.05} 
+                            defaultValue={[0, 1.0]} 
+                            tipFormatter={value => `${value}%`}
+                            marks={{0.0:0.0, 0.25 : 0.25 ,0.5 : 0.5, 0.75:0.75, 1.0:1.0}}
+                            onAfterChange={function(d){console.log(d)}}/>
                     </div>
                 </Navbar.Form>
                 <Navbar.Form pullRight>

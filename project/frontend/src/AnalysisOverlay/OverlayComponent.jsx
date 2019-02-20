@@ -1,6 +1,6 @@
 import ReactModal from 'react-modal';
 import React, {Component} from 'react';
-import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
+import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup, Dropdown, DropdownButton} from 'react-bootstrap';
 import '../../public/css/Overlay.css';
 import axios from "axios";
 import TopPredictionTable from './Top_Prediction_Table';
@@ -23,7 +23,7 @@ export default class overlayComponent extends Component {
           current_image_name : this.props.selectedElements[0].src.split("/").pop(),
           current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
           current_image_class: -1,
-          method: 'lime',
+          method: 'tcav',
           show_explanation_image: false,
           concept_data : {}
        }
@@ -69,14 +69,14 @@ export default class overlayComponent extends Component {
                     <hr style={{marginTop : '4px'}}></hr>
                 </div>
                 <div styleName='overlay_content'>
-                    <div styleName="top_row">
+                    <div styleName="left_content">
                         <div styleName='image_container'>
                             <div styleName='method_selection'>
                                 <ButtonToolbar>
                                     <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
+                                    <ToggleButton value={'tcav'}>TCAV</ToggleButton>
                                     <ToggleButton value={'lime'}>LIME</ToggleButton>
                                     <ToggleButton value={'elrp'}>LRP</ToggleButton>
-                                    <ToggleButton value={'tcav'}>TCAV</ToggleButton>
                                     </ToggleButtonGroup>
                                 </ButtonToolbar>
                             </div>
@@ -92,17 +92,19 @@ export default class overlayComponent extends Component {
                                                 correct_class={this.state.current_image_label[0]}
                                                 onSelect={this.toggleExplanationImage.bind(this)}/>
                         </div>
-                        <div styleName="addtional_info_vis">
-                            {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/>
-                                                            : <ClassPerformance/>}
+                        <div>
+                        { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> :
+                                                            <RelatedImageBrowser key={this.state.current_image_name}
+                                                                                    imageName={this.state.current_image_name} 
+                                                                                    imageLabel={this.state.current_image_label} 
+                                                                                    explanationClass={this.state.current_image_class}
+                                                                                    onClick={this.setNewImage.bind(this)}/>}
                         </div>
                     </div>
-                    { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> :
-                                                       <RelatedImageBrowser key={this.state.current_image_name}
-                                                                            imageName={this.state.current_image_name} 
-                                                                            imageLabel={this.state.current_image_label} 
-                                                                            explanationClass={this.state.current_image_class}
-                                                                            onClick={this.setNewImage.bind(this)}/>}
+                    <div styleName='additional_info_vis'>
+                            {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/>
+                                                            : <ClassPerformance/>}
+                    </div>
                     <InfoFooter method={this.state.method}/>
                 </div>
             </ReactModal>

@@ -19,7 +19,11 @@ const config = {
                         "presets": [
                             "@babel/preset-react",
                             "@babel/env"
-                          ]
+                        ],
+                        "plugins": [
+                            "@babel/plugin-proposal-class-properties",
+                            "react-css-modules",
+                        ]
                     }
                 }
             },
@@ -33,6 +37,7 @@ const config = {
                             importLoaders: 1,
                             modules: true,
                             localIdentName: '[path]___[name]__[local]___[hash:base64:5]'
+                            
                         }
                     }
                 ]

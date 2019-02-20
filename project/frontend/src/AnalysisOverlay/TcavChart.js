@@ -42,8 +42,8 @@ export default class TcavChart extends Component {
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-        const width = 1550, height = 300;
-        const margin = ({top: 20, right: 0, bottom: 30, left: 40})
+        const width = 950, height = 280;
+        const margin = ({top: 10, right: 0, bottom: 25, left: 80})
         const svg = d3.select('.viz').append('svg')
         .attr('height', height)
         .attr('width', width)

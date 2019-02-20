@@ -1,6 +1,8 @@
 import React from 'react';
 import Tree from 'react-d3-tree';
 import treeData from '../../public/local_data/temp_tree_data';
+import {Dropdown, DropdownButton, MenuItem} from 'react-bootstrap';
+import '../../public/css/Overlay.css';
 import clone from 'clone';
 import {interpolateOrRd} from 'd3';
 
@@ -42,11 +44,18 @@ const DetailConceptTree = (props) => {
     // clone() creates a deep clone of the tree object, so we don't modify the original tree
     return(
         <div>
-            <div id="treeWrapper" style={{width: '100%', height:'100%'}}>
+            <div styleName='activation_layer_dropdown'>
+                <DropdownButton id="dropdown-basic-button" title="TCAV Activation Layer" onSelect={function(d){console.log(d);}}>
+                    <MenuItem active eventKey="combined">Combined</MenuItem>
+                    <MenuItem eventKey="low_layer">Lower Layer</MenuItem>
+                    <MenuItem eventKey="high_layer">Higher Layer</MenuItem>
+                </DropdownButton>
+            </div>
+            <div styleName="treeContainer" id="treeWrapper" style={{width: '100%', height:'85%'}}>
               <Tree 
                 data={(props.conceptData) ? loopConceptData(clone(treeData)) : treeData} 
                 zoom={4} 
-                translate={{x: 250, y: 200}}
+                translate={{x: 25, y: 400}}
                 initialDepth={2} 
                 nodeSize={{x: 120, y: 50}}
                 transitionDuration={200}
