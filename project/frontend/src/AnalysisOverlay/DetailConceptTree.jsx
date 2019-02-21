@@ -41,18 +41,18 @@ const DetailConceptTree = (props) => {
         return obj;
     }
 
-    // clone() creates a deep clone of the tree object, so we don't modify the original tree
     return(
         <div>
             <div styleName='activation_layer_dropdown'>
-                <DropdownButton id="dropdown-basic-button" title="TCAV Activation Layer" onSelect={function(d){console.log(d);}}>
-                    <MenuItem active eventKey="combined">Combined</MenuItem>
-                    <MenuItem eventKey="low_layer">Lower Layer</MenuItem>
-                    <MenuItem eventKey="high_layer">Higher Layer</MenuItem>
+                <DropdownButton id="dropdown-basic-button" title="TCAV Activation Layer" onSelect={props.changeTcavLayers}>
+                    <MenuItem active={"combined" === props.activeLayers} eventKey="combined">Combined</MenuItem>
+                    <MenuItem active={"low_layer" === props.activeLayers} eventKey="low_layer">Lower Layer</MenuItem>
+                    <MenuItem active={"high_layer" === props.activeLayers} eventKey="high_layer">Higher Layer</MenuItem>
                 </DropdownButton>
             </div>
             <div styleName="treeContainer" id="treeWrapper" style={{width: '100%', height:'85%'}}>
               <Tree 
+                // clone() creates a deep clone of the tree object, so we don't modify the original tree
                 data={(props.conceptData) ? loopConceptData(clone(treeData)) : treeData} 
                 zoom={4} 
                 translate={{x: 25, y: 400}}

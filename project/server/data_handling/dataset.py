@@ -21,7 +21,6 @@ class ImageDataset(DatasetPrototype):
         self.label_path = os.path.join(self.dataset_path, 'labels.json')
         self.id_to_label_path = os.path.join(self.dataset_path, 'id_to_label.json')
         self.dataset_type = 'image'
-        self.top_predictions = None
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)

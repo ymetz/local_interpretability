@@ -8,7 +8,7 @@ const treeData = {
               "name": "smooth",
               "children": [
                   {
-                      "name": "planar"
+                      "name": "smooth texture"
                   },
                   {
                       "name": "gradient"
@@ -26,7 +26,9 @@ const treeData = {
             {
                 "name": "irregular pattern",
                 "children": [
-                  {"name": "noisy"}
+                  {"name": "noise texture"},
+                  {"name": "random pattern"},
+                  {"name": "chaos texture"}
                 ]
               }
           ]
@@ -36,7 +38,7 @@ const treeData = {
           "children": [
             {"name": "colorful"},
             {"name": "single colors"},
-            {"name": "muted"}
+            {"name": "monochrome"}
           ]
         },
         {
@@ -49,9 +51,8 @@ const treeData = {
         {
             "name": "(image type)",
             "children": [
-              {"name": "realistic"},
-              {"name": "drawing"},
-              {"name": "animation"}
+              {"name": "photo"},
+              {"name": "drawing"}
             ]
         },
         {
@@ -62,14 +63,34 @@ const treeData = {
                 {"name": "(material)",
                  "children": [
                      {"name":"wood"},
-                     {"name":"metal"},
+                     {"name":"metal material"},
                      {"name":"plastic"},
                      {"name":"concrete"}
+                 ]},
+                 {"name": "(type)",
+                 "children": [
+                     {"name":"food"},
+                     {"name":"furniture"},
+                     {"name":"plastic"}
                  ]}
                ]
               },
-              {"name": "Creature"},
-              {"name": "Abstract Shape"}
+              {"name": "Creature",
+               "children": [
+                  {"name":"human",
+                  "children": [
+                    {"name":"child"},
+                    {"name":"woman"},
+                    {"name":"man"}
+                ]},
+                  {"name": "animal",
+                    "children": [
+                      {"name":"land animal"},
+                      {"name":"bird"},
+                      {"name":"water animal"}
+                  ]},
+               ]},
+              {"name": "abstract"}
             ]
         }
       ]

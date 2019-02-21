@@ -14,6 +14,7 @@ def load_tcavs(model, dataset):
     tcav_scores = {}
     tcav_file_name = os.path.join(model.model_path, dataset.dataset_name + model.model_name
                                       + '-tcavscores' + '.pkl')
+    print(tcav_file_name)
     if os.path.isfile(tcav_file_name):
         with open(tcav_file_name, 'rb') as f:
             tcav_scores = pickle.load(f)

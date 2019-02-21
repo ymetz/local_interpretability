@@ -38,7 +38,7 @@ export default class TcavChart extends Component {
 
     draw = (props) => {
 
-      let data = props.conceptData.sort(function(a,b){return b.score - a.score});
+      const data = props.conceptData.sort(function(a,b){return b.score - a.score});
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);

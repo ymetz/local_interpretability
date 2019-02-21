@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, send_from_directory
 from data_handling.dataservice import *
 from data_handling.dataset import encode_dataset
 import tensorflow as tf
-from model_handling.classifier import create_top_5_predictions
+from model_handling.classifier import create_top_5_predictions, check_classifier_performance
 from explanations.tcav_explainer import load_tcavs
 from explanations.lrp_explainer import create_lrp_explanation
 
@@ -11,6 +11,8 @@ models = []
 active_dataset = None
 active_model = None
 tcav_scores = None
+top_preds_for_active_model_dataset = None
+classifier_performance_for_active_model_dataset = None
 
 get_data = Blueprint('get_data', __name__)
 
@@ -71,7 +73,11 @@ def get_single_classifications():
 
 @get_data.route("/get_top_classifications")
 def get_top_classifications():
-    return jsonify(active_dataset.top_predictions)
+    return jsonify(top_preds_for_active_model_dataset)
+
+@get_data.route("/get_classifier_performance")
+def get_classifier_performance():
+    return jsonify(classifier_performance_for_active_model_dataset)
 
 @get_data.route("/get_related_images")
 def get_related_images():
@@ -97,6 +103,8 @@ def init_data():
     global active_dataset
     global active_model
     global tcav_scores
+    global top_preds_for_active_model_dataset
+    global classifier_performance_for_active_model_dataset
 
     datasets = get_dataset_list("../../datasets/")
 
@@ -115,10 +123,12 @@ def init_data():
 
     active_model = models[0]
 
-    create_top_5_predictions(active_dataset, active_model)
+    top_preds_for_active_model_dataset = create_top_5_predictions(active_dataset, active_model)
+    classifier_performance_for_active_model_dataset = check_classifier_performance(active_dataset,
+                                                                                   top_preds_for_active_model_dataset)
 
     tcav_scores = load_tcavs(active_model, active_dataset)
     print(tcav_scores)
 
-    print("Creating Lime explanations")
-    #create_explanation_images(datasets[0], models[0])
+    # print("Creating Lime explanations")
+    # create_explanation_images(datasets[0], models[0])

@@ -43,6 +43,10 @@ export default class overlayComponent extends Component {
         this.setState({ method: method });
     }
 
+    tcavLayerChange(active_type) {
+        this.setState({ tcav_active_layers : active_type});
+    }
+
     toggleExplanationImage(imgClass) {
         if (this.state.method === 'tcav')
             return;
@@ -102,8 +106,11 @@ export default class overlayComponent extends Component {
                         </div>
                     </div>
                     <div styleName='additional_info_vis'>
-                            {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/>
-                                                            : <ClassPerformance/>}
+                            {(this.state.method === 'tcav') ? <DetailConceptTree activeLayers={this.state.tcav_active_layers} 
+                                                                                 conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}
+                                                                                 changeTcavLayers={this.tcavLayerChange.bind(this)}/>
+                                                            : <ClassPerformance classPerformance={this.props.appState.classifier_performance} 
+                                                                                currentLabel={this.state.current_image_label[0]}/>}
                     </div>
                     <InfoFooter method={this.state.method}/>
                 </div>

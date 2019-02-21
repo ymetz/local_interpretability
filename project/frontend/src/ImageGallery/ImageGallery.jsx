@@ -24,6 +24,9 @@ export default class imageGallery extends Component {
     }
 
     getClassifierScoresForComponent(image_list, classifier_results, labels) {
+        if (image_list === undefined || image_list === undefined || labels === undefined)
+            return [];
+
         let classifier_scores = [];
         image_list.forEach( image => {
             let classifier_result = {};

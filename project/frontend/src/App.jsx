@@ -6,7 +6,6 @@ import Gallery from './ImageGallery/ImageGallery';
 import {Button} from 'react-bootstrap';
 import axios from "axios";
 import OverlayComponent from './AnalysisOverlay/OverlayComponent';
-import SettingsView from './GlobalView/SettingsView';
 import '../public/css/App.css';
 import {config} from './app_config'; 
 import GlobalView from "./GlobalView/GlobalView";
@@ -41,7 +40,8 @@ export default class App extends Component {
       images_on_display: [],
       image_display_options: {},
       labels: [],
-      top_classes: [],
+      top_classes: {},
+      classifier_performance: [],
       id_to_label: [],
       tcav_scores: {},
       show_gallery: true,
@@ -49,8 +49,7 @@ export default class App extends Component {
       app_settings: {
         show_tcav_tree: true
       },
-      tcav_concept_hierarchy: {},
-      show_settings: false
+      tcav_concept_hierarchy: {}
     }
   }
 
@@ -83,6 +82,12 @@ export default class App extends Component {
       .then(res => {
         const preds = res.data;
         this.setState( {top_classes: preds} );
+      })
+
+    axios.get('get_data/get_classifier_performance')
+      .then(res => {
+        const classifierPerformance = res.data;
+        this.setState( {classifier_performance: classifierPerformance} );
       })
 
     axios.get('/get_data/get_id_to_label')
@@ -124,11 +129,6 @@ export default class App extends Component {
     this.setState({show_overlay: showOverlay});
   }
 
-  toggleSettings() {
-    let showSettings = !this.state.show_settings;
-    this.setState({show_settings: showSettings});
-  }
-
   getImagePredictions() {
     let image_name = this.state.current_image_name;
     axios.get('/get_data/get_prediction?name='+ image_name)
@@ -168,7 +168,6 @@ export default class App extends Component {
           dataset_name={this.state.dataset.dataset_name} 
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
-          onSettingButtonClick={this.toggleSettings.bind(this)}
         />        
         <FilteringOptions 
           onAnalysisButtonClick={this.toogleOverlay.bind(this)} 
@@ -195,10 +194,6 @@ export default class App extends Component {
                                       selectedElements={this.state.images_on_display.filter(im => im.selected)} 
                                       close_it={this.toogleOverlay.bind(this)} 
                                       appState={this.state}/> : null}
-        {this.state.show_settings ? <SettingsView 
-                                        appSettings={this.state.app_settings}
-                                        close_it={this.toggleSettings.bind(this)}
-                                        conceptHierarchy={this.state.tcav_concept_hierarchy}/> : null}
       </div>
     )
   }
