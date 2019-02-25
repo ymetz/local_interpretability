@@ -128,7 +128,7 @@ def init_data():
                                                                                    top_preds_for_active_model_dataset)
 
     tcav_scores = load_tcavs(active_model, active_dataset)
-    print(tcav_scores)
+    print(tcav_scores.keys())
 
     # print("Creating Lime explanations")
     # create_explanation_images(datasets[0], models[0])

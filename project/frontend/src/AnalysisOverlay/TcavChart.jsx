@@ -9,15 +9,23 @@ export default class TcavChart extends Component {
 
     componentDidMount() {
         //in case we dont provide concept data for this class, dont't render a diagram
-        if (this.props.conceptData !== undefined)
-          this.draw(this.props)
+        if (this.props.conceptData !== undefined){
+          const filtered_concept_data = (this.props.activeLayers === 'combined') 
+          ?  this.props.conceptData 
+          : this.props.conceptData.filter(x => x.bottleneck === this.props.activeLayers);
+          this.draw(filtered_concept_data);
+        }
     }
 
     componentDidUpdate(prevProps){
       //this makes sure we don't redraw unnecessarily
-      if((this.props.conceptData !== prevProps.conceptData) && this.props.conceptData !== undefined){
+      if((this.props !== prevProps) && this.props.conceptData !== undefined){
+        console.log(this.props);
+        const filtered_concept_data = (this.props.activeLayers === 'combined') 
+        ?  this.combineLayerScores(this.props.conceptData)
+        : this.props.conceptData.filter(x => x.bottleneck === this.props.activeLayers);
         d3.select('.viz > *').remove();
-        this.draw(this.props);
+        this.draw(filtered_concept_data);
       }
   
     }
@@ -29,6 +37,16 @@ export default class TcavChart extends Component {
         if (this.random_tooltip)
             this.random_tooltip.destroy(); 
     }
+
+    combineLayerScores(conceptData) {
+      let outData = [];
+      let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
+      uniqueConcepts.forEach(concept => {
+        let singleConceptScores = conceptData.filter(x => x.concept === concept);
+        outData.push({ concept: concept, score: singleConceptScores.map(x => x.score).reduce(function(a, b) { return a + b; }) / singleConceptScores.length, random_score: singleConceptScores[0].random_score });
+      });
+      return outData;
+    }
   
     render() {
       return (
@@ -38,7 +56,7 @@ export default class TcavChart extends Component {
 
     draw = (props) => {
 
-      const data = props.conceptData.sort(function(a,b){return b.score - a.score});
+      const data = props.sort(function(a,b){return b.score - a.score});
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);

@@ -25,7 +25,8 @@ export default class overlayComponent extends Component {
           current_image_class: -1,
           method: 'tcav',
           show_explanation_image: false,
-          concept_data : {}
+          concept_data : {},
+          tcav_active_layers: 'combined'
        }
 
     }
@@ -43,7 +44,8 @@ export default class overlayComponent extends Component {
         this.setState({ method: method });
     }
 
-    tcavLayerChange(active_type) {
+    changeTcavLayers(active_type) {
+        console.log(active_type);
         this.setState({ tcav_active_layers : active_type});
     }
 
@@ -97,7 +99,8 @@ export default class overlayComponent extends Component {
                                                 onSelect={this.toggleExplanationImage.bind(this)}/>
                         </div>
                         <div>
-                        { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}/> :
+                        { (this.state.method === 'tcav') ? <TcavChart conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}
+                                                                      activeLayers={this.state.tcav_active_layers}/> :
                                                             <RelatedImageBrowser key={this.state.current_image_name}
                                                                                     imageName={this.state.current_image_name} 
                                                                                     imageLabel={this.state.current_image_label} 
@@ -106,9 +109,8 @@ export default class overlayComponent extends Component {
                         </div>
                     </div>
                     <div styleName='additional_info_vis'>
-                            {(this.state.method === 'tcav') ? <DetailConceptTree activeLayers={this.state.tcav_active_layers} 
-                                                                                 conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}
-                                                                                 changeTcavLayers={this.tcavLayerChange.bind(this)}/>
+                            {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}
+                                                                                 changeTcavLayers={this.changeTcavLayers.bind(this)}/>
                                                             : <ClassPerformance classPerformance={this.props.appState.classifier_performance} 
                                                                                 currentLabel={this.state.current_image_label[0]}/>}
                     </div>
