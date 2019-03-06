@@ -180,6 +180,7 @@ export default class App extends Component {
       this.setState({expand_button_disabled: true})
 
     // At last, slice it to chosen number of images
+    console.log(displayed_images.length);
     displayed_images = displayed_images.slice(indices[0],indices[1])
 
     this.setState({images_on_display: displayed_images});

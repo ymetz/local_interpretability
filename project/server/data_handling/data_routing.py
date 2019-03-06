@@ -138,6 +138,7 @@ def init_data():
 
     active_model = models[0]
 
+    print("predict images")
     top_preds_for_active_model_dataset = create_top_5_predictions(active_dataset, active_model)
     classifier_performance_for_active_model_dataset = check_classifier_performance(active_dataset,
                                                                                    top_preds_for_active_model_dataset)

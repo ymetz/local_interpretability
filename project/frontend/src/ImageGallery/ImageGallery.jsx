@@ -59,10 +59,11 @@ export default class imageGallery extends Component {
             this.props.labels);
 
         return (
-            <Gallery photos={this.props.images} onClick={this.props.onClick} 
+            (photoClassificationResults)?
+            <Gallery photos={this.props.images} onClick={this.props.onClick} columns={6}
                     ImageComponent={({...nativeProps}) => <SelectedImage {...nativeProps}
                                                            classificationResults={photoClassificationResults}/>}
-            />
+            />:<div/>
         );
     }
 };

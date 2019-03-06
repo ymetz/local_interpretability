@@ -43,7 +43,7 @@ def get_model_list(path):
     try:
         model_id = 0
         for subdir in os.listdir(path):
-            if not subdir.startswith('.'):
+            if not subdir.startswith('.') and not '__init__' in subdir:
                 model_path = os.path.join(path, subdir)
                 if subdir == 'preprocessing':
                     print('preprocessing directory found')
@@ -53,7 +53,7 @@ def get_model_list(path):
                     if subdir.split('_')[1] == 'inception':
                         models.append(InceptionModel(model_id, model_path, subdir.split('_')[1]))
                 else:
-                    raise Exception('Invalid or unsupported model found. Check the name of the folder.')
+                    raise Exception('Invalid or unsupported model found: {0} Check the name of the folder.'.format(subdir))
                 model_id = model_id + 1
     except Exception as e:
         print(e)

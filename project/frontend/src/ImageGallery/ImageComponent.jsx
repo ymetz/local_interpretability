@@ -45,6 +45,7 @@ const ClassificationIndicator = ({classificationResult, width, height, display})
           (classificationResult.score === 0.0) ?
             "rgba(255,0,0,0.5)" :
             "rgba(209, 244, 66," + classificationResult.score + ")"
+          
       }/>
     </svg>
   </div>
@@ -91,7 +92,7 @@ const SelectedImage = ({
     >
       <Checkmark selected={photo.selected ? true : false} />
       <ClassificationIndicator 
-        classificationResult={classificationResults[index]} 
+        classificationResult={classificationResults[index]? classificationResults[index]: {label_correct:false, score:0.0}} 
         width={photo.width} 
         height={photo.height}
         display={photo.selected ? false : true}/>
