@@ -13,7 +13,7 @@ export default class imageGallery extends Component {
      */
     shouldComponentUpdate(nextProps, nextState) {
         if (this.props !== nextProps) {
-            if (nextProps.images.length !== 0 
+            if (nextProps.images !== undefined
                 && nextProps.topPredictions.length !== 0 
                 && nextProps.labels.length !== 0){
                 return true;
@@ -33,6 +33,8 @@ export default class imageGallery extends Component {
             let photo_name = image.src.split('/').pop();
             let preds = classifier_results[photo_name];
             let result = { score: 0.0, label_correct: false};
+            if (preds === undefined)
+                return result;
             let image_prediction = preds.find((pred,index) => {
                 if (pred.class == labels[photo_name][0]){
                     if (index === preds.length-1){
@@ -40,6 +42,7 @@ export default class imageGallery extends Component {
                     }
                     return true;
                 }
+                return false;
             });
             if (image_prediction !== undefined)
                 result.score = image_prediction.score;

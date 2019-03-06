@@ -49,7 +49,7 @@ const Second_Navbar = (props) => {
                             defaultValue={[0, 1.0]} 
                             tipFormatter={value => `${value}%`}
                             marks={{0.0:0.0, 0.25 : 0.25 ,0.5 : 0.5, 0.75:0.75, 1.0:1.0}}
-                            onAfterChange={function(d){console.log(d)}}/>
+                            onAfterChange={props.onIntervallChange}/>
                     </div>
                 </Navbar.Form>
                 <Navbar.Form pullRight>

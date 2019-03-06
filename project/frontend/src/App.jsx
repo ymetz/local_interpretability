@@ -9,6 +9,7 @@ import OverlayComponent from './AnalysisOverlay/OverlayComponent';
 import '../public/css/App.css';
 import {config} from './app_config'; 
 import GlobalView from "./GlobalView/GlobalView";
+import SelectedImage from "./ImageGallery/ImageComponent";
 
 /**
  * App Component of the React App.
@@ -38,7 +39,12 @@ export default class App extends Component {
       dataset: {},
       image_list: [],
       images_on_display: [],
-      image_display_options: {},
+      image_display_options: {
+        indices: [0,config.nr_of_displayed_images],
+        prediction_interval: [0,1],
+        display_image_classes: []
+      },
+      expand_button_disabled: false,
       labels: [],
       top_classes: {},
       classifier_performance: [],
@@ -46,9 +52,6 @@ export default class App extends Component {
       tcav_scores: {},
       show_gallery: true,
       show_overlay : false,
-      app_settings: {
-        show_tcav_tree: true
-      },
       tcav_concept_hierarchy: {}
     }
   }
@@ -67,9 +70,8 @@ export default class App extends Component {
     axios.get('/get_data/get_image_list')
       .then(res => {
         const image_paths = res.data;
-        this.setState( {image_list: image_paths, images_on_display: image_paths.slice(0,config.nr_of_displayed_images),
-                        image_display_options : {indices : [0,config.nr_of_displayed_images]}
-                       });
+        this.setState( {image_list: image_paths, 
+                        images_on_display: image_paths.slice(0,config.nr_of_displayed_images)});
       })
 
     axios.get('/get_data/get_labels')
@@ -138,16 +140,72 @@ export default class App extends Component {
     })
   }
 
-  toggleDisplayedImages(event,obj) {
+  /**
+   *  Update the list of display images. Get's called when relevant properties change. */
+  updateImageList() {
+    let image_display_options = Object.assign({}, this.state.image_display_options);
+    const selectedClasses = image_display_options.display_image_classes;
+    const predictionInterval = image_display_options.prediction_interval;
+    const indices = image_display_options.indices;
+    const image_paths = this.state.image_list;
+    let displayed_images = [];
+
+    //First, get images of selected classes only
+    if (selectedClasses.length === 0) {
+      displayed_images = image_paths;
+    } else {
+      displayed_images = image_paths.filter(x => selectedClasses.includes(x.label));
+    }
+
+    // Secondly, only choose images inside prediction score interval
+    if (!(predictionInterval[0] === 0 && predictionInterval[1] === 1)){
+      const topClasses = this.state.top_classes;
+      displayed_images = displayed_images.filter(function(x)
+                                                { const image_name = x.src.split("/").pop();
+                                                  const pred_score = topClasses[image_name].find(y => y.class === x.label);
+                                                  let score = 0.0;
+                                                  if (pred_score !== undefined){
+                                                    score = pred_score.score;
+                                                  }
+                                                  if (score >= predictionInterval[0] && score <= predictionInterval[1]) {
+                                                        return true;
+                                                      }
+                                                  return false;
+                                                })
+    }
+
+    if (displayed_images.length > indices[1])
+      this.setState({expand_button_disabled: false})
+    else
+      this.setState({expand_button_disabled: true})
+
+    // At last, slice it to chosen number of images
+    displayed_images = displayed_images.slice(indices[0],indices[1])
+
+    this.setState({images_on_display: displayed_images});
+
+  }
+
+  expandDisplayedImages(event,obj) {
     //creating copy of object
     let image_display_options = Object.assign({}, this.state.image_display_options);
     let images_on_display = this.state.images_on_display;
     //updating value
     image_display_options.indices[1] = image_display_options.indices[1] + config.show_more_expansion_size;
-    images_on_display = this.state.image_list.slice(image_display_options.indices[0],
-                                                    image_display_options.indices[1])
-    this.setState({image_display_options, images_on_display: images_on_display});
+    this.setState({image_display_options: image_display_options}, () => this.updateImageList());
 
+  }
+
+  updateDisplayImagesByClass(event, obj) {
+    let image_display_options = Object.assign({}, this.state.image_display_options);
+    image_display_options.display_image_classes = event.map(x => Number(x.value));
+    this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
+  }
+
+  changeInterval(interval) {
+    let image_display_options = Object.assign({}, this.state.image_display_options);
+    image_display_options.prediction_interval = interval;
+    this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
   }
 
   toggleViewMode() {
@@ -171,7 +229,9 @@ export default class App extends Component {
         />        
         <FilteringOptions 
           onAnalysisButtonClick={this.toogleOverlay.bind(this)} 
-          selectedList={this.state.images_on_display.filter(im => im.selected)} 
+          selectedList={this.state.images_on_display.filter(im => im.selected)}
+          onSearchSubmit={this.updateDisplayImagesByClass.bind(this)}
+          onIntervallChange={this.changeInterval.bind(this)}
           labels={this.state.id_to_label}
           onViewModeChange={this.toggleViewMode.bind(this)}
         />
@@ -186,8 +246,9 @@ export default class App extends Component {
             />
             <Button 
               styleName='show_more_button' 
-              bsStyle="default" 
-              onClick={this.toggleDisplayedImages.bind(this)}>Show More</Button>
+              bsStyle="default"
+              disabled={this.state.expand_button_disabled} 
+              onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
           </div> : <GlobalView/> }
         </div>
         {this.state.show_overlay ? <OverlayComponent 

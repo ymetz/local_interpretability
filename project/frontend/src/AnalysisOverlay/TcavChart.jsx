@@ -20,7 +20,6 @@ export default class TcavChart extends Component {
     componentDidUpdate(prevProps){
       //this makes sure we don't redraw unnecessarily
       if((this.props !== prevProps) && this.props.conceptData !== undefined){
-        console.log(this.props);
         const filtered_concept_data = (this.props.activeLayers === 'combined') 
         ?  this.combineLayerScores(this.props.conceptData)
         : this.props.conceptData.filter(x => x.bottleneck === this.props.activeLayers);

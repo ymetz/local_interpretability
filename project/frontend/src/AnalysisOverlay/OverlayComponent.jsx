@@ -45,7 +45,6 @@ export default class overlayComponent extends Component {
     }
 
     changeTcavLayers(active_type) {
-        console.log(active_type);
         this.setState({ tcav_active_layers : active_type});
     }
 

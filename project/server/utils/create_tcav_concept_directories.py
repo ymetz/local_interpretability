@@ -12,19 +12,24 @@ def rchop(string, ending):
 
 concept_directory = "../../../datasets/tcav_concepts"
 
-concepts = ["smooth texture", "gradient", "dotted", "striped", "zigzagged", "chaos texture", "noise texture",
-            "random pattern", "colorful", "single color", "monochrome", "photo", "drawing", "white person",
-            "black person", "employee", "leisure", "man", "woman", "child", "animal", "land animal", "water animal",
-            "bird", "wood", "metal material", "plastic", "concrete", "food", "tool", "furniture", "abstract"]
+# concepts = ["smooth texture", "gradient", "dotted", "striped", "zigzagged", "chaos texture", "noise texture",
+#             "random pattern", "colorful", "single color", "monochrome", "photo", "drawing", "employee", "leisure", "man",
+#             "woman", "child", "animal", "land animal", "water animal",
+#             "bird", "wood", "metal material", "plastic", "concrete", "food", "tool", "furniture", "abstract"]
 
-random_concepts = ["random"]
+concepts = ["glossy surface", "matt surface", "uneven texture", "wrinkled object", "rectangle pattern", "transparent object",
+            "translucent", "rectangular", "round", "triangular", "complex shape", "spiky surface", "tree", "flower",
+            "plant", "grass/moss", "machine", "machine device", "architecture", "clothes", "animal fur", "fabric clothes",
+            "inside lighting", "nature", "beach", "underwater", "sky"]
+
+# random_concepts = ["random"]
 
 
-random_directories = ["random500_0", "random500_1", "random500_2", "random500_3", "random500_4"]
+# random_directories = ["random500_0", "random500_1", "random500_2", "random500_3", "random500_4"]
 
 def crawl_and_process_concepts():
     # crawl images for concepts and target class
-    for concept in concepts[3:]:
+    for concept in concepts:
         print(concept)
         if not os.path.isdir(os.path.join(concept_directory, concept)):
             if not os.path.isdir(os.path.join(concept_directory, concept+"_before")):
@@ -55,4 +60,6 @@ def process_random():
                         im.save(os.path.join(in_dir+"_processed", outfile), "JPEG")
             shutil.rmtree(in_dir, ignore_errors=True)
 
-process_random()
+
+crawl_and_process_concepts()
+# process_random()

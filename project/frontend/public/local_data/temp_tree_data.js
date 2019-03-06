@@ -1,99 +1,140 @@
 const treeData = {
     "name": "root",
     "children": [
-        {
-          "name": "textures",
-          "children": [
-            {
-              "name": "smooth",
-              "children": [
-                  {
-                      "name": "smooth texture"
-                  },
-                  {
-                      "name": "gradient"
-                  }
-              ]
-            },
-            {
-              "name": "pattern",
-              "children": [
-                  {"name": "dotted"},
-                  {"name": "striped"},
-                  {"name": "zigzagged"},
-              ]
-            },
-            {
-                "name": "irregular pattern",
+      {
+        "name": "(visual property)",
+        "children": [
+          {
+            "name": "(surface texture)",
+            "children": [
+              {
+                "name": "even texture",
                 "children": [
-                  {"name": "noise texture"},
-                  {"name": "random pattern"},
-                  {"name": "chaos texture"}
+                  {"name": "smooth texture"},
+                  {"name": "glossy"},
+                  {"name": "matt"}
+                ]
+              },
+              {
+                "name": "uneven texture",
+                "children": [
+                  {"name": "uneven texture"},
+                  {"name": "wrinkled"},
+                  {"name": "spiky"}
+                ]
+              },
+              {
+                "name": "patterned",
+                "children": [
+                  {"name": "regular",
+                   "children": [
+                     {"name": "dotted"},
+                     {"name": "striped"},
+                     {"name": "zigzagged"}
+                   ]},
+                  {"name": "irregular",
+                   "children": [
+                     {"name": "irregular pattern"},
+                     {"name": "chaos texture"}
+                  ]},
+                  {"name": "translucent",
+                  "children": [
+                    {"name": "transparent"},
+                    {"name": "semi-translucent"}
+                 ]},
                 ]
               }
-          ]
-        },
-        {
-          "name": "(color balance)",
-          "children": [
-            {"name": "colorful"},
-            {"name": "single colors"},
-            {"name": "monochrome"}
-          ]
-        },
-        {
-            "name": "(conturs)",
-            "children": [
-              {"name": "defined"},
-              {"name": "washed out"}
             ]
-        },
-        {
-            "name": "(image type)",
+          },
+          {
+            "name": "(colors)",
             "children": [
-              {"name": "photo"},
-              {"name": "drawing"}
+              {"name": "colorful"},
+              {"name": "single color"},
+              {"name": "monochrome"}
             ]
-        },
-        {
-            "name": "(category)",
+          },
+          {
+            "name": "(shape)",
             "children": [
-              {"name": "Object",
-               "children":[
-                {"name": "(material)",
-                 "children": [
-                     {"name":"wood"},
-                     {"name":"metal material"},
-                     {"name":"plastic"},
-                     {"name":"concrete"}
-                 ]},
-                 {"name": "(type)",
-                 "children": [
-                     {"name":"food"},
-                     {"name":"furniture"},
-                     {"name":"plastic"}
-                 ]}
-               ]
-              },
-              {"name": "Creature",
+              {"name": "rectangular"},
+              {"name": "round"},
+              {"name": "triangular"},
+              {"name": "complex shape"}
+
+            ] 
+          }
+        ]
+      },
+      {"name": "(category)",
+       "children": [
+         {
+           "name": "alive",
+           "children": [
+             {
+               "name": "plant",
                "children": [
-                  {"name":"human",
-                  "children": [
-                    {"name":"child"},
-                    {"name":"woman"},
-                    {"name":"man"}
-                ]},
-                  {"name": "animal",
-                    "children": [
-                      {"name":"land animal"},
-                      {"name":"bird"},
-                      {"name":"water animal"}
-                  ]},
-               ]},
-              {"name": "abstract"}
-            ]
-        }
-      ]
-    };
+                  {"name": "tree"},
+                  {"name": "flower"},
+                  {"name": "grass-moss"}
+               ]
+             },
+             {
+               "name": "animal",
+               "children": [
+                 {"name": "land animal"},
+                 {"name": "water animal"},
+                 {"name": "bird"}
+               ]
+             },
+             {
+               "name": "human",
+               "children": [
+                 {"name": "man"},
+                 {"name": "woman"},
+                 {"name": "child"}
+               ]
+             }
+           ]
+         },
+         {
+           "name": "object",
+           "children": [
+             {"name": "machine-device"},
+             {"name": "building"},
+             {"name": "clothes"},
+             {"name": "food"},
+             {"name": "furniture"}
+           ]
+         },
+         { "name" : "abstract"}
+       ]},
+      {
+        "name": "(material)",
+        "children": [
+          {"name": "concrete"},
+          {"name": "wood"},
+          {"name": "metal material"},
+          {"name": "plastic"},
+          {"name": "fur"},
+          {"name": "fabric"}
+        ]
+      },
+      {
+        "name": "(setting)",
+        "children": [
+          {"name": "inside"},
+          {"name": "outside",
+           "children": [
+             {"name": "beach"},
+             {"name": "nature"},
+             {"name": "underwater"},
+             {"name": "sky"}
+           ]},
+
+        ]
+      }
+    ]
+}
 
 export default treeData;

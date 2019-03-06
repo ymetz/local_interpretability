@@ -37,7 +37,6 @@ export default class ClassPerformance extends Component {
 
         const data = props.classPerformance;
         //let data = d3.stack().keys(["top5_predicted", "top_predicted"])(props.classPerformance);
-        console.log(props.classPerformance);
         const classLabel = props.currentLabel;
 
         const width = 250, height = 450;
