@@ -39,6 +39,7 @@ export default class App extends Component {
       dataset: {},
       image_list: [],
       images_on_display: [],
+      images_count: 0,
       image_display_options: {
         indices: [0,config.nr_of_displayed_images],
         prediction_interval: [0,1],
@@ -70,8 +71,10 @@ export default class App extends Component {
     axios.get('/get_data/get_image_list')
       .then(res => {
         const image_paths = res.data;
+        const imgCount = image_paths.length
         this.setState( {image_list: image_paths, 
-                        images_on_display: image_paths.slice(0,config.nr_of_displayed_images)});
+                        images_on_display: image_paths.slice(0,config.nr_of_displayed_images),
+                        images_count : imgCount});
       })
 
     axios.get('/get_data/get_labels')
@@ -180,10 +183,10 @@ export default class App extends Component {
       this.setState({expand_button_disabled: true})
 
     // At last, slice it to chosen number of images
-    console.log(displayed_images.length);
+    const imgCount = displayed_images.length;
     displayed_images = displayed_images.slice(indices[0],indices[1])
 
-    this.setState({images_on_display: displayed_images});
+    this.setState({images_on_display: displayed_images, images_count: imgCount});
 
   }
 
@@ -234,6 +237,7 @@ export default class App extends Component {
           onSearchSubmit={this.updateDisplayImagesByClass.bind(this)}
           onIntervallChange={this.changeInterval.bind(this)}
           labels={this.state.id_to_label}
+          imgCount={this.state.images_count}
           onViewModeChange={this.toggleViewMode.bind(this)}
         />
         <div styleName="content_main">

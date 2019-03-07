@@ -32,11 +32,13 @@ class InceptionModel(ModelPrototype):
         self.scope = "InceptionV3"
         self.mode = mode
         self.image_size = inception.inception_v3.default_image_size
+        # For the inception model, logits are shifted by one compared to groundtruth labels
+        # e.g. class 465 has the target logit 466
+        self.logit_shift = 1
 
         self.prepare_model()
 
-
-    def transform_images(self,path_list):
+    def transform_images(self, path_list):
         with self.graph.as_default():
             out = []
             for f in path_list:
@@ -78,6 +80,8 @@ class InceptionModel(ModelPrototype):
         with self.graph.as_default():
             image_raw = os.path.join(dataset_path, image_name)
             preprossed_image = inception_preprocessing.preprocess_image(image_raw,
-                                                                 self.image_size, self.image_size, is_training=False)
+                                                                        self.image_size,
+                                                                        self.image_size,
+                                                                        is_training=False)
             return self.session.run(self.probabilities, feed_dict={self.processed_images: preprossed_image})
 

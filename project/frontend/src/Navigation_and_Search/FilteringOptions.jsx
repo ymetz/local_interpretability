@@ -52,6 +52,9 @@ const Second_Navbar = (props) => {
                             onAfterChange={props.onIntervallChange}/>
                     </div>
                 </Navbar.Form>
+                <Navbar.Text pullLeft>
+                #Filtered Images: {props.imgCount}
+                </Navbar.Text>
                 <Navbar.Form pullRight>
                     <Button styleName='style.action_btn' bsStyle="default" onClick={props.onViewModeChange}>
                         <Glyphicon glyph="stats" /> Global View

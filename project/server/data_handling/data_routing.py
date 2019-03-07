@@ -4,7 +4,7 @@ from data_handling.dataset import encode_dataset
 import tensorflow as tf
 from model_handling.classifier import create_top_5_predictions, check_classifier_performance
 from explanations.tcav_explainer import load_tcavs
-from explanations.lrp_explainer import create_lrp_explanation
+from explanations.lrp_explainer import initialize_lrp_model, create_lrp_explanation
 from explanations.lime_explainer import create_lime_explanations
 
 datasets = []
@@ -31,7 +31,6 @@ def custom_static(filename):
 
 @get_data.route('/dataset_explanation/<path:filename>')
 def custom_explanation_static(filename):
-    print(os.path.join(active_dataset.dataset_path, 'current_explanations'))
     return send_from_directory(os.path.join(active_dataset.dataset_path, 'current_explanations'), filename)
 
 
@@ -123,7 +122,7 @@ def init_data():
 
     datasets = get_dataset_list("../../datasets/")
 
-    global_tensorflow_session = tf.Session()
+    # global_tensorflow_session = tf.Session()
     models = get_model_list("../../models/")
 
     print("Available datasets: {}".format(len(datasets)))
@@ -143,10 +142,15 @@ def init_data():
     classifier_performance_for_active_model_dataset = check_classifier_performance(active_dataset,
                                                                                    top_preds_for_active_model_dataset)
 
+    print(classifier_performance_for_active_model_dataset)
     tcav_scores = load_tcavs(active_model, active_dataset)
     print("Available TCAV concepts:")
     print(tcav_scores.keys())
 
+    # print("Creating E-LRP Explanation images")
+    # lrp_model, lrp_session = initialize_lrp_model()
+    # create_lrp_explanation(active_dataset, active_dataset.file_list[:25], lrp_session, lrp_model,
+    #                        top_preds_for_active_model_dataset)
+
     print("Creating Lime explanations")
-    # create_lime_explanations(datasets[0], models[0])
-    # create_explanation_images(datasets[0], models[0])
+    # create_lime_explanations(active_dataset, active_model, top_preds_for_active_model_dataset)
