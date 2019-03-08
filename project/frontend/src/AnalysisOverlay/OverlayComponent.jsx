@@ -1,6 +1,6 @@
 import ReactModal from 'react-modal';
 import React, {Component} from 'react';
-import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup, Dropdown, DropdownButton} from 'react-bootstrap';
+import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
 import '../../public/css/Overlay.css';
 import axios from "axios";
 import TopPredictionTable from './Top_Prediction_Table';
@@ -69,7 +69,7 @@ export default class overlayComponent extends Component {
                 style={{overlay:{zIndex:1040}}}>
                 <div>
                     <h2 styleName="top_heading">Detail Interpretabilty View
-                    <Button styleName="close_button" onClick={this.props.close_it}><Glyphicon glyph="remove" /></Button>
+                    <span styleName="close_button" onClick={this.props.closeModal}><Glyphicon glyph="remove" /></span>
                     </h2>
                     <hr style={{marginTop : '4px'}}></hr>
                 </div>

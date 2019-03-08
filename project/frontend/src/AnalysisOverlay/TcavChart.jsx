@@ -11,7 +11,7 @@ export default class TcavChart extends Component {
         //in case we dont provide concept data for this class, dont't render a diagram
         if (this.props.conceptData !== undefined){
           const filtered_concept_data = (this.props.activeLayers === 'combined') 
-          ?  this.props.conceptData 
+          ?  this.combineLayerScores(this.props.conceptData)
           : this.props.conceptData.filter(x => x.bottleneck === this.props.activeLayers);
           this.draw(filtered_concept_data);
         }
@@ -97,9 +97,17 @@ export default class TcavChart extends Component {
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
-        svg.append("g")
+        const zoom = d3.zoom()
+          .scaleExtent([1, 20])
+          .translateExtent([[0 + margin.left, 0 + margin.top], [width - margin.right, height - margin.bottom]])
+          .on("zoom", zoomed);
+
+        let view = svg.append("g");
+
+        view.append("g")
             .attr("fill", "orange")
           .selectAll("rect").data(data).enter().append("rect")
+            .attr("class","rect")
             .attr("x", d => (x(d.concept)+10))
             .attr("y", d => y(d.random_score))
             .attr("height", d => y(0) - y(d.random_score))
@@ -107,9 +115,10 @@ export default class TcavChart extends Component {
             .on('mouseover', this.random_tooltip.show)
             .on('mouseout', this.random_tooltip.hide);
 
-        svg.append("g")
+        view.append("g")
             .attr("fill", "steelblue")
           .selectAll("rect").data(data).enter().append("rect")
+            .attr("class","rect")
             .attr("x", d => x(d.concept))
             .attr("y", d => y(d.score))
             .attr("height", d => y(0) - y(d.score))
@@ -117,11 +126,21 @@ export default class TcavChart extends Component {
              .on('mouseover', this.tooltip.show)
              .on('mouseout', this.tooltip.hide);
         
-        svg.append("g")
+        let gX = svg.append("g")
             .call(xAxis);
         
-        svg.append("g")
+        let gY = svg.append("g")
             .call(yAxis);
 
+        svg.call(zoom);
+
+        function zoomed() {
+          view.attr("transform", d3.event.transform);
+          gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+        }
+
       }
+
+      
+
 }

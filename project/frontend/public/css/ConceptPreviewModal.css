@@ -1,0 +1,17 @@
+.close_button {
+    float : right;
+    color: grey;
+    cursor: pointer;
+}
+
+.concept_name {
+    display: inline-block;
+}
+
+.top_div {
+    overflow: hidden;
+}
+
+.content_div {
+    overflow: hidden;
+}

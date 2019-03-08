@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import Tree from 'react-d3-tree';
+import axios from "axios";
 import treeData from '../../public/local_data/temp_tree_data';
+import ConceptPreviewModal from './ConceptPreviewModal';
 import {Dropdown, DropdownButton, MenuItem} from 'react-bootstrap';
 import '../../public/css/Overlay.css';
 import clone from 'clone';
@@ -13,12 +15,20 @@ export default class DetailConceptTree extends Component {
 
         this.state = {
             tcavLayers : (props.conceptData) ? [...new Set(props.conceptData.map(x => x.bottleneck))] : undefined ,
-            tcav_active_layers: 'combined'
+            tcav_active_layers: 'combined',
+            show_concept_preview_modal: false,
+            concept_preview_modal_data: null
+
         }
     }
 
+    /**
+     * 
+     * @param {object} treeData Parsed from JSON-file or response. Contains the tree layout
+     * @param {*} conceptData Scores for concepts & random counterpart, used to fill the tree
+     */
     getConceptTree(treeData, conceptData) {
-            // Recursively itterate through the concept tree and tcav values at available nodes. Sum up
+            // Recursively iterate through the concept tree and tcav values at available nodes. Sum up
             // the scores and propagate them to higher nodes
             let loopConceptData = (obj) =>
             {
@@ -44,6 +54,7 @@ export default class DetailConceptTree extends Component {
                                     r: "12px"
                                 }
                             }
+                            obj.leafNode = true;
                         }     
                     }
                     else if (typeof obj === "object" && k === "children") {
@@ -55,13 +66,43 @@ export default class DetailConceptTree extends Component {
                                 r: "12px"
                             }
                         }
+                        obj.leafNode = false;
                     }
                 }
                 return obj;
             }
+            return loopConceptData(treeData); 
+    }
 
-            return loopConceptData(treeData);
-        
+    /**
+     * Combine/Average the scores from different layer to a single score
+     * @param {object} conceptData 
+     */
+    combineLayerScores(conceptData) {
+        let outData = [];
+        let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
+        uniqueConcepts.forEach(concept => {
+          let singleConceptScores = conceptData.filter(x => x.concept === concept);
+          outData.push({ concept: concept, score: singleConceptScores.map(x => x.score).reduce(function(a, b) { return a + b; }) / singleConceptScores.length, random_score: singleConceptScores[0].random_score });
+        });
+        return outData;
+      }
+
+    onConceptTreeNodeClick(node, event) {
+        if (!node.leafNode)
+            return;
+        //Set the concept preview data, wait for callback to only render when data is available
+        axios.get('/get_data/get_tcav_concept_examples?'
+        +'concept='+ node.name)
+        .then(res => {
+            const examplImgs = res.data;
+            this.setState({concept_preview_modal_data: {node: node, event: event, example_images: examplImgs}, 
+                           show_concept_preview_modal: true});
+        })
+    }
+
+    closeModal() {
+        this.setState({show_concept_preview_modal: false, concept_preview_modal_data: null});
     }
 
     changeTcavLayers(active_type) {
@@ -88,7 +129,7 @@ export default class DetailConceptTree extends Component {
         }
 
         const filtered_concept_data = (this.state.tcav_active_layers === 'combined') 
-                                        ?  this.props.conceptData 
+                                        ?  this.combineLayerScores(this.props.conceptData)
                                         : this.props.conceptData.filter(x => x.bottleneck === this.state.tcav_active_layers);
 
         return(
@@ -106,10 +147,14 @@ export default class DetailConceptTree extends Component {
                     zoom={4} 
                     translate={{x: 25, y: 400}}
                     initialDepth={2} 
+                    onClick={this.onConceptTreeNodeClick.bind(this)}
                     nodeSize={{x: 120, y: 50}}
                     transitionDuration={0}
                     nodeSvgShape={svgNode}/>
                 </div>
+                {this.state.show_concept_preview_modal ? <ConceptPreviewModal previewData={this.state.concept_preview_modal_data}
+                                                                              closeModal={this.closeModal.bind(this)}
+                ></ConceptPreviewModal> : null}
             </div>
         )
     }

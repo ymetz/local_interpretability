@@ -5,7 +5,7 @@ import {config} from '../app_config';
 import '../../public/css/Navbar.css';  
 
 
-const Top_Navbar = (props) => {
+const TopNavbar = (props) => {
     return (
         <Navbar fixedTop inverse styleName='top_navbar'>
             <Navbar.Header>
@@ -33,7 +33,7 @@ const Top_Navbar = (props) => {
 
 
 
-export default Top_Navbar;
+export default TopNavbar;
 
 /*
                 <Navbar.Form pullRight>

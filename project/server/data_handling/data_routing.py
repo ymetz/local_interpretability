@@ -14,12 +14,13 @@ active_model = None
 tcav_scores = None
 top_preds_for_active_model_dataset = None
 classifier_performance_for_active_model_dataset = None
+tcav_concept_examples = None
 
 get_data = Blueprint('get_data', __name__)
 
 
 @get_data.route("/get_datasets")
-def get_models():
+def get_datasets():
     return jsonify([encode_dataset(ds) for ds in datasets])
 
 
@@ -34,6 +35,11 @@ def custom_explanation_static(filename):
     print(os.path.join(active_dataset.dataset_path, 'current_explanations'))
     return send_from_directory(os.path.join(active_dataset.dataset_path, 'current_explanations'), filename)
 
+
+@get_data.route('/tcav_concepts/<path:filename>')
+def custom_tcav_concept_static(filename):
+    print(os.path.join("../../datasets/", 'tcav_concepts'))
+    return send_from_directory(os.path.join("../../datasets/", 'tcav_concepts'), filename)
 
 @get_data.route("/get_image")
 def get_image():
@@ -97,18 +103,25 @@ def get_classifier_performance():
 def get_related_images():
     image = request.args.get('image', default="", type=str)
     label = active_dataset.labels[image][0]
-    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"],
-                       "height": file["height"], "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
-                      if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
+    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
+                       "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
+                       if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
     return jsonify(out_image_list)
 
 
 @get_data.route("/get_all_class_images")
 def get_all_class_images():
     img_class = request.args.get('class', default=0, type=int)
-    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"],
-                       "height": file["height"], "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
-                      if file["src"] in datasets[0].label_to_elements[img_class]]
+    out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
+                       "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
+                       if file["src"] in datasets[0].label_to_elements[img_class]]
+    return jsonify(out_image_list)
+
+@get_data.route("get_tcav_concept_examples")
+def get_tcav_concept_examples():
+    concept = request.args.get('concept', default="", type=str)
+    out_image_list = [{"src": "/get_data/tcav_concepts/" + file["src"], "width": file["width"],
+                       "height": file["height"]} for file in tcav_concept_examples[concept]]
     return jsonify(out_image_list)
 
 
@@ -120,6 +133,7 @@ def init_data():
     global tcav_scores
     global top_preds_for_active_model_dataset
     global classifier_performance_for_active_model_dataset
+    global tcav_concept_examples
 
     datasets = get_dataset_list("../../datasets/")
 
@@ -144,6 +158,8 @@ def init_data():
                                                                                    top_preds_for_active_model_dataset)
 
     tcav_scores = load_tcavs(active_model, active_dataset)
+    tcav_concept_examples = get_tcav_example_images("../../datasets/tcav_concepts/")
+    print(tcav_concept_examples)
     print("Available TCAV concepts:")
     print(tcav_scores.keys())
 

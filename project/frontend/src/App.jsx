@@ -254,7 +254,7 @@ export default class App extends Component {
         </div>
         {this.state.show_overlay ? <OverlayComponent 
                                       selectedElements={this.state.images_on_display.filter(im => im.selected)} 
-                                      close_it={this.toogleOverlay.bind(this)} 
+                                      closeModal={this.toogleOverlay.bind(this)} 
                                       appState={this.state}/> : null}
       </div>
     )

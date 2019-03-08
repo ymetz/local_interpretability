@@ -1,5 +1,7 @@
 .close_button {
     float : right;
+    color: grey;
+    cursor: pointer;
 }
 
 .top_heading {
