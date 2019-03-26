@@ -1,8 +1,22 @@
 import pickle
 import os
 
+'''
+    classifier.py
+    Contains functions for the actual classification of samples from the dataset as well as classifier performance
+    evaluation.
+    Calls the current model and dataset and creates a prediction for each element in the dataset.
+'''
 
 def create_top_5_predictions(dataset, model):
+    '''
+    Calls the current model and dataset and creates a prediction for each element in the dataset.
+    Saves the classification results to a pickle file. If the predictions were already made for the current dataset
+    and model, just load the content of the pickle file.
+    :param dataset: currently active dataset object
+    :param model: currently active model object
+    :return: a dictionary containing the top 5 predicted classes, contains class label and classfier confidence score
+    '''
 
     out_preds = None
 
@@ -38,7 +52,13 @@ def create_top_5_predictions(dataset, model):
 
 
 def check_classifier_performance(dataset, model_predictions):
-
+    '''
+    Evaluates the performance of the classifier by comparing the results with the ground truth labels.
+    :param dataset: dataset we previously created the predictions for. Contains the element labels for comparison
+    :param model_predictions: the previously created predictions as returned by create_top_5_predictions()
+    :return: A list of dicts for each class with the number of total predictions (n) and correct predictions
+             (top_predicted or top5_predicted)
+    '''
     class_performances = []
 
     for predictions in model_predictions.items():
@@ -66,7 +86,14 @@ def check_classifier_performance(dataset, model_predictions):
 
     return class_performances
 
+
 def chunks(l, n):
+    '''
+    Generator function to separate a list into batches/chunks.
+    :param l: the list to be split into chunks
+    :param n: the chunk size
+    :return: everytime the generator is called, returns an approriate chunk of the list
+    '''
     # For item i in a range that is a length of l,
     for i in range(0, len(l), n):
         # Create an index range for l of n items:

@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
 
+/**
+ * Two charts visualizing the classifier performance for the current class as well as a comparison of the
+ * performance with other classes in the  dataset.
+ * PieChart visualzation heavily influenced by: https://bl.ocks.org/mbhall88/b2504f8f3e384de4ff2b9dfa60f325e2
+ */
 export default class ClassPerformance extends Component {
 
     tooltips = null;
@@ -36,69 +41,34 @@ export default class ClassPerformance extends Component {
     draw = (props) => {
 
         const data = props.classPerformance;
-        //let data = d3.stack().keys(["top5_predicted", "top_predicted"])(props.classPerformance);
         const classLabel = props.currentLabel;
+        const currentClassData = props.classPerformance.find(d => d.class = classLabel);
 
-        const width = 250, height = 450;
-        const margin = ({top: 10, right: 0, bottom: 10, left: 10})
+        const pieData = [currentClassData.top_predicted, currentClassData.top5_predicted, 
+                         currentClassData.n - currentClassData.top_predicted - currentClassData.top5_predicted];
+
+        const width = 450, height = 450;
+        const margin = ({top: 10, right: 0, between: 20, bottom: 10, left: 10})
         const svg = d3.select('.performance_viz').append('svg')
         .attr('height', height)
-        .attr('width', width)
-        .attr('id', 'svg-viz');
-        const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
+        .attr('width', width);
 
-        this.tooltip = d3Tip()
-                    .attr('class', 'd3-tip')
-                    .html(function(d) { return "Score:" + d.score; });
+        // Set up constructors for making donut. See https://github.com/d3/d3-shape/blob/master/README.md
+        var radius = Math.min(width, height) / 2;
 
-        // set x scale
-        var x = d3.scaleBand()
-        .rangeRound([0, width])
-        .paddingInner(0.05)
-        .align(0.1);
+        // creates a new pie generator
+        var pie = d3.pie()
+            .value(function(d) { return floatFormat(d[variable]); })
+            .sort(null);
 
-        // set y scale
-        var y = d3.scaleLinear()
-        .rangeRound([height, 0]);
+        // contructs and arc generator. This will be used for the donut. The difference between outer and inner
+        // radius will dictate the thickness of the donut
+        var arc = d3.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.6);
 
-        // set the colors
-        var z = d3.scaleOrdinal()
-        .range(["#98abc5", "#8a89a6"]);
+        const pieChartG = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var keys = ['top5_predicted','top_predicted'];
-
-        x.domain(data.map(function(d) { return d.class; }));
-        y.domain([0, d3.max(data, function(d) { return d.n; })]).nice();
-        z.domain(keys);
-
-        g.append("g")
-            .selectAll("g")
-            .data(d3.stack().keys(keys)(data))
-                .enter().append("g")
-                .attr("fill", function(d) { return z(d.key); })
-                .selectAll("rect")
-                    .data(function(d) { return d; })
-                    .enter().append("rect")
-                    .attr("x", function(d) { return x(d.class); })
-                    .attr("y", function(d) { return y(d[1]); })
-                    .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-                    .attr("width", x.bandwidth());
-
-        g.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x));
-
-        g.append("g")
-            .attr("class", "axis")
-            .call(d3.axisLeft(y).ticks(null, "s"))
-            .append("text")
-                .attr("x", 2)
-                .attr("y", y(y.ticks().pop()) + 0.5)
-                .attr("dy", "0.32em")
-                .attr("fill", "#000")
-                .attr("font-weight", "bold")
-                .attr("text-anchor", "start");
 
 
     }

@@ -23,7 +23,7 @@ export default class overlayComponent extends Component {
           current_image_name : this.props.selectedElements[0].src.split("/").pop(),
           current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
           current_image_class: -1,
-          method: 'tcav',
+          method: 'lime',
           show_explanation_image: false,
           concept_data : {},
           tcav_active_layers: 'combined'
@@ -79,8 +79,8 @@ export default class overlayComponent extends Component {
                             <div styleName='method_selection'>
                                 <ButtonToolbar>
                                     <ToggleButtonGroup type='radio' name='options' value={this.state.method} onChange={this.methodChange.bind(this)} justified>
-                                    <ToggleButton value={'tcav'}>TCAV</ToggleButton>
                                     <ToggleButton value={'lime'}>LIME</ToggleButton>
+                                    <ToggleButton value={'tcav'}>TCAV</ToggleButton>
                                     <ToggleButton value={'elrp'}>LRP</ToggleButton>
                                     </ToggleButtonGroup>
                                 </ButtonToolbar>

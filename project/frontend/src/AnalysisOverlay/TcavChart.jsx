@@ -60,7 +60,8 @@ export default class TcavChart extends Component {
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const width = 950, height = 280;
-        const margin = ({top: 10, right: 0, bottom: 25, left: 80})
+        const margin = {top: 10, right: 0, bottom: 40, left: 80};
+        const innerWidth = width - margin.left - margin.right, innerHeight = height - margin.top - margin.bottom;
         const svg = d3.select('.viz').append('svg')
         .attr('height', height)
         .attr('width', width)
@@ -68,25 +69,15 @@ export default class TcavChart extends Component {
 
         this.tooltip = d3Tip()
                     .attr('class', 'd3-tip')
-                    .html(function(d) { return "Score:" + d.score; });
+                    .html(function(d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Score: </b>" + d.score.toFixed(3); });
 
         this.random_tooltip = d3Tip()
             .attr('class', 'd3-tip')
-            .html(function(d) { return "Random Score:" + d.random_score; });
+            .html(function(d) { return "<b>Random Score:</b>" + d.random_score.toFixed(3); });
 
         svg.append("g")
             .call(this.tooltip)
             .call(this.random_tooltip);
-    
-       const  yAxis = g => g
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y))
-            .call(g => g.select(".domain").remove());
-
-        const xAxis = g => g
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x)
-            .tickSizeOuter(0));
 
         const y = d3.scaleLinear()
             .domain([0.0, 1.0]).nice()
@@ -94,31 +85,55 @@ export default class TcavChart extends Component {
 
         const x = d3.scaleBand()
             .domain(data.map(x => x['concept']))
-            .range([margin.left, width - margin.right])
-            .padding(0.1);
+            .range([margin.left, (width - margin.right)*4])
+            .align(0)
+            .padding(0.2);
+
+        const yAxis = g => g
+            .attr("transform", "translate(" + margin.left + ",0)")
+            .call(d3.axisLeft(y))
+            .call(g => g.select(".domain").remove())
+
+        const xAxis = g => g
+            .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+            .call(d3.axisBottom(x).tickSizeOuter(10))
+
+        const extent = [[0, margin.top], [(width - margin.right)*4, height - margin.top]];
 
         const zoom = d3.zoom()
-          .scaleExtent([1, 20])
-          .translateExtent([[0 + margin.left, 0 + margin.top], [width - margin.right, height - margin.bottom]])
-          .on("zoom", zoomed);
+            .scaleExtent([0.5, 1])
+            .translateExtent(extent)
+            //.extent(extent)
+            .on("zoom", zoomed);
 
-        let view = svg.append("g");
+        svg.append("rect")
+            .style("cursor", "ew-resize")
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(zoom);
 
-        view.append("g")
+        svg.append("g")
             .attr("fill", "orange")
+            .attr("clip-path", "url(#clip)")
+            .style("clip-path", "url(#clip)")
           .selectAll("rect").data(data).enter().append("rect")
-            .attr("class","rect")
-            .attr("x", d => (x(d.concept)+10))
+            .attr("class","random-rect")
+            .attr("x", d => (x(d.concept))+10)
             .attr("y", d => y(d.random_score))
             .attr("height", d => y(0) - y(d.random_score))
             .attr("width", x.bandwidth())
             .on('mouseover', this.random_tooltip.show)
             .on('mouseout', this.random_tooltip.hide);
 
-        view.append("g")
+        svg.append("g")
             .attr("fill", "steelblue")
+            .attr("clip-path", "url(#clip)")
+            .style("clip-path", "url(#clip)")
           .selectAll("rect").data(data).enter().append("rect")
-            .attr("class","rect")
+            .attr("class","concept-rect")
             .attr("x", d => x(d.concept))
             .attr("y", d => y(d.score))
             .attr("height", d => y(0) - y(d.score))
@@ -126,21 +141,41 @@ export default class TcavChart extends Component {
              .on('mouseover', this.tooltip.show)
              .on('mouseout', this.tooltip.hide);
         
-        let gX = svg.append("g")
+        svg.append("g")
+          .attr("clip-path", "url(#clip)")
+          .style("clip-path", "url(#clip)")
+          .append("g")
+            .attr("class", "x-axis")
             .call(xAxis);
-        
-        let gY = svg.append("g")
+      
+        svg.append("g")
+            .attr("class", "y-axis")
             .call(yAxis);
 
-        svg.call(zoom);
+        svg.append("rect")
+          .attr("x", width-margin.right-50)
+          .attr("y", margin.top)
+          .attr("height", height - margin.bottom)
+          .attr("width", 50)
+          .attr("fill", "rgba(255,255,255,0.5)");
+
+        let defs = svg.append("defs")
+        
+        //Add the clip path for the main bar chart
+        defs.append("clipPath")
+          .attr("id", "clip")
+          .append("rect")
+          .attr("width", innerWidth)
+          .attr("height", height)
+          .attr("transform", "translate("+ margin.left + "," + margin.top + ")");
 
         function zoomed() {
-          view.attr("transform", d3.event.transform);
-          gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+          x.range([margin.left, (width - margin.right)*4].map(d => d3.event.transform.applyX(d)));
+          svg.selectAll(".concept-rect").attr("x", d => x(d.concept)).attr("width", x.bandwidth());
+          svg.selectAll(".random-rect").attr("x", d => x(d.concept)+10).attr("width", x.bandwidth());
+          svg.selectAll(".x-axis").call(xAxis);
         }
 
       }
-
-      
 
 }

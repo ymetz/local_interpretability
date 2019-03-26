@@ -254,7 +254,7 @@ export default class App extends Component {
               bsStyle="default"
               disabled={this.state.expand_button_disabled} 
               onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
-          </div> : <GlobalView/> }
+          </div> : <GlobalView classifierPerformance={this.state.classifier_performance} onViewModeChange={this.toggleViewMode.bind(this)}/> }
         </div>
         {this.state.show_overlay ? <OverlayComponent 
                                       selectedElements={this.state.images_on_display.filter(im => im.selected)} 

@@ -23,34 +23,34 @@ export default class DetailConceptTree extends Component {
     }
 
     /**
-     * 
+     * Traverse the default concept tree (treeData) and fill in scores from tht TCAV concept data,
+     * propagate maximum values
      * @param {object} treeData Parsed from JSON-file or response. Contains the tree layout
      * @param {*} conceptData Scores for concepts & random counterpart, used to fill the tree
      */
     getConceptTree(treeData, conceptData) {
-            // Recursively iterate through the concept tree and tcav values at available nodes. Sum up
-            // the scores and propagate them to higher nodes
+            // Recursively call this function to  iterate through the concept tree and tcav values at available nodes
             let loopConceptData = (obj) =>
             {
                 if ((typeof obj === "object"))
-                    obj.scoreSum = {sum: 0.0, n: 0};
+                    obj.scoreSum = {scores: [], n: 0};
                 for (var k in obj)
                 {
                     if (k === "scoreSum")
                         continue;
                     if (Array.isArray(obj)) {
                         let scoreSum = loopConceptData(obj[k]).scoreSum;
-                        obj.scoreSum.sum += scoreSum.sum; obj.scoreSum.n += scoreSum.n;       
+                        obj.scoreSum.scores.push(...scoreSum.scores); obj.scoreSum.n += scoreSum.n;       
                     }
                     else if (typeof obj === "object" && k === "name"){
                         if (conceptData.map(x => x.concept).includes(obj.name)) {
                             let filteredConceptData = conceptData.filter(x => x.concept === obj.name);
                             let conceptLayerSum = filteredConceptData.map(x => x.score).reduce(function(a, b) { return a + b; });
-                            obj.scoreSum.sum += conceptLayerSum / filteredConceptData.length;
+                            obj.scoreSum.scores.push(conceptLayerSum / filteredConceptData.length);
                             obj.scoreSum.n += 1;
                             obj.nodeSvgShape = {
                                 shapeProps: {
-                                    fill: interpolateOrRd(obj.scoreSum.sum),
+                                    fill: interpolateOrRd(obj.scoreSum.scores[0]),
                                     r: "12px"
                                 }
                             }
@@ -59,10 +59,11 @@ export default class DetailConceptTree extends Component {
                     }
                     else if (typeof obj === "object" && k === "children") {
                         let scoreSum = loopConceptData(obj[k]).scoreSum;
-                        obj.scoreSum.sum = scoreSum.sum; obj.scoreSum.n = scoreSum.n;
+                        obj.scoreSum.scores = scoreSum.scores; obj.scoreSum.n = scoreSum.n;
                         obj.nodeSvgShape = {
                             shapeProps: {
-                                fill: interpolateOrRd(obj.scoreSum.sum/Math.max(obj.scoreSum.n,1)),
+                                fill: interpolateOrRd(Math.max(...obj.scoreSum.scores)),
+                                opacity: (obj.name.startsWith('(')) ? 0.75 : 1.0,
                                 r: "12px"
                             }
                         }
@@ -79,6 +80,8 @@ export default class DetailConceptTree extends Component {
      * @param {object} conceptData 
      */
     combineLayerScores(conceptData) {
+        if (conceptData === undefined)
+            return conceptData;
         let outData = [];
         let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
         uniqueConcepts.forEach(concept => {
