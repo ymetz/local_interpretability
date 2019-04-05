@@ -25,8 +25,8 @@ export default class RelatedImageBrowser extends PureComponent {
     render() {
         return (
             <div styleName="related_image_container">
-                <p>Class Represenatives</p>
-                <Gallery photos={this.state.related_images.slice(0,4)} columns={4} onClick={this.props.onClick}></Gallery>
+                {(this.props.showHeader) ? <p>Class Represenatives</p>: null}
+                <Gallery photos={this.state.related_images} columns={this.props.columns} onClick={this.props.onClick}></Gallery>
             </div>
         )
     }

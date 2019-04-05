@@ -4,7 +4,7 @@ import d3Tip from 'd3-tip';
 
 export default class TcavChart extends Component {
 
-    tooltips = null;
+    tooltip = null;
     random_tooltip = null;
 
     componentDidMount() {
@@ -31,8 +31,8 @@ export default class TcavChart extends Component {
 
     componentWillUnmount() {
     
-        if (this.tooltips)
-            this.tooltips.destroy();
+        if (this.tooltip)
+            this.tooltip.destroy();
         if (this.random_tooltip)
             this.random_tooltip.destroy(); 
     }

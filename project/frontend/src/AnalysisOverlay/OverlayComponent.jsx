@@ -36,7 +36,8 @@ export default class overlayComponent extends Component {
             current_image: image.photo,
             current_image_name: image.photo.src.split("/").pop(),
             current_image_label: this.props.appState.labels[image.photo.src.split("/").pop()],
-            current_image_class: -1
+            current_image_class: -1,
+            show_explanation_image: false
         })
     }
 
@@ -85,8 +86,19 @@ export default class overlayComponent extends Component {
                                     </ToggleButtonGroup>
                                 </ButtonToolbar>
                             </div>
+                            {(this.state.method === 'tcav') ?
+                            <div styleName="gallery_display">
+                                <RelatedImageBrowser key={this.state.current_image_name}
+                                    imageName={this.state.current_image_name} 
+                                    imageLabel={this.state.current_image_label} 
+                                    explanationClass={this.state.current_image_class}
+                                    onClick={this.setNewImage.bind(this)}
+                                    columns={2}
+                                    showHeader={false}/>
+                            </div> : 
                             <img styleName='image_display' src={this.state.show_explanation_image ? 
                                                                 this.state.current_explanation_src : this.state.current_image.src}></img>
+                            }
                         </div>
                         <div styleName='image_details'>
                             <p><b>{this.state.current_image_name}</b></p>
@@ -104,7 +116,9 @@ export default class overlayComponent extends Component {
                                                                                     imageName={this.state.current_image_name} 
                                                                                     imageLabel={this.state.current_image_label} 
                                                                                     explanationClass={this.state.current_image_class}
-                                                                                    onClick={this.setNewImage.bind(this)}/>}
+                                                                                    onClick={this.setNewImage.bind(this)}
+                                                                                    columns={4}
+                                                                                    showHeader={true}/>}
                         </div>
                     </div>
                     <div styleName='additional_info_vis'>

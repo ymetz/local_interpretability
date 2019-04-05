@@ -48,8 +48,16 @@
     object-fit: contain;
 }
 
+.gallery_display {
+    display: block;
+    margin:auto;
+    overflow-y: scroll;
+    width: 400px;
+    height: 400px;   
+}
+
 .overlay_content {
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .tcav_chart_container {
@@ -75,4 +83,6 @@
 
 .related_image_container {
     margin-top: 10px;
+    height: 280px;
+    overflow-y: scroll;
 }

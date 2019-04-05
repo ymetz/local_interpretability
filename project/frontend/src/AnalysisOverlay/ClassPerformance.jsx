@@ -42,7 +42,7 @@ export default class ClassPerformance extends Component {
 
         const data = props.classPerformance;
         const classLabel = props.currentLabel;
-        const currentClassData = props.classPerformance.find(d => d.class = classLabel);
+        const currentClassData = props.classPerformance.class_performances.find(d => d.class === classLabel);
 
         const pieData = [currentClassData.top_predicted, currentClassData.top5_predicted, 
                          currentClassData.n - currentClassData.top_predicted - currentClassData.top5_predicted];

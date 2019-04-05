@@ -57,9 +57,11 @@ def check_classifier_performance(dataset, model_predictions):
     :param dataset: dataset we previously created the predictions for. Contains the element labels for comparison
     :param model_predictions: the previously created predictions as returned by create_top_5_predictions()
     :return: A list of dicts for each class with the number of total predictions (n) and correct predictions
-             (top_predicted or top5_predicted)
+             (top_predicted or top5_predicted),
+             A dict object that contains the classifier performance for all elements in the dataset
     '''
     class_performances = []
+    overall_performance = {'top_predicted': 0, 'top5_predicted': 0, 'n': 0}
 
     for predictions in model_predictions.items():
         # get the classes of all the predicted classes
@@ -79,12 +81,15 @@ def check_classifier_performance(dataset, model_predictions):
 
         if top_prediction == label:
             class_performance['top_predicted'] += 1
+            overall_performance['top_predicted'] += 1
         elif label in predicted_classes:
             class_performance['top5_predicted'] += 1
+            overall_performance['top5_predicted'] += 1
 
         class_performance['n'] += 1
+        overall_performance['n'] += 1
 
-    return class_performances
+    return {'class_performances': class_performances, 'overall_performance': overall_performance}
 
 
 def chunks(l, n):

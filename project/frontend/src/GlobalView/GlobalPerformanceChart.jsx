@@ -4,12 +4,12 @@ import d3Tip from 'd3-tip';
 
 export default class GlobalPerformanceChart extends PureComponent {
 
-    tooltips = null;
-    random_tooltip = null;
+    tooltip = null;
 
     componentDidMount() {
         //in case we dont provide concept data for this class, dont't render a diagram
         if (this.props.classifierPerformance !== undefined){
+          const groupedData = this
           this.draw(this.props.classifierPerformance);
         }
     }
@@ -23,10 +23,24 @@ export default class GlobalPerformanceChart extends PureComponent {
   
     }
 
+    groupData(data, n) {
+        let groupedData = []
+        const sortedClasses = data.sort(function(a,b){ return ((a.top_predicted + a.top5_predicted)/a.n-(b.top_predicted + b.top5_predicted)/b.n)});
+        for (let i = 0; i < sortedClasses.length; i += n){
+            groupedData.push(
+              sortedClasses.slice(i, i+n).reduce( function(prev, curr){ return {top_predicted: (prev.top_predicted + curr.top_predicted), 
+                                                                    top5_predicted: (prev.top5_predicted + curr.top5_predicted),
+                                                                    n: (prev.n + curr.n),
+                                                                    class: i}})
+            );
+        }
+        return groupedData;
+    }
+
     componentWillUnmount() {
     
-        if (this.tooltips)
-            this.tooltips.destroy();
+        if (this.tooltip)
+            this.tooltip.destroy();
     }
   
     render() {
@@ -36,8 +50,9 @@ export default class GlobalPerformanceChart extends PureComponent {
     }
 
     draw = (props) => {
+        let _self = this;
 
-      const data = props;
+        let data = this.groupData(props, 20);
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -51,15 +66,10 @@ export default class GlobalPerformanceChart extends PureComponent {
 
         this.tooltip = d3Tip()
                     .attr('class', 'd3-tip')
-                    .html(function(d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Score: </b>" + d.score.toFixed(3); });
-
-        this.random_tooltip = d3Tip()
-            .attr('class', 'd3-tip')
-            .html(function(d) { return "<b>Random Score:</b>" + d.random_score.toFixed(3); });
+                    .html(function(d) { console.log("bla"); return "<b>Concept: </b>" + d.class + "<br>" + "<b>#Entries: </b>" + d.n; });
 
         svg.append("g")
-            .call(this.tooltip)
-            .call(this.random_tooltip);
+            .call(this.tooltip);
 
         const y = d3.scaleLinear()
             .domain([0.0,1.0]).nice()
@@ -88,31 +98,60 @@ export default class GlobalPerformanceChart extends PureComponent {
             //.extent(extent)
             .on("zoom", zoomed);
 
-        svg.append("g")
-            .attr("fill", "orange")
+        let drawBars = () => {
+          svg.selectAll('*').remove();
+
+          svg.append("g")
+              .attr("fill", "rgb(0,255,0)")
+              .attr("clip-path", "url(#clip)")
+              .style("clip-path", "url(#clip)")
+            .selectAll("rect").data(data).enter().append("rect")
+              .attr("class","rect")
+              .attr("x", d => x(d.class))
+              .attr("y", d => y(d.top_predicted / d.n))
+              .attr("height", d => y(0) - y(d.top_predicted / d.n))
+              .attr("width", x.bandwidth())
+              .on('mouseover', this.tooltip.show)
+              .on('mouseout', this.tooltip.hide);
+
+          svg.append("g")
+              .attr("fill", "rgb(209, 244, 66)")
+              .attr("clip-path", "url(#clip)")
+              .style("clip-path", "url(#clip)")
+            .selectAll("rect").data(data).enter().append("rect")
+              .attr("class","rect")
+              .attr("x", d => x(d.class))
+              .attr("y", d => y((d.top5_predicted + d.top_predicted) / d.n))
+              .attr("height", d => y(0) - y(d.top5_predicted / d.n))
+              .attr("width", x.bandwidth())
+              .on('mouseover', this.tooltip.show)
+              .on('mouseout', this.tooltip.hide);
+
+          svg.append("g")
+              .attr("fill", "rgba(255, 0, 0, 0.5)")
+              .attr("clip-path", "url(#clip)")
+              .style("clip-path", "url(#clip)")
+            .selectAll("rect").data(data).enter().append("rect")
+              .attr("class","rect")
+              .attr("x", d => x(d.class))
+              .attr("y", d => y(1))
+              .attr("height", d => y(0) - y((d.n - d.top_predicted - d.top5_predicted) / d.n))
+              .attr("width", x.bandwidth())
+              .on('mouseover', this.tooltip.show)
+              .on('mouseout', this.tooltip.hide);
+          
+          svg.append("g")
             .attr("clip-path", "url(#clip)")
             .style("clip-path", "url(#clip)")
-          .selectAll("rect").data(data).enter().append("rect")
-            .attr("class","rect")
-            .attr("x", d => x(d.class))
-            .attr("y", d => y(d.top_predicted / d.n))
-            .attr("height", d => y(0) - y(d.top_predicted / d.n))
-            .attr("width", x.bandwidth())
-            .on('mouseover', this.random_tooltip.show)
-            .on('mouseout', this.random_tooltip.hide);
+            .append("g")
+              .attr("class", "x-axis")
+              .call(xAxis);
         
-        svg.append("g")
-          .attr("clip-path", "url(#clip)")
-          .style("clip-path", "url(#clip)")
-          .append("g")
-            .attr("class", "x-axis")
-            .call(xAxis);
-      
-        svg.append("g")
-            .attr("class", "y-axis")
-            .call(yAxis);
+          svg.append("g")
+              .attr("class", "y-axis")
+              .call(yAxis);
 
-        svg.append("rect")
+          svg.append("rect")
           .style("fill", "none")
           .style("pointer-events", "all")
           .attr("width", width)
@@ -129,8 +168,16 @@ export default class GlobalPerformanceChart extends PureComponent {
           .attr("width", innerWidth)
           .attr("height", height)
           .attr("transform", "translate("+ margin.left + "," + margin.top + ")");
+        }
+
+        drawBars();
 
         function zoomed() {
+          if (d3.event.transform.k > 4.0){
+            data = _self.groupData(props, 10);
+            x.domain(data.map(x => x['class']));
+            drawBars();
+          }
           x.range([margin.left, (width - margin.right)].map(d => d3.event.transform.applyX(d)));
           svg.selectAll(".rect").attr("x", d => x(d.class)).attr("width", x.bandwidth());
           svg.selectAll(".x-axis").call(xAxis);
