@@ -214,7 +214,20 @@ export default class App extends Component {
 
   toggleViewMode() {
     let showGallery = !this.state.show_gallery;
-    this.setState({show_gallery: showGallery});
+    if (showGallery === true){
+      let image_display_options = Object.assign({}, this.state.image_display_options);
+      image_display_options.display_image_classes = []
+      this.setState({show_gallery: showGallery, 
+                     image_display_options : image_display_options}, () => this.updateImageList());
+    } else {
+      this.setState({show_gallery: showGallery});
+    }
+  }
+
+  renderFilteredGallery(data) {
+    let image_display_options = Object.assign({}, this.state.image_display_options);
+    image_display_options.display_image_classes = data;
+    this.setState( {show_gallery: true, image_display_options: image_display_options}, () => this.updateImageList());
   }
 
   /**
@@ -239,6 +252,7 @@ export default class App extends Component {
           labels={this.state.id_to_label}
           imgCount={this.state.images_count}
           onViewModeChange={this.toggleViewMode.bind(this)}
+          showGallery={this.state.show_gallery}
         />
         <div styleName="content_main">
           { (this.state.show_gallery) ? 
@@ -254,7 +268,9 @@ export default class App extends Component {
               bsStyle="default"
               disabled={this.state.expand_button_disabled} 
               onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
-          </div> : <GlobalView classifierPerformance={this.state.classifier_performance} onViewModeChange={this.toggleViewMode.bind(this)}/> }
+          </div> : <GlobalView 
+                    classifierPerformance={this.state.classifier_performance}
+                    performanceChartClick={this.renderFilteredGallery.bind(this)}/> }
         </div>
         {this.state.show_overlay ? <OverlayComponent 
                                       selectedElements={this.state.images_on_display.filter(im => im.selected)} 

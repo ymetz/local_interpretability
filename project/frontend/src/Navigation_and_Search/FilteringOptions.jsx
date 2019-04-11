@@ -56,9 +56,13 @@ const Second_Navbar = (props) => {
                 #Filtered Images: {props.imgCount}
                 </Navbar.Text>
                 <Navbar.Form pullRight>
+                    {(props.showGallery) ?
                     <Button styleName='style.action_btn' bsStyle="default" onClick={props.onViewModeChange}>
                         <Glyphicon glyph="stats" /> Global View
-                    </Button>   
+                    </Button> :
+                    <Button styleName='style.action_btn' bsStyle="default" onClick={props.onViewModeChange}>
+                        <Glyphicon glyph="th" /> Data Browser
+                    </Button>}  
                 </Navbar.Form>
                 <Navbar.Form pullRight>
                     <label styleName="style.filtering_label">Show Detailed Analysis:</label>

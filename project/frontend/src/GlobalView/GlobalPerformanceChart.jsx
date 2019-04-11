@@ -9,7 +9,6 @@ export default class GlobalPerformanceChart extends PureComponent {
     componentDidMount() {
         //in case we dont provide concept data for this class, dont't render a diagram
         if (this.props.classifierPerformance !== undefined){
-          const groupedData = this
           this.draw(this.props.classifierPerformance);
         }
     }
@@ -36,17 +35,18 @@ export default class GlobalPerformanceChart extends PureComponent {
      * @param {Number} n 
      */
     groupData(data, n) {
-        let groupedData = []
+        let groupedData = [], groupedClasses = [];
         const sortedClasses = data.sort((a,b) => this.groupSortingFunction(a,b));
         for (let i = 0; i < sortedClasses.length; i += n){
             groupedData.push(
               sortedClasses.slice(i, i+n).reduce( function(prev, curr){ return {top_predicted: (prev.top_predicted + curr.top_predicted), 
                                                                     top5_predicted: (prev.top5_predicted + curr.top5_predicted),
                                                                     n: (prev.n + curr.n),
-                                                                    class: (i/sortedClasses.length * 100).toFixed(0) + '%'}})
+                                                                    class: (i/sortedClasses.length)}})
             );
+            groupedClasses.push(sortedClasses.slice(i, i+n).map(d => d.class));
         }
-        return groupedData;
+        return {data: groupedData, classes: groupedClasses};
     }
 
     componentWillUnmount() {
@@ -78,7 +78,10 @@ export default class GlobalPerformanceChart extends PureComponent {
             return 2;
         }
 
-        let data = this.groupData(props, 20);
+        const topLineColors = { top1: 'rgba(20, 94, 255, 0.5)', top5: 'rgba(152, 178, 230, 0.5)'};
+
+        let combinedData = this.groupData(props, 20);
+        let data = combinedData.data;
 
         //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -92,7 +95,10 @@ export default class GlobalPerformanceChart extends PureComponent {
 
         this.tooltip = d3Tip()
                     .attr('class', 'd3-tip')
-                    .html(function(d) { return "<div style='margin-left: 5px;'>" + "<b>top </b>" + d.class + "<br>" 
+                    .offset([100, 0])
+                    .html(function(d) { return "<div style='margin-left: 5px;'>"
+                                               + "<b>top </b>" + (d.class*100).toFixed(0) + "% of classes <br>"
+                                               + "<b>#Classses: </b>" + zoomIntervals[currentZoomStage] + "<br>" 
                                                + "<b>#Entries: </b>" + d.n + "<br>"
                                                + "<b>misclassified: </b>" + (d.n - d.top_predicted - d.top5_predicted ) 
                                                + "</div>"; });
@@ -117,7 +123,7 @@ export default class GlobalPerformanceChart extends PureComponent {
 
         const xAxis = g => g
             .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-            .call(d3.axisBottom(x).tickSizeOuter(10))
+            .call(d3.axisBottom(x).tickSizeOuter(10).tickFormat(d3.format(".00%")))
 
         const extent = [[0, margin.top], [(width - margin.right), height - margin.top]];
 
@@ -172,6 +178,11 @@ export default class GlobalPerformanceChart extends PureComponent {
               .attr("width", x.bandwidth())
               .on('mouseover', this.tooltip.show)
               .on('mouseout', this.tooltip.hide);
+
+          barGroup.selectAll("rect")
+          .on("click", function(d,i) { 
+            _self.props.clickHandler(combinedData.classes[i % combinedData.classes.length]);
+          })
           
           svg.append("g")
             .attr("clip-path", "url(#clip)")
@@ -185,21 +196,19 @@ export default class GlobalPerformanceChart extends PureComponent {
               .call(yAxis);
 
         barGroup.append("g")
-          .append("line")
-          .attr("x1", (margin.left - 50))
-          .attr("y1", y(this.props.overallAccuracies.top1))
+          .selectAll("line").data(Object.keys(this.props.overallAccuracies)).enter().append("line")
+          .attr("x1", (margin.left - 70))
+          .attr("y1", d => y(this.props.overallAccuracies[d]))
           .attr("x2", (width - margin.right))
-          .attr("y2", y(this.props.overallAccuracies.top1))
-          .attr("stroke", "rgb(20, 94, 255)");
+          .attr("y2", d => y(this.props.overallAccuracies[d]))
+          .attr("stroke", d => topLineColors[d]);
 
         barGroup.append("g")
-          .append("line")
-          .attr("x1", (margin.left - 50))
-          .attr("y1", y(this.props.overallAccuracies.top5))
-          .attr("x2", (width - margin.right))
-          .attr("y2", y(this.props.overallAccuracies.top5))
-          .attr("stroke", "rgb(137, 160, 255)")
-          .append("text");
+          .selectAll("text").data(Object.keys(this.props.overallAccuracies)).enter().append("text")
+          .attr("x", (margin.left - 75))
+          .attr("y", d => y(this.props.overallAccuracies[d]))
+          .text(d => (this.props.overallAccuracies[d] * 100) + '%')
+          .attr("stroke", d => topLineColors[d]);
 
         let defs = svg.append("defs");
         
@@ -218,7 +227,8 @@ export default class GlobalPerformanceChart extends PureComponent {
           let zS = getZoomStages(d3.event.transform.k);
           if (zS !== currentZoomStage){
             currentZoomStage = zS;
-            data = _self.groupData(props, zoomIntervals[zS]);
+            combinedData = _self.groupData(props, zoomIntervals[zS]);
+            data = combinedData.data;
             x.domain(data.map(x => x['class']));
             drawBars();
           }

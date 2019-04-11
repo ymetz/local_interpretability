@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactModal from 'react-modal';
-import {Button, Glyphicon, ButtonToolbar, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
+import {Glyphicon} from 'react-bootstrap';
 import Gallery from 'react-photo-gallery';
 import '../../public/css/ConceptPreviewModal.css';
 
 const ConceptPreviewModal = (props) => {
     const node = props.previewData.node;
+    if (node.scoreSum === undefined)
+        node.scoreSum = { sum: '-'}
     const event = props.previewData.event;
     const example_images = props.previewData.example_images;
     return (
