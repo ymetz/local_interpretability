@@ -87,6 +87,16 @@
     overflow-y: scroll;
 }
 
+.class_performance_header {
+    margin: auto;
+    text-align: center;
+}
+
+.class_performance_content {
+    margin: auto;
+    text-align: center;
+}
+
 .overlay_footer {
     position: fixed;
     left: 40px;

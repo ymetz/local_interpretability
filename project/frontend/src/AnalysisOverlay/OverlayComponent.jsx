@@ -127,7 +127,7 @@ export default class OverlayComponent extends Component {
                             {(this.state.method === 'tcav') ? <DetailConceptTree conceptData={this.props.appState.tcav_scores[this.state.current_image_label[0]]}
                                                                                  changeTcavLayers={this.changeTcavLayers.bind(this)}/>
                                                             : <ClassPerformance classPerformance={this.props.appState.classifier_performance} 
-                                                                                currentLabel={this.state.current_image_label[0]}/>}
+                                                                                currentLabel={this.state.current_image_label}/>}
                     </div>
                     <InfoFooter method={this.state.method}/>
                 </div>

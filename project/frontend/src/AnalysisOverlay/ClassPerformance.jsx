@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
+import '../../public/css/Overlay.css';
 
 /**
  * Two charts visualizing the classifier performance for the current class as well as a comparison of the
@@ -33,10 +34,21 @@ export default class ClassPerformance extends Component {
     }
 
     render() {
+        const currentClassData = this.props.classPerformance.class_performances.find(d => d.class === this.props.currentLabel[0]);
         return (
           <div>
-            <div>Class Performance</div>
+            <div styleName="class_performance_header" >
+              <h2>Class Performance</h2>
+              <p>for class: <b>{this.props.currentLabel[1]}</b></p>
+            </div>
             <div className="performance_viz"/>
+            <div styleName="class_performance_content">
+              <p>Nr. of elements in class: <b>{currentClassData.n}</b></p>
+              <p>Correctly classified: <b>{currentClassData.top_predicted}</b></p>
+              <p>Correct result in top 5: <b>{currentClassData.top5_predicted}</b></p>
+              <p>Misclassified: <b>{currentClassData.n - currentClassData.top_predicted 
+                - currentClassData.top5_predicted}</b></p>
+            </div>
           </div>
         )
       }
@@ -44,21 +56,21 @@ export default class ClassPerformance extends Component {
     draw = (props) => {
 
         const data = props.classPerformance;
-        const classLabel = props.currentLabel;
+        const classLabel = props.currentLabel[0];
         const currentClassData = props.classPerformance.class_performances.find(d => d.class === classLabel);
 
         const pieData = [{name: 'top predicted', value: currentClassData.top_predicted}, 
                          {name: 'top5 predicted', value: currentClassData.top5_predicted}, 
                          {name: 'falsely predicted', value: currentClassData.n - currentClassData.top_predicted - currentClassData.top5_predicted}];
 
-        const width = 450, height = 450;
-        const margin = ({top: 10, right: 0, between: 20, bottom: 10, left: 10})
+        const width = 465, height = 280;
+        const margin = ({top: 10, right: 0, between: 20, bottom: 30, left: 10})
         const svg = d3.select('.performance_viz').append('svg')
         .attr('height', height)
         .attr('width', width);
 
         // Set up constructors for making donut. See https://github.com/d3/d3-shape/blob/master/README.md
-        const radius = Math.min(width, height) / 4;
+        const radius = Math.min(width, height - margin.top - margin.bottom) / 2;
         const donutWidth = 50;
         const color = (name) => {
           switch(name) {
