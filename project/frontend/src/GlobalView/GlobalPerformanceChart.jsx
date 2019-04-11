@@ -23,15 +23,27 @@ export default class GlobalPerformanceChart extends PureComponent {
   
     }
 
+    groupSortingFunction(a,b) {
+      if ((a.top_predicted + a.top5_predicted) !== a.n || (b.top_predicted + b.top5_predicted) !== b.n)
+        return (a.top_predicted + a.top5_predicted)/a.n - (b.top_predicted + b.top5_predicted)/b.n
+      else
+        return a.top_predicted /a.n - b.top_predicted / b.n
+    }
+
+    /**
+     * 
+     * @param {Array} data 
+     * @param {Number} n 
+     */
     groupData(data, n) {
         let groupedData = []
-        const sortedClasses = data.sort(function(a,b){ return ((a.top_predicted + a.top5_predicted)/a.n-(b.top_predicted + b.top5_predicted)/b.n)});
+        const sortedClasses = data.sort((a,b) => this.groupSortingFunction(a,b));
         for (let i = 0; i < sortedClasses.length; i += n){
             groupedData.push(
               sortedClasses.slice(i, i+n).reduce( function(prev, curr){ return {top_predicted: (prev.top_predicted + curr.top_predicted), 
                                                                     top5_predicted: (prev.top5_predicted + curr.top5_predicted),
                                                                     n: (prev.n + curr.n),
-                                                                    class: i}})
+                                                                    class: (i/sortedClasses.length * 100).toFixed(0) + '%'}})
             );
         }
         return groupedData;
@@ -49,8 +61,22 @@ export default class GlobalPerformanceChart extends PureComponent {
       )
     }
 
+
     draw = (props) => {
+
         let _self = this;
+
+        const zoomIntervals = [20, 10, 5];
+        let currentZoomStage = 0;
+
+        const getZoomStages = (k) => {
+          if (k < 6)
+            return 0;
+          if (k >= 6 && k < 10)
+            return 1;
+          if (k >= 10)
+            return 2;
+        }
 
         let data = this.groupData(props, 20);
 
@@ -66,7 +92,10 @@ export default class GlobalPerformanceChart extends PureComponent {
 
         this.tooltip = d3Tip()
                     .attr('class', 'd3-tip')
-                    .html(function(d) { console.log("bla"); return "<b>Concept: </b>" + d.class + "<br>" + "<b>#Entries: </b>" + d.n; });
+                    .html(function(d) { return "<div style='margin-left: 5px;'>" + "<b>top </b>" + d.class + "<br>" 
+                                               + "<b>#Entries: </b>" + d.n + "<br>"
+                                               + "<b>misclassified: </b>" + (d.n - d.top_predicted - d.top5_predicted ) 
+                                               + "</div>"; });
 
         svg.append("g")
             .call(this.tooltip);
@@ -93,15 +122,19 @@ export default class GlobalPerformanceChart extends PureComponent {
         const extent = [[0, margin.top], [(width - margin.right), height - margin.top]];
 
         const zoom = d3.zoom()
-            .scaleExtent([1, 8])
+            .scaleExtent([1, 12])
             .translateExtent(extent)
             //.extent(extent)
             .on("zoom", zoomed);
 
-        let drawBars = () => {
-          svg.selectAll('*').remove();
+        svg.call(zoom);
 
-          svg.append("g")
+        const barGroup = svg.append("g");
+
+        let drawBars = () => {
+          barGroup.selectAll('*').remove();
+
+          barGroup.append("g")
               .attr("fill", "rgb(0,255,0)")
               .attr("clip-path", "url(#clip)")
               .style("clip-path", "url(#clip)")
@@ -114,7 +147,7 @@ export default class GlobalPerformanceChart extends PureComponent {
               .on('mouseover', this.tooltip.show)
               .on('mouseout', this.tooltip.hide);
 
-          svg.append("g")
+          barGroup.append("g")
               .attr("fill", "rgb(209, 244, 66)")
               .attr("clip-path", "url(#clip)")
               .style("clip-path", "url(#clip)")
@@ -127,7 +160,7 @@ export default class GlobalPerformanceChart extends PureComponent {
               .on('mouseover', this.tooltip.show)
               .on('mouseout', this.tooltip.hide);
 
-          svg.append("g")
+          barGroup.append("g")
               .attr("fill", "rgba(255, 0, 0, 0.5)")
               .attr("clip-path", "url(#clip)")
               .style("clip-path", "url(#clip)")
@@ -151,15 +184,24 @@ export default class GlobalPerformanceChart extends PureComponent {
               .attr("class", "y-axis")
               .call(yAxis);
 
-          svg.append("rect")
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .attr("width", width)
-          .attr("height", height)
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-          .call(zoom);
+        barGroup.append("g")
+          .append("line")
+          .attr("x1", (margin.left - 50))
+          .attr("y1", y(this.props.overallAccuracies.top1))
+          .attr("x2", (width - margin.right))
+          .attr("y2", y(this.props.overallAccuracies.top1))
+          .attr("stroke", "rgb(20, 94, 255)");
 
-        let defs = svg.append("defs")
+        barGroup.append("g")
+          .append("line")
+          .attr("x1", (margin.left - 50))
+          .attr("y1", y(this.props.overallAccuracies.top5))
+          .attr("x2", (width - margin.right))
+          .attr("y2", y(this.props.overallAccuracies.top5))
+          .attr("stroke", "rgb(137, 160, 255)")
+          .append("text");
+
+        let defs = svg.append("defs");
         
         //Add the clip path for the main bar chart
         defs.append("clipPath")
@@ -173,8 +215,10 @@ export default class GlobalPerformanceChart extends PureComponent {
         drawBars();
 
         function zoomed() {
-          if (d3.event.transform.k > 4.0){
-            data = _self.groupData(props, 10);
+          let zS = getZoomStages(d3.event.transform.k);
+          if (zS !== currentZoomStage){
+            currentZoomStage = zS;
+            data = _self.groupData(props, zoomIntervals[zS]);
             x.domain(data.map(x => x['class']));
             drawBars();
           }

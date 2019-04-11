@@ -14,7 +14,7 @@ ReactModal.setAppElement('#content');
 /**
  * Overlay Compoment that is displayed to analyse a single image.
  */
-export default class overlayComponent extends Component {
+export default class OverlayComponent extends Component {
     constructor(props) {
         super(props);
     
@@ -94,6 +94,7 @@ export default class overlayComponent extends Component {
                                     explanationClass={this.state.current_image_class}
                                     onClick={this.setNewImage.bind(this)}
                                     columns={2}
+                                    mainDisplay={true}
                                     showHeader={false}/>
                             </div> : 
                             <img styleName='image_display' src={this.state.show_explanation_image ? 
@@ -118,6 +119,7 @@ export default class overlayComponent extends Component {
                                                                                     explanationClass={this.state.current_image_class}
                                                                                     onClick={this.setNewImage.bind(this)}
                                                                                     columns={4}
+                                                                                    mainDisplay={false}
                                                                                     showHeader={true}/>}
                         </div>
                     </div>

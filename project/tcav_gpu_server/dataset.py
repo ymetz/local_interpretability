@@ -1,13 +1,9 @@
 import os
 import json
-from abc import ABC
 
 
-'''
-    dataset.py
-    base class for datasets: a dataset always consists of a dataset and an assosiated dataset
-'''
-class DatasetPrototype(ABC):
+# base class for datasets: a dataset always consists of a dataset and an assosiated dataset
+class DatasetPrototype(object):
 
     def __init__(self, dataset_id, dataset_path, dataset_name, file_list, num_elements):
         self.dataset_id = dataset_id
@@ -25,6 +21,7 @@ class ImageDataset(DatasetPrototype):
         self.label_path = os.path.join(self.dataset_path, 'labels.json')
         self.id_to_label_path = os.path.join(self.dataset_path, 'id_to_label.json')
         self.dataset_type = 'image'
+        self.top_predictions = None
 
         with open(self.label_path) as lf:
             self.labels = json.load(lf)
@@ -63,7 +60,7 @@ def encode_dataset(ds):
         return ds_dict
     else:
         type_name = ds.__class__.__name__
-        raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
+        raise TypeError("Object of type '{type_name}' is not JSON serializable")
 
 
 def jsonKeys2int(x):

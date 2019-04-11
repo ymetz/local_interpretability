@@ -25,7 +25,7 @@ concepts = ["glossy surface", "matt surface", "uneven texture", "wrinkled object
 # random_concepts = ["random"]
 
 
-# random_directories = ["random500_0", "random500_1", "random500_2", "random500_3", "random500_4"]
+random_directories = ["random500_0", "random500_1", "random500_2", "random500_3", "random500_4"]
 
 def crawl_and_process_concepts():
     # crawl images for concepts and target class

@@ -16,10 +16,6 @@ limitations under the License.
 
 """ Activation generator helper classes for TCAV"""
 
-'''
-    The following class was modified to enable numeric class labels
-'''
-
 from abc import ABCMeta
 from abc import abstractmethod
 from multiprocessing import dummy as multiprocessing
@@ -38,17 +34,19 @@ class ActivationGeneratorInterface(object):
         pass
 
     @abstractmethod
-    def get_model(self):
+    def get_model():
         pass
 
 
 class ActivationGeneratorBase(ActivationGeneratorInterface):
     """Basic abstract activation generator for a model"""
 
-    def __init__(self, model, acts_dir, max_examples=500):
+    def __init__(self, model, acts_dir, max_examples=500, target_dir=None, label_to_element_dict=None):
         self.model = model
         self.acts_dir = acts_dir
         self.max_examples = max_examples
+        self.target_dir = target_dir
+        self.label_to_element_dict = label_to_element_dict
 
     def get_model(self):
         return self.model
@@ -60,12 +58,20 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
     def get_activations_for_concept(self, concept, bottleneck):
         examples = self.get_examples_for_concept(concept)
         return self.get_activations_for_examples(examples, bottleneck)
+    
+    def get_activations_for_target_class(self, target, bottleneck):
+        if self.label_to_element_dict == None:
+            print("Provide a Label to Elements Dictionary, e.g. dataset.label_to_elements")
+            return
+        files_for_target_class = self.label_to_element_dict[target]
+        examples = self.get_examples_for_target_class_by_label(files_for_target_class)
+        return self.get_activations_for_examples(examples, bottleneck)
 
     def get_activations_for_examples(self, examples, bottleneck):
         acts = self.model.run_examples(examples, bottleneck)
         return self.model.reshape_activations(acts).squeeze()
 
-    def process_and_load_activations(self, bottleneck_names, concepts):
+    def process_and_load_activations(self, bottleneck_names, concepts, target=None):
         acts = {}
         if self.acts_dir and not tf.gfile.Exists(self.acts_dir):
             tf.gfile.MakeDirs(self.acts_dir)
@@ -82,8 +88,12 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
                         tf.logging.info('Loaded {} shape {}'.format(
                             acts_path, acts[concept][bottleneck_name].shape))
                 else:
-                    acts[concept][bottleneck_name] = self.get_activations_for_concept(
-                        concept, bottleneck_name)
+                    if target != None and concept == str(target):
+                        acts[concept][bottleneck_name] = self.get_activations_for_target_class(
+                            target, bottleneck_name)  
+                    else:
+                        acts[concept][bottleneck_name] = self.get_activations_for_concept(
+                            concept, bottleneck_name)                      
                     if acts_path:
                         tf.logging.info('{} does not exist, Making one...'.format(
                             acts_path))
@@ -95,19 +105,30 @@ class ActivationGeneratorBase(ActivationGeneratorInterface):
 class ImageActivationGenerator(ActivationGeneratorBase):
     """Activation generator for a basic image model"""
 
-    def __init__(self, model, source_dir, acts_dir, max_examples=10):
+    def __init__(self, model, source_dir, acts_dir, max_examples=10, target_dir=None, label_to_element_dict=None):
         self.source_dir = source_dir
         super(ImageActivationGenerator, self).__init__(
-            model, acts_dir, max_examples)
+            model, acts_dir, max_examples, target_dir, label_to_element_dict)
 
     def get_examples_for_concept(self, concept):
+        print("get examples for concept:", concept)
         concept_dir = os.path.join(self.source_dir, concept)
-        print(concept_dir, concept)
         img_paths = [os.path.join(concept_dir, d)
                      for d in tf.gfile.ListDirectory(concept_dir)]
         imgs = self.load_images_from_files(img_paths, self.max_examples,
                                            shape=self.model.get_image_shape()[:2])
         return imgs
+    
+    def get_examples_for_target_class_by_label(self, files_for_target_class):
+        if self.target_dir == None:
+            print("Specifiy the target directory at the ActivationGenerator initialization")
+            return []
+        img_paths = [os.path.join(self.target_dir,d) for d in files_for_target_class]
+        imgs = self.load_images_from_files(img_paths, self.max_examples,
+                                           shape=self.model.get_image_shape()[:2])
+        return imgs
+        
+        
 
     def load_image_from_file(self, filename, shape):
         """Given a filename, try to open the file. If failed, return None.

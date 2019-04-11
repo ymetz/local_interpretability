@@ -48,12 +48,12 @@
     object-fit: contain;
 }
 
-.gallery_display {
+.main_related_image_container {
     display: block;
-    margin:auto;
-    overflow-y: scroll;
+    margin:auto; 
     width: 400px;
-    height: 400px;   
+    height: 380px;
+    overflow-y: scroll;
 }
 
 .overlay_content {

@@ -6,6 +6,13 @@ import pickle
 
 
 def create_lime_explanations(dataset, model, top_preds):
+    '''
+
+    :param dataset:
+    :param model:
+    :param top_preds:
+    :return:
+    '''
     file_list = []
     for file in dataset.file_list[:25]:
         file_list.append(file['src'].split('/')[-1])

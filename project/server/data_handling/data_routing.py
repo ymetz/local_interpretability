@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request, send_from_directory
 from data_handling.dataservice import *
 from data_handling.dataset import encode_dataset
-import tensorflow as tf
 from model_handling.classifier import create_top_5_predictions, check_classifier_performance
 from explanations.tcav_explainer import load_tcavs
 from explanations.lrp_explainer import initialize_lrp_model, create_lrp_explanation
@@ -171,6 +170,10 @@ def get_classifier_performance():
 
 @get_data.route("/get_related_images")
 def get_related_images():
+    '''
+
+    :return:
+    '''
     image = request.args.get('image', default="", type=str)
     label = active_dataset.labels[image][0]
     out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
@@ -181,6 +184,10 @@ def get_related_images():
 
 @get_data.route("/get_all_class_images")
 def get_all_class_images():
+    '''
+
+    :return:
+    '''
     img_class = request.args.get('class', default=0, type=int)
     out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
                        "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
@@ -189,6 +196,10 @@ def get_all_class_images():
 
 @get_data.route("get_tcav_concept_examples")
 def get_tcav_concept_examples():
+    '''
+
+    :return:
+    '''
     concept = request.args.get('concept', default="", type=str)
     out_image_list = [{"src": "/get_data/tcav_concepts/" + file["src"], "width": file["width"],
                        "height": file["height"]} for file in tcav_concept_examples[concept]]
@@ -196,6 +207,10 @@ def get_tcav_concept_examples():
 
 
 def init_data():
+    '''
+
+    :return: void
+    '''
     global datasets
     global models
     global active_dataset

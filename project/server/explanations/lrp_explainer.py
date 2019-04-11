@@ -7,9 +7,15 @@ import os
 from model_handling.tensorflow_models import InceptionModel
 import numpy as np
 
+'''
+    lrp_explainer.py
+'''
 
 def initialize_lrp_model():
+    '''
 
+    :return:
+    '''
     lrp_session = tf.Session()
     with DeepExplain(session=lrp_session, graph=lrp_session.graph) as de:
             the_model = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, mode='lrp')
@@ -18,7 +24,15 @@ def initialize_lrp_model():
 
 
 def create_lrp_explanation(dataset, filenames, lrp_session, the_model, top_preds):
+    '''
 
+    :param dataset:
+    :param filenames:
+    :param lrp_session:
+    :param the_model:
+    :param top_preds:
+    :return:
+    '''
     explanation_directory = os.path.join(dataset.dataset_path, 'current_explanations')
     if not os.path.isdir(explanation_directory):
         os.makedirs(explanation_directory)
