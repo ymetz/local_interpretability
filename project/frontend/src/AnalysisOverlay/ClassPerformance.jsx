@@ -34,7 +34,10 @@ export default class ClassPerformance extends Component {
 
     render() {
         return (
-          <div className="performance_viz"/>
+          <div>
+            <div>Class Performance</div>
+            <div className="performance_viz"/>
+          </div>
         )
       }
 

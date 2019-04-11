@@ -87,7 +87,7 @@ export default class OverlayComponent extends Component {
                                 </ButtonToolbar>
                             </div>
                             {(this.state.method === 'tcav') ?
-                            <div styleName="gallery_display">
+                            <div>
                                 <RelatedImageBrowser key={this.state.current_image_name}
                                     imageName={this.state.current_image_name} 
                                     imageLabel={this.state.current_image_label} 

@@ -1,6 +1,5 @@
 import React from "react";
 import {config} from "../app_config";
-import '../../public/css/ImageComponent.css';
 
 const Checkmark = ({ selected }) => (
   <div

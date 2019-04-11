@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../public/css/InfoFooter.css';
+import '../../public/css/Overlay.css';
 
 /**
  * Info Footer component, displaying information about the used local explainabilty method.

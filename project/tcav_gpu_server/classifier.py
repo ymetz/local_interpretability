@@ -3,7 +3,6 @@ import os
 
 
 def create_top_5_predictions(dataset, model):
-
     file_list = []
     for file in dataset.file_list:
         file_list.append(file['src'].split('/')[-1])

@@ -5,3 +5,27 @@
 .action_btn {
     margin-left: 10px;
 }
+
+.second_navbar {
+    margin-top: 50px;
+    height: 20px;
+    fill-opacity: 5%;
+}
+
+.filtering_label {
+    font-weight: bold;
+    color: #808080;
+}
+
+.action_btn {
+    margin-left: 10px;
+}
+
+.class_select {
+    margin-top: -2px;
+    width: 300px;
+}
+
+.range_slider {
+    width: 250;
+}

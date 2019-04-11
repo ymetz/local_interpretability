@@ -86,3 +86,10 @@
     height: 280px;
     overflow-y: scroll;
 }
+
+.overlay_footer {
+    position: fixed;
+    left: 40px;
+    bottom: 0;
+    width: 100%;
+ }

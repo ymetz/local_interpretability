@@ -4,7 +4,7 @@ import Select from 'react-select';
 import Slider from 'rc-slider';
 import Tooltip from 'rc-tooltip';
 import {config} from '../app_config';
-import style from '../../public/css/FilteringOptions.css';
+import style from '../../public/css/Navbar.css';
 
 const getClasses = (labels) => {
     let classes = [];
