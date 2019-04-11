@@ -5,7 +5,7 @@ import {config} from '../app_config';
 import '../../public/css/Navbar.css';  
 
 
-const TopNavbar = (props) => {
+const Infobar = (props) => {
     return (
         <Navbar fixedTop inverse styleName='top_navbar'>
             <Navbar.Header>
@@ -33,11 +33,4 @@ const TopNavbar = (props) => {
 
 
 
-export default TopNavbar;
-
-/*
-                <Navbar.Form pullRight>
-                    <Button styleName='action_btn' bsStyle="default" onClick={props.onSettingButtonClick}>
-                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-                    </Button>
-                </Navbar.Form>*/
+export default Infobar;

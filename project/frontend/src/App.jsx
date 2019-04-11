@@ -1,6 +1,6 @@
 // App.jsx
 import React, { Component } from "react";
-import Navbar from './Navigation_and_Search/Navbar';
+import Infobar from './Navigation_and_Search/Infobar';
 import FilteringOptions from './Navigation_and_Search/FilteringOptions';
 import Gallery from './ImageGallery/ImageGallery';
 import {Button} from 'react-bootstrap';
@@ -28,12 +28,17 @@ export default class App extends Component {
      * - A list of all available images
      * - A list of images that we actually want to display (e.g. because some are filtered out)
      * - Image Display Options defines the filtering options for said images
+     * - expand_button_disabled saves whether more images than the alredy displayed are available
      * - labels is a list of the correct class for each individual image in the dataset
      * - show_overlay defines whether we want to show the overlay for detail analysis
      * - top_classes contains the five classes with the 
      *   highest prediction probability by the classifier for each image
      * - id_to_label is used to translate the numeric class id to a human readable name
-     * - app_settings contains settings that may be used across components in the app
+     * - classifier performance is an array containing the number of correct/incorrect predictions for
+     *   each individual class
+     * - tcav_scores is an object with the tcav concept scores for available classes
+     * - show_data_browser determines whether to show the data browser/image gallery or the global view
+     * - show_overlay determines if we show the analyis overlay
      */
     this.state = {
       dataset: {},
@@ -51,9 +56,8 @@ export default class App extends Component {
       classifier_performance: [],
       id_to_label: [],
       tcav_scores: {},
-      show_gallery: true,
-      show_overlay : false,
-      tcav_concept_hierarchy: {}
+      show_data_browser: true,
+      show_overlay : false
     }
   }
 
@@ -144,7 +148,9 @@ export default class App extends Component {
   }
 
   /**
-   *  Update the list of display images. Get's called when relevant properties change. */
+   * Update the list of display images according to settings like search, score internval... 
+   * Get's called when relevant properties change. Leads to a rerender of the image gallery.
+   * */
   updateImageList() {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     const selectedClasses = image_display_options.display_image_classes;
@@ -190,7 +196,10 @@ export default class App extends Component {
 
   }
 
-  expandDisplayedImages(event,obj) {
+  /**
+   * Is triggered when the 'show more' button is pressed. Increase the number of displayed images.
+   */
+  expandDisplayedImages() {
     //creating copy of object
     let image_display_options = Object.assign({}, this.state.image_display_options);
     let images_on_display = this.state.images_on_display;
@@ -200,46 +209,69 @@ export default class App extends Component {
 
   }
 
-  updateDisplayImagesByClass(event, obj) {
+  /**
+   * Is callec e.g. on class search submit, to apply filtering by classes. Multiple classes are handed over
+   * as an array.
+   * @param {Array} data
+   */
+  updateDisplayImagesByClass(data) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
-    image_display_options.display_image_classes = event.map(x => Number(x.value));
+    image_display_options.display_image_classes = data.map(x => Number(x.value));
     this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
   }
 
+  /**
+   * Is called when the prediction confidence score slider is changed. Limits range of images by
+   * prediction score.
+   * @param {Array} interval 
+   */
   changeInterval(interval) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.prediction_interval = interval;
     this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
   }
 
+  /**
+   * Is called to switch between global view and data browser view.
+   */
   toggleViewMode() {
-    let showGallery = !this.state.show_gallery;
+    let showGallery = !this.state.show_data_browser;
     if (showGallery === true){
       let image_display_options = Object.assign({}, this.state.image_display_options);
       image_display_options.display_image_classes = []
-      this.setState({show_gallery: showGallery, 
+      this.setState({show_data_browser: showGallery, 
                      image_display_options : image_display_options}, () => this.updateImageList());
     } else {
-      this.setState({show_gallery: showGallery});
+      this.setState({show_data_browser: showGallery});
     }
   }
 
+  /**
+   * Is e.g. called when clicking a bar in the global performance chart to change into data browser view and
+   * limit the displayed images to the given group of classes
+   * @param {Array} data 
+   */
   renderFilteredGallery(data) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.display_image_classes = data;
-    this.setState( {show_gallery: true, image_display_options: image_display_options}, () => this.updateImageList());
+    this.setState( {show_data_browser: true, image_display_options: image_display_options}, () => this.updateImageList());
   }
 
   /**
    * Main rendering method that each React Component has to provide.
    * Defines what actually is displayed on the web page.
    * In this case many other component like the Navbar are called, and only the info text is rendered in this
-   * component.
+   * component. We call:
+   * - the Infobar (topmost bar) contains information about the dataset
+   * - Filtering Options is the second navbar that contains relevant filtering optins and buttons for further navigigation
+   * - Gallery is the actual image gallery in the data browser view
+   * - GlobalView is the second page that contains the global performance chart & tcav concept tree
+   * - OverlayComponent is the analysis overlay that can be selected for single images
    */
   render () {
     return(
       <div>
-        <Navbar 
+        <Infobar 
           dataset_name={this.state.dataset.dataset_name} 
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
@@ -252,10 +284,10 @@ export default class App extends Component {
           labels={this.state.id_to_label}
           imgCount={this.state.images_count}
           onViewModeChange={this.toggleViewMode.bind(this)}
-          showGallery={this.state.show_gallery}
+          showGallery={this.state.show_data_browser}
         />
         <div styleName="content_main">
-          { (this.state.show_gallery) ? 
+          { (this.state.show_data_browser) ? 
           <div>
             <Gallery 
               images={this.state.images_on_display} 

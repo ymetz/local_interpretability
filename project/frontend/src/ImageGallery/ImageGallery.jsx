@@ -2,7 +2,10 @@ import React, { Component, PureComponent } from "react";
 import Gallery from 'react-photo-gallery';
 import SelectedImage from './ImageComponent';
 
-
+/**
+ * This component encapsualtes the photo-gallery library call.
+ * Forwards data to the photo gallery and process classifier scores for image components.
+ */
 export default class imageGallery extends Component {
 
     /**
@@ -23,6 +26,14 @@ export default class imageGallery extends Component {
         return false;
     }
 
+    /**
+     * For the image list, we compute the classifier result for all displayed images. The classifeir
+     * result is then used in the custom image component to show the classification indicator 
+     * (correct/incorrect prediction).
+     * @param {*} image_list 
+     * @param {*} classifier_results 
+     * @param {*} labels 
+     */
     getClassifierScoresForComponent(image_list, classifier_results, labels) {
         if (image_list === undefined || classifier_results === undefined || labels === undefined)
             return [];

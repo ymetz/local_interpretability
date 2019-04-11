@@ -17,6 +17,13 @@ const getClasses = (labels) => {
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
+/**
+ * Provides a filtering options for the data browser. Namely
+ * - Select : Filtering by specific class affiliation
+ * - Range: Filtering by classifier score confidence
+ * The Second navbar also has buttons for the toggle of the analysis overlay and the global view/data browser
+ * @param {*} props 
+ */
 const Second_Navbar = (props) => {
     const class_list = getClasses(props.labels);
 

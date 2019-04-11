@@ -2,6 +2,12 @@ import React, {Component} from 'react';
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
 
+
+/**
+ * Contains code to create and render the scrolable bar chart containing tcav concept scores.
+ * D3 code is not natively integrated in the native react udpate mechanisms, so meassures have
+ * to be taken to stop unnecessary updates and re-renders.
+ */
 export default class TcavChart extends Component {
 
     tooltip = null;
@@ -37,28 +43,36 @@ export default class TcavChart extends Component {
             this.random_tooltip.destroy(); 
     }
 
+    /**
+     * Averages the concept scores over data from different network layers.
+     * @param {Array} conceptData 
+     */
     combineLayerScores(conceptData) {
       let outData = [];
       let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
       uniqueConcepts.forEach(concept => {
         let singleConceptScores = conceptData.filter(x => x.concept === concept);
-        outData.push({ concept: concept, score: singleConceptScores.map(x => x.score).reduce(function(a, b) { return a + b; }) / singleConceptScores.length, random_score: singleConceptScores[0].random_score });
+        outData.push({ concept: concept, score: singleConceptScores.map(x => x.score)
+                      .reduce(function(a, b) { return a + b; }) / singleConceptScores.length
+                      , random_score: singleConceptScores[0].random_score });
       });
       return outData;
     }
-  
+
     render() {
       return (
         <div className="viz"/>
       )
     }
 
+    /**
+     * draw contains plain d3 code (in contranst to react specific code outside) and is called with the respective
+     * data when mounted/updated. Draws the bar chart for the concept scores.
+     */
     draw = (props) => {
 
       const data = props.sort(function(a,b){return b.score - a.score});
 
-        //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const width = 950, height = 280;
         const margin = {top: 10, right: 0, bottom: 40, left: 80};
         const innerWidth = width - margin.left - margin.right, innerHeight = height - margin.top - margin.bottom;

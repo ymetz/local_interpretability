@@ -15,12 +15,12 @@ const ConceptPreviewModal = (props) => {
             isOpen={true}
             contentLabel="onRequestClose ConceptPreview"
             style={{overlay:{zIndex:1050, 
-                             top:event.screenY - 200, 
-                             left:event.screenX - 500, 
+                             top:event.screenY - 300, 
+                             left:event.screenX -600, 
                              bottom: 0, 
                              right: 20, 
                              width: 600, 
-                             height: 350, 
+                             height: 500, 
                              backgroundColor: 'rgba(255, 255, 255, 0.5)'}}}
         >
             <div styleName="top_div">

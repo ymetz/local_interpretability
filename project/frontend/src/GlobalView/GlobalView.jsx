@@ -6,7 +6,6 @@ import GlobalPerformanceChart from './GlobalPerformanceChart';
 import ConceptPreviewModal from '../AnalysisOverlay/ConceptPreviewModal';
 import '../../public/css/GlobalView.css';
 import axios from 'axios';
-import {Button} from 'react-bootstrap';
 import {config} from '../app_config';
 
 /**
@@ -53,21 +52,23 @@ export default class GlobalView extends Component {
       return(
           <div styleName="global_content">
               <h3>Classifier Performance</h3>
-                <p><b>Global Classifier Performance</b>
+                <p style={{color: 'rgba(100,100,100,1.0)'}}>The chart shows the performance for groups of classes. According to the zoom level, 
+                  one bar representes a different number of classes. By clicking on bar, you can inspect the contained images.</p>
+                <p><b>Global Classifier Performance </b>
                   | <b>Top-1-Acurracy:</b> {top1_accuarcy * 100}% 
                   | <b>Top-5-Acurracy:</b> {top5_accuarcy * 100}% </p>
-                <div style={{marginTop: '50px'}}>
                 <GlobalPerformanceChart classifierPerformance={this.props.classifierPerformance.class_performances}
                                         overallAccuracies = {{top1: top1_accuarcy, top5: top5_accuarcy}}
                                         clickHandler={this.props.performanceChartClick}></GlobalPerformanceChart>
-                </div>
               <h3>TCAV</h3>
+              <p style={{color: 'rgba(100,100,100,1.0)'}}>The tree shows the concepts that are available for TCAV testing. By clicking
+              on a leaf node, you can inspect some exemplary images for each concept.</p>
               <div id="treeWrapper" style={{width: '1600px', height:'750px'}}>
                 <Tree 
                   data={treeData}
                   zoom={4} 
                   translate={{x: 50, y: 375}}
-                  initialDepth={4} 
+                  initialDepth={5} 
                   nodeSize={{x: 200, y: 40}}
                   transitionDuration={250}
                   onClick={this.onConceptTreeNodeClick.bind(this)}/>

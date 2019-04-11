@@ -8,6 +8,11 @@ import '../../public/css/Overlay.css';
 import clone from 'clone';
 import {interpolateOrRd} from 'd3';
 
+/**
+ * The detail concept tree is a visualization for the concept hierarchy and scores for a particual class.
+ * If no concept data is available, all nodes are colored uniformely. If data is available, nodes are
+ * colored according to TCAV score.
+ */
 export default class DetailConceptTree extends Component {
 
     constructor(props) {
@@ -26,7 +31,7 @@ export default class DetailConceptTree extends Component {
      * Traverse the default concept tree (treeData) and fill in scores from tht TCAV concept data,
      * propagate maximum values
      * @param {object} treeData Parsed from JSON-file or response. Contains the tree layout
-     * @param {*} conceptData Scores for concepts & random counterpart, used to fill the tree
+     * @param {object} conceptData Scores for concepts & random counterpart, used to fill the tree
      */
     getConceptTree(treeData, conceptData) {
             // Recursively call this function to  iterate through the concept tree and tcav values at available nodes

@@ -2,6 +2,10 @@ import React, {PureComponent} from 'react';
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
 
+/**
+ * Component to draw the zoomable global performance bar chart displaying the classifier performance
+ * for subgroups of classes distributed by the classification result quality.
+ */
 export default class GlobalPerformanceChart extends PureComponent {
 
     tooltip = null;
@@ -30,7 +34,8 @@ export default class GlobalPerformanceChart extends PureComponent {
     }
 
     /**
-     * 
+     * Group the raw single class performance data into group of size n each. The classes are sorted by
+     * the classifier performance. 
      * @param {Array} data 
      * @param {Number} n 
      */
@@ -66,9 +71,15 @@ export default class GlobalPerformanceChart extends PureComponent {
 
         let _self = this;
 
+        // For different zoom levels we change the granularity of the class grouping.
+        // zoomIntervals is the index for the array corresponding to the number of classes per bar.
         const zoomIntervals = [20, 10, 5];
         let currentZoomStage = 0;
 
+        /**
+         * Returns a zoom stage for a particular zoom level of the bar chart.
+         * @param {Number} k 
+         */
         const getZoomStages = (k) => {
           if (k < 6)
             return 0;
@@ -83,8 +94,6 @@ export default class GlobalPerformanceChart extends PureComponent {
         let combinedData = this.groupData(props, 20);
         let data = combinedData.data;
 
-        //const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        //const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const width = 1600, height = 600;
         const margin = {top: 10, right: 0, bottom: 40, left: 80};
         const innerWidth = width - margin.left - margin.right, innerHeight = height - margin.top - margin.bottom;
@@ -206,8 +215,8 @@ export default class GlobalPerformanceChart extends PureComponent {
         barGroup.append("g")
           .selectAll("text").data(Object.keys(this.props.overallAccuracies)).enter().append("text")
           .attr("x", (margin.left - 75))
-          .attr("y", d => y(this.props.overallAccuracies[d]))
-          .text(d => (this.props.overallAccuracies[d] * 100) + '%')
+          .attr("y", d => y(this.props.overallAccuracies[d])-2.0)
+          .text(d => (this.props.overallAccuracies[d] * 100).toFixed(2) + '%')
           .attr("stroke", d => topLineColors[d]);
 
         let defs = svg.append("defs");

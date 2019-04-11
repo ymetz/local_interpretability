@@ -4,6 +4,10 @@ import Gallery from 'react-photo-gallery';
 import axios from "axios";
 import '../../public/css/Overlay.css';
 
+/**
+ * Component displaying other images in the same ckass as the given image (props.imageName).
+ * Is used with different column numbers in bottom row of e.g. LIME/LRP and as class preview in TCAV tab.
+ */
 export default class RelatedImageBrowser extends PureComponent {
 
     constructor(props){

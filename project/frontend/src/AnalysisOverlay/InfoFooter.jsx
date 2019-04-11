@@ -1,6 +1,9 @@
 import React from 'react';
 import '../../public/css/InfoFooter.css';
 
+/**
+ * Info Footer component, displaying information about the used local explainabilty method.
+ */
 const infoFooter = (props) => {
 
     if (props.method === 'lime')
