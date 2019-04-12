@@ -3,11 +3,11 @@ import React, { Component } from "react";
 import Infobar from './Navigation_and_Search/Infobar';
 import FilteringOptions from './Navigation_and_Search/FilteringOptions';
 import Gallery from './ImageGallery/ImageGallery';
-import {Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import axios from "axios";
 import OverlayComponent from './AnalysisOverlay/OverlayComponent';
 import '../public/css/App.css';
-import {config} from './app_config'; 
+import { config } from './app_config';
 import GlobalView from "./GlobalView/GlobalView";
 import SelectedImage from "./ImageGallery/ImageComponent";
 
@@ -46,8 +46,8 @@ export default class App extends Component {
       images_on_display: [],
       images_count: 0,
       image_display_options: {
-        indices: [0,config.nr_of_displayed_images],
-        prediction_interval: [0,1],
+        indices: [0, config.nr_of_displayed_images],
+        prediction_interval: [0, 1],
         display_image_classes: []
       },
       expand_button_disabled: false,
@@ -57,7 +57,7 @@ export default class App extends Component {
       id_to_label: [],
       tcav_scores: {},
       show_data_browser: true,
-      show_overlay : false
+      show_overlay: false
     }
   }
 
@@ -69,47 +69,49 @@ export default class App extends Component {
     axios.get('/get_data/get_datasets')
       .then(res => {
         const dsets = res.data;
-        this.setState( {dataset: dsets[0]} );
+        this.setState({ dataset: dsets[0] });
       })
 
     axios.get('/get_data/get_image_list')
       .then(res => {
         const image_paths = res.data;
         const imgCount = image_paths.length
-        this.setState( {image_list: image_paths, 
-                        images_on_display: image_paths.slice(0,config.nr_of_displayed_images),
-                        images_count : imgCount});
+        this.setState({
+          image_list: image_paths,
+          images_on_display: image_paths.slice(0, config.nr_of_displayed_images),
+          images_count: imgCount
+        });
       })
 
     axios.get('/get_data/get_labels')
       .then(res => {
         const labels = res.data;
-        this.setState( {labels: labels} );
+        this.setState({ labels: labels });
       })
 
     axios.get('/get_data/get_top_classifications')
       .then(res => {
         const preds = res.data;
-        this.setState( {top_classes: preds} );
+        this.setState({ top_classes: preds });
       })
 
     axios.get('get_data/get_classifier_performance')
       .then(res => {
         const classifierPerformance = res.data;
-        this.setState( {classifier_performance: classifierPerformance} );
+        this.setState({ classifier_performance: classifierPerformance });
       })
 
     axios.get('/get_data/get_id_to_label')
       .then(res => {
         const id_to_label = res.data;
-        this.setState( {id_to_label: id_to_label} );
+        this.setState({ id_to_label: id_to_label });
       })
 
     axios.get('/get_data/get_tcav_scores')
-    .then(res => {
+      .then(res => {
         const scores = res.data;
-        this.setState( {tcav_scores: scores} );
-    })    
+        this.setState({ tcav_scores: scores });
+      })
   }
 
   /**
@@ -129,22 +131,22 @@ export default class App extends Component {
    * and reset the image selection.
    */
   toogleOverlay() {
-    if (this.state.show_overlay === true){
+    if (this.state.show_overlay === true) {
       let images_on_display = this.state.images_on_display;
-      images_on_display.map((elem) => {elem.selected = false; return elem;})
-      this.setState({ images_on_display: images_on_display });      
+      images_on_display.map((elem) => { elem.selected = false; return elem; })
+      this.setState({ images_on_display: images_on_display });
     }
     let showOverlay = !this.state.show_overlay;
-    this.setState({show_overlay: showOverlay});
+    this.setState({ show_overlay: showOverlay });
   }
 
   getImagePredictions() {
     let image_name = this.state.current_image_name;
-    axios.get('/get_data/get_prediction?name='+ image_name)
-    .then(res => {
-      const pred = res.data;
-      this.setState( {current_image_prediction: pred} );
-    })
+    axios.get('/get_data/get_prediction?name=' + image_name)
+      .then(res => {
+        const pred = res.data;
+        this.setState({ current_image_prediction: pred });
+      })
   }
 
   /**
@@ -167,32 +169,32 @@ export default class App extends Component {
     }
 
     // Secondly, only choose images inside prediction score interval
-    if (!(predictionInterval[0] === 0 && predictionInterval[1] === 1)){
+    if (!(predictionInterval[0] === 0 && predictionInterval[1] === 1)) {
       const topClasses = this.state.top_classes;
-      displayed_images = displayed_images.filter(function(x)
-                                                { const image_name = x.src.split("/").pop();
-                                                  const pred_score = topClasses[image_name].find(y => y.class === x.label);
-                                                  let score = 0.0;
-                                                  if (pred_score !== undefined){
-                                                    score = pred_score.score;
-                                                  }
-                                                  if (score >= predictionInterval[0] && score <= predictionInterval[1]) {
-                                                        return true;
-                                                      }
-                                                  return false;
-                                                })
+      displayed_images = displayed_images.filter(function (x) {
+        const image_name = x.src.split("/").pop();
+        const pred_score = topClasses[image_name].find(y => y.class === x.label);
+        let score = 0.0;
+        if (pred_score !== undefined) {
+          score = pred_score.score;
+        }
+        if (score >= predictionInterval[0] && score <= predictionInterval[1]) {
+          return true;
+        }
+        return false;
+      })
     }
 
     if (displayed_images.length > indices[1])
-      this.setState({expand_button_disabled: false})
+      this.setState({ expand_button_disabled: false })
     else
-      this.setState({expand_button_disabled: true})
+      this.setState({ expand_button_disabled: true })
 
     // At last, slice it to chosen number of images
     const imgCount = displayed_images.length;
-    displayed_images = displayed_images.slice(indices[0],indices[1])
+    displayed_images = displayed_images.slice(indices[0], indices[1])
 
-    this.setState({images_on_display: displayed_images, images_count: imgCount});
+    this.setState({ images_on_display: displayed_images, images_count: imgCount });
 
   }
 
@@ -200,12 +202,15 @@ export default class App extends Component {
    * Is triggered when the 'show more' button is pressed. Increase the number of displayed images.
    */
   expandDisplayedImages() {
+
+
+
     //creating copy of object
     let image_display_options = Object.assign({}, this.state.image_display_options);
     let images_on_display = this.state.images_on_display;
     //updating value
     image_display_options.indices[1] = image_display_options.indices[1] + config.show_more_expansion_size;
-    this.setState({image_display_options: image_display_options}, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
 
   }
 
@@ -217,7 +222,7 @@ export default class App extends Component {
   updateDisplayImagesByClass(data) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.display_image_classes = data.map(x => Number(x.value));
-    this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
   }
 
   /**
@@ -228,7 +233,7 @@ export default class App extends Component {
   changeInterval(interval) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.prediction_interval = interval;
-    this.setState( {image_display_options: image_display_options}, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
   }
 
   /**
@@ -236,13 +241,15 @@ export default class App extends Component {
    */
   toggleViewMode() {
     let showGallery = !this.state.show_data_browser;
-    if (showGallery === true){
+    if (showGallery === true) {
       let image_display_options = Object.assign({}, this.state.image_display_options);
       image_display_options.display_image_classes = []
-      this.setState({show_data_browser: showGallery, 
-                     image_display_options : image_display_options}, () => this.updateImageList());
+      this.setState({
+        show_data_browser: showGallery,
+        image_display_options: image_display_options
+      }, () => this.updateImageList());
     } else {
-      this.setState({show_data_browser: showGallery});
+      this.setState({ show_data_browser: showGallery });
     }
   }
 
@@ -254,7 +261,7 @@ export default class App extends Component {
   renderFilteredGallery(data) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.display_image_classes = data;
-    this.setState( {show_data_browser: true, image_display_options: image_display_options}, () => this.updateImageList());
+    this.setState({ show_data_browser: true, image_display_options: image_display_options }, () => this.updateImageList());
   }
 
   /**
@@ -268,16 +275,16 @@ export default class App extends Component {
    * - GlobalView is the second page that contains the global performance chart & tcav concept tree
    * - OverlayComponent is the analysis overlay that can be selected for single images
    */
-  render () {
-    return(
+  render() {
+    return (
       <div>
-        <Infobar 
-          dataset_name={this.state.dataset.dataset_name} 
+        <Infobar
+          dataset_name={this.state.dataset.dataset_name}
           num_elements={this.state.dataset.num_elements}
           dataset_path={this.state.dataset.dataset_path}
-        />        
-        <FilteringOptions 
-          onAnalysisButtonClick={this.toogleOverlay.bind(this)} 
+        />
+        <FilteringOptions
+          onAnalysisButtonClick={this.toogleOverlay.bind(this)}
           selectedList={this.state.images_on_display.filter(im => im.selected)}
           onSearchSubmit={this.updateDisplayImagesByClass.bind(this)}
           onIntervallChange={this.changeInterval.bind(this)}
@@ -287,27 +294,27 @@ export default class App extends Component {
           showGallery={this.state.show_data_browser}
         />
         <div styleName="content_main">
-          { (this.state.show_data_browser) ? 
-          <div>
-            <Gallery 
-              images={this.state.images_on_display} 
-              onClick={this.selectPhoto.bind(this)} 
-              topPredictions={this.state.top_classes} 
-              labels={this.state.labels}
-            />
-            <Button 
-              styleName='show_more_button' 
-              bsStyle="default"
-              disabled={this.state.expand_button_disabled} 
-              onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
-          </div> : <GlobalView 
-                    classifierPerformance={this.state.classifier_performance}
-                    performanceChartClick={this.renderFilteredGallery.bind(this)}/> }
+          {(this.state.show_data_browser) ?
+            <div>
+              <Gallery
+                images={this.state.images_on_display}
+                onClick={this.selectPhoto.bind(this)}
+                topPredictions={this.state.top_classes}
+                labels={this.state.labels}
+              />
+              <Button
+                styleName='show_more_button'
+                bsStyle="default"
+                disabled={this.state.expand_button_disabled}
+                onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
+            </div> : <GlobalView
+              classifierPerformance={this.state.classifier_performance}
+              performanceChartClick={this.renderFilteredGallery.bind(this)} />}
         </div>
-        {this.state.show_overlay ? <OverlayComponent 
-                                      selectedElements={this.state.images_on_display.filter(im => im.selected)} 
-                                      closeModal={this.toogleOverlay.bind(this)} 
-                                      appState={this.state}/> : null}
+        {this.state.show_overlay ? <OverlayComponent
+          selectedElements={this.state.images_on_display.filter(im => im.selected)}
+          closeModal={this.toogleOverlay.bind(this)}
+          appState={this.state} /> : null}
       </div>
     )
   }

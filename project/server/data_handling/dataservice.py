@@ -9,7 +9,8 @@ from operator import itemgetter
     dataservice.py
 '''
 
-#returns list of available datasets
+
+# returns list of available datasets
 def get_dataset_list(path):
     '''
 
@@ -27,7 +28,7 @@ def get_dataset_list(path):
                     nr_images = 0
                     for file in os.listdir(dataset_path):
                         if file.endswith(('.JPEG', '.jpg', '.png')):
-                            im = Image.open(dataset_path+"/"+file)
+                            im = Image.open(dataset_path + "/" + file)
                             nr_images += 1
                             width, height = im.size
                             file_list.append({"src": file, "width": width, "height": height})
@@ -40,7 +41,8 @@ def get_dataset_list(path):
                 elif subdir == "tcav_concepts":
                     print("found concept directory for tcav")
                 elif subdir == 'current_explanations':
-                    print("found existing directory for explanation images. Images in the directory may be owerwritten.")
+                    print(
+                        "found existing directory for explanation images. Images in the directory may be owerwritten.")
                 else:
                     print("{0} is not a valid dataset directory".format(subdir))
     except Exception as e:
@@ -48,7 +50,8 @@ def get_dataset_list(path):
     finally:
         return datasets
 
-#returns list of available models
+
+# returns list of available models
 def get_model_list(path):
     '''
 
@@ -69,15 +72,17 @@ def get_model_list(path):
                     if subdir.split('_')[1] == 'inception':
                         models.append(InceptionModel(model_id, model_path, subdir.split('_')[1]))
                 else:
-                    raise Exception('Invalid or unsupported model found: {0} Check the name of the folder.'.format(subdir))
+                    raise Exception(
+                        'Invalid or unsupported model found: {0} Check the name of the folder.'.format(subdir))
                 model_id = model_id + 1
     except Exception as e:
         print(e)
     finally:
         return models
 
-#returns dict of ten example images per concept
-def get_tcav_example_images(path):
+
+# returns dict of ten example images per concept
+def get_tcav_concept_example_images(path):
     '''
 
     :param path:
@@ -94,5 +99,3 @@ def get_tcav_example_images(path):
                     width, height = im.size
                     concepts[subdir].append({"src": os.path.join(subdir, file), "width": width, "height": height})
     return concepts
-
-

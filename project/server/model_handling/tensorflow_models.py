@@ -5,8 +5,9 @@ slim = tf.contrib.slim
 import os
 import sys
 
-#add model directory to import path
+# add model directory to import path
 from sys import platform
+
 if platform == "win32":
     sys.path.insert(0, "..\..\models")
 else:
@@ -25,7 +26,7 @@ class InceptionModel(ModelPrototype):
         self.logdir = os.path.join(self.model_path, 'logdir')
 
         self.graph = graph
-        if session == None:
+        if session is None:
             self.session = tf.Session(graph=self.graph)
         else:
             self.session = session
@@ -84,4 +85,3 @@ class InceptionModel(ModelPrototype):
                                                                         self.image_size,
                                                                         is_training=False)
             return self.session.run(self.probabilities, feed_dict={self.processed_images: preprossed_image})
-

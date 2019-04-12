@@ -17,12 +17,12 @@ export default class imageGallery extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (this.props !== nextProps) {
             if (nextProps.images !== undefined
-                && nextProps.topPredictions.length !== 0 
-                && nextProps.labels.length !== 0){
+                && nextProps.topPredictions.length !== 0
+                && nextProps.labels.length !== 0) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -39,16 +39,16 @@ export default class imageGallery extends Component {
             return [];
 
         let classifier_scores = [];
-        image_list.forEach( image => {
+        image_list.forEach(image => {
             let classifier_result = {};
             let photo_name = image.src.split('/').pop();
             let preds = classifier_results[photo_name];
-            let result = { score: 0.0, label_correct: false};
+            let result = { score: 0.0, label_correct: false };
             if (preds === undefined)
                 return result;
-            let image_prediction = preds.find((pred,index) => {
-                if (pred.class == labels[photo_name][0]){
-                    if (index === preds.length-1){
+            let image_prediction = preds.find((pred, index) => {
+                if (pred.class == labels[photo_name][0]) {
+                    if (index === preds.length - 1) {
                         result.label_correct = true;
                     }
                     return true;
@@ -57,24 +57,24 @@ export default class imageGallery extends Component {
             });
             if (image_prediction !== undefined)
                 result.score = image_prediction.score;
-            
+
             classifier_scores.push(result);
         });
 
         return classifier_scores;
     }
 
-    render(){
+    render() {
         let photoClassificationResults = this.getClassifierScoresForComponent(this.props.images,
             this.props.topPredictions,
             this.props.labels);
 
         return (
-            (photoClassificationResults)?
-            <Gallery photos={this.props.images} onClick={this.props.onClick} columns={6}
-                    ImageComponent={({...nativeProps}) => <SelectedImage {...nativeProps}
-                                                           classificationResults={photoClassificationResults}/>}
-            />:<div/>
+            (photoClassificationResults) ?
+                <Gallery photos={this.props.images} onClick={this.props.onClick} columns={6}
+                    ImageComponent={({ ...nativeProps }) => <SelectedImage {...nativeProps}
+                        classificationResults={photoClassificationResults} />}
+                /> : <div />
         );
     }
 };

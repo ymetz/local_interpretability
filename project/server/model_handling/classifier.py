@@ -8,6 +8,7 @@ import os
     Calls the current model and dataset and creates a prediction for each element in the dataset.
 '''
 
+
 def create_top_5_predictions(dataset, model):
     '''
     Calls the current model and dataset and creates a prediction for each element in the dataset.
@@ -20,7 +21,8 @@ def create_top_5_predictions(dataset, model):
 
     out_preds = None
 
-    top_pred_file_name = os.path.join(dataset.dataset_path, dataset.dataset_name+model.model_name+'-top_preds'+'.pkl')
+    top_pred_file_name = os.path.join(dataset.dataset_path,
+                                      dataset.dataset_name + model.model_name + '-top_preds' + '.pkl')
     if os.path.isfile(top_pred_file_name):
         with open(top_pred_file_name, 'rb') as f:
             out_preds = pickle.load(f)
@@ -33,7 +35,8 @@ def create_top_5_predictions(dataset, model):
             file_list = []
             for file in batch:
                 file_list.append(file['src'].split('/')[-1])
-            transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
+            transformed_images = model.transform_images(
+                [os.path.join(dataset.dataset_path, file) for file in file_list])
 
             preds = model.predict_images(transformed_images)
             # Make sure the predictions are sorted from lowest to highest score in top_predictions!!
@@ -102,4 +105,4 @@ def chunks(l, n):
     # For item i in a range that is a length of l,
     for i in range(0, len(l), n):
         # Create an index range for l of n items:
-        yield l[i:i+n]
+        yield l[i:i + n]

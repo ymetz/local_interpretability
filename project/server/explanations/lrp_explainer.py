@@ -11,26 +11,34 @@ import numpy as np
     lrp_explainer.py
 '''
 
+
 def initialize_lrp_model():
     '''
-
-    :return:
+    For the libary DeepExplain, the model has to be re-created in a specific context. So create a separate model
+    for lrp explainer.
+    :return: The DeepExplain context model and session
     '''
     lrp_session = tf.Session()
     with DeepExplain(session=lrp_session, graph=lrp_session.graph) as de:
-            the_model = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, mode='lrp')
+        the_model = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, mode='lrp')
 
-    return the_model, lrp_session
+        # First create an explainer
+        explainer = de.get_explainer('elrp', the_model.logits, the_model.processed_images)
+
+    return the_model, lrp_session, explainer
 
 
-def create_lrp_explanation(dataset, filenames, lrp_session, the_model, top_preds):
+def create_lrp_explanation(dataset, filenames, lrp_session, the_model, explainer, top_preds, img_class=None):
     '''
-
-    :param dataset:
-    :param filenames:
-    :param lrp_session:
-    :param the_model:
-    :param top_preds:
+    Create lrp explanations for the given dataset and a list of files. For each image, lrp explanation images are
+    generated for the 5 classes with the highest prediction score, or just for the given class.
+    :param dataset: The dataset containing elements
+    :param filenames: List of images we wan't to create predictions for
+    :param lrp_session: The seperate lrp_session initialized above
+    :param the_model: same as lrp_session
+    :param explainer: explainer module used to create elrp images
+    :param top_preds: Lookup dictionairy of top predictions for each image
+    :param img_class: if class is specified, only create explanation for this cass
     :return:
     '''
     explanation_directory = os.path.join(dataset.dataset_path, 'current_explanations')
@@ -38,27 +46,33 @@ def create_lrp_explanation(dataset, filenames, lrp_session, the_model, top_preds
         os.makedirs(explanation_directory)
 
     with DeepExplain(session=lrp_session) as de:
-        for file in filenames:
-            file_name = file['src'].split('/')[-1]
+
+        for file_name in filenames:
             transformed_image = the_model.transform_images([os.path.join(dataset.dataset_path, file_name)])
 
             for pred in top_preds[file_name]:
                 class_id = pred['class']
+                if img_class is not None and class_id != img_class:
+                    continue
                 # if logits are shifted compared to labels, hot_one_label is different
                 hot_one_label = class_id + the_model.logit_shift
 
-                attribution = de.explain('elrp', tf.one_hot(hot_one_label, dataset.num_of_labels)*the_model.logits,
-                                         the_model.processed_images, transformed_image)
+                attribution = explainer.run(transformed_image, ys=[np.eye(dataset.num_of_labels)[hot_one_label]])
 
                 xi = (transformed_image - np.min(transformed_image))
                 xi /= np.max(xi)
 
                 for attr in attribution:
                     save_as_img(os.path.join(explanation_directory, 'elrp' + '_' + str(class_id) + '_' + file_name),
-                               attr, xi=xi, dilation=0.5, percentile=99, alpha=0.5)
+                                attr, xi=xi, dilation=0.5, percentile=99, alpha=0.5)
 
 
 def save_as_img(image_path, data, xi=None, cmap='RdBu_r', percentile=100, dilation=3.0, alpha=0.8):
+    '''
+    Creates an attribution image via matplotlib.
+    See https://github.com/marcoancona/DeepExplain/blob/master/examples/utils.py
+    :return:
+    '''
     plt.axis('off')
     dx, dy = 0.05, 0.05
     xx = np.arange(0.0, data.shape[1], dx)
@@ -91,6 +105,7 @@ def save_as_img(image_path, data, xi=None, cmap='RdBu_r', percentile=100, dilati
     if overlay is not None:
         plt.imshow(overlay, extent=extent, interpolation='none', cmap=cmap_xi, alpha=alpha)
     plt.savefig(image_path, bbox_inches='tight', transparent=True, pad_inches=0.0)
+
 
 '''
 attributions = {

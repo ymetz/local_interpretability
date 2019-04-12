@@ -20,11 +20,12 @@ class ModelPrototype(ABC):
         pass
 
 
-
-
-
 class KerasModel(ModelPrototype):
 
-    def b(self):
+    @abstractmethod
+    def transform_images(self, path_list):
         pass
 
+    @abstractmethod
+    def predict_images(self, images):
+        pass

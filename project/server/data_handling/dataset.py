@@ -2,11 +2,12 @@ import os
 import json
 from abc import ABC
 
-
 '''
     dataset.py
     base class for datasets: a dataset always consists of a dataset and an assosiated dataset
 '''
+
+
 class DatasetPrototype(ABC):
 
     def __init__(self, dataset_id, dataset_path, dataset_name, file_list, num_elements):
@@ -68,6 +69,5 @@ def encode_dataset(ds):
 
 def jsonKeys2int(x):
     if isinstance(x, dict):
-            return {int(k):v for k,v in x.items()}
+        return {int(k): v for k, v in x.items()}
     return x
-

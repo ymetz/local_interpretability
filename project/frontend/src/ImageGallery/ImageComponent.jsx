@@ -1,5 +1,5 @@
 import React from "react";
-import {config} from "../app_config";
+import { config } from "../app_config";
 
 const Checkmark = ({ selected }) => (
   <div
@@ -26,26 +26,26 @@ const Checkmark = ({ selected }) => (
   </div>
 );
 
-const ClassificationIndicator = ({classificationResult, width, height, display}) => (
+const ClassificationIndicator = ({ classificationResult, width, height, display }) => (
   <div
     style={
       display ?
-      {left: "0px", top:(height*0.95), position:"absolute", zIndex: "1"} : {display: "none"}
+        { left: "0px", top: (height * 0.95), position: "absolute", zIndex: "1" } : { display: "none" }
     }
   >
     <svg
-      style={{ fill: "white", position:"absolute"}}
+      style={{ fill: "white", position: "absolute" }}
       width={width}
-      height={height/20}
+      height={height / 20}
     >
-      <rect width={width} height={height/20} fill={
-          (classificationResult.label_correct) ?
-            "rgba(0,255,0," + classificationResult.score + ")" :
+      <rect width={width} height={height / 20} fill={
+        (classificationResult.label_correct) ?
+          "rgba(0,255,0," + classificationResult.score + ")" :
           (classificationResult.score === 0.0) ?
             "rgba(255,0,0,0.5)" :
             "rgba(209, 244, 66," + classificationResult.score + ")"
-          
-      }/>
+
+      } />
     </svg>
   </div>
 );
@@ -90,11 +90,11 @@ const SelectedImage = ({
       className={!photo.selected ? "not-selected" : ""}
     >
       <Checkmark selected={photo.selected ? true : false} />
-      <ClassificationIndicator 
-        classificationResult={classificationResults[index]? classificationResults[index]: {label_correct:false, score:0.0}} 
-        width={photo.width} 
+      <ClassificationIndicator
+        classificationResult={classificationResults[index] ? classificationResults[index] : { label_correct: false, score: 0.0 }}
+        width={photo.width}
         height={photo.height}
-        display={photo.selected ? false : true}/>
+        display={photo.selected ? false : true} />
       <img
         style={
           photo.selected

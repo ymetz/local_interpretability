@@ -11,7 +11,6 @@ from explanations.lime_explainer import create_lime_explanations
     Contains the logic for all routing calls made by clients to the server as well as calls to data intialization
 '''
 
-
 # Global variables that store the state of the web server, could be extended in the future to enables multiple states
 # for different sessions
 datasets = []
@@ -22,6 +21,7 @@ tcav_scores = None
 top_preds_for_active_model_dataset = None
 classifier_performance_for_active_model_dataset = None
 tcav_concept_examples = None
+lrp_model, lrp_session, lrp_explainer = None, None, None
 
 # this enables the routing functions to be called with prefix get_data/, e.g. localhost:5000/get_data/...
 get_data = Blueprint('get_data', __name__)
@@ -68,6 +68,7 @@ def custom_tcav_concept_static(filename):
     print(os.path.join("../../datasets/", 'tcav_concepts'))
     return send_from_directory(os.path.join("../../datasets/", 'tcav_concepts'), filename)
 
+
 @get_data.route("/get_image")
 def get_image():
     '''
@@ -93,16 +94,17 @@ def tcav_scores_for_class():
 def get_explanation_image():
     '''
     Returns the source [similar to get_image()] for an explanation image, depending on the name of the original image,
-    the method we want to retreive an explanation image from (LIME or LRP) and the class we want the explanation image
+    the method we want to retrieve an explanation image from (LIME or LRP) and the class we want the explanation image
     for.
     :return: the image source to be called by the web browser
     '''
     name = request.args.get('id', default="", type=str)
     method = request.args.get('method', default=0, type=str)
     img_class = request.args.get('class', default=0, type=int)
-    # if method == 'elrp':
-    #     Create the LRP explanation image on the fly
-    #     create_lrp_explanation(datasets[0], iid, img_class)
+    if method == 'elrp':
+        # Create the LRP explanation image on the fly as the method is fast enough
+        create_lrp_explanation(datasets[0], [name], lrp_session, lrp_model, lrp_explainer,
+                               top_preds_for_active_model_dataset, img_class=img_class)
     i_path = "get_data/dataset_explanation/" + method + '_' + str(img_class) + '_' + name
     return i_path
 
@@ -178,7 +180,7 @@ def get_related_images():
     label = active_dataset.labels[image][0]
     out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
                        "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
-                       if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
+                      if file["src"] in datasets[0].label_to_elements[label] and file['src'] != image][:5]
     return jsonify(out_image_list)
 
 
@@ -191,8 +193,9 @@ def get_all_class_images():
     img_class = request.args.get('class', default=0, type=int)
     out_image_list = [{"src": "/get_data/dataset/" + file["src"], "width": file["width"], "height": file["height"],
                        "label": active_dataset.labels[file["src"]][0]} for file in datasets[0].file_list
-                       if file["src"] in datasets[0].label_to_elements[img_class]]
+                      if file["src"] in datasets[0].label_to_elements[img_class]]
     return jsonify(out_image_list)
+
 
 @get_data.route("get_tcav_concept_examples")
 def get_tcav_concept_examples():
@@ -208,7 +211,7 @@ def get_tcav_concept_examples():
 
 def init_data():
     '''
-
+    Loads all necessary data, in current prototype version only for one given model/dataset.
     :return: void
     '''
     global datasets
@@ -219,6 +222,7 @@ def init_data():
     global top_preds_for_active_model_dataset
     global classifier_performance_for_active_model_dataset
     global tcav_concept_examples
+    global lrp_session, lrp_model, lrp_explainer
 
     datasets = get_dataset_list("../../datasets/")
 
@@ -237,20 +241,18 @@ def init_data():
 
     active_model = models[0]
 
-    print("predict images & evaluate classifier")
+    print("Predict images & evaluate Classifier")
     top_preds_for_active_model_dataset = create_top_5_predictions(active_dataset, active_model)
     classifier_performance_for_active_model_dataset = check_classifier_performance(active_dataset,
                                                                                    top_preds_for_active_model_dataset)
 
-    print(classifier_performance_for_active_model_dataset)
     tcav_scores = load_tcavs(active_model, active_dataset)
-    tcav_concept_examples = get_tcav_example_images("../../datasets/tcav_concepts/")
-    print(tcav_concept_examples)
+    tcav_concept_examples = get_tcav_concept_example_images("../../datasets/tcav_concepts/")
     print("Available TCAV concepts:")
     print(tcav_scores.keys())
 
-    # print("Creating E-LRP Explanation images")
-    # lrp_model, lrp_session = initialize_lrp_model()
+    print("Initialize E-LRP explainer module")
+    lrp_model, lrp_session, lrp_explainer = initialize_lrp_model()
     # create_lrp_explanation(active_dataset, active_dataset.file_list[:25], lrp_session, lrp_model,
     #                        top_preds_for_active_model_dataset)
 

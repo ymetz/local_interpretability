@@ -7,6 +7,7 @@ import pickle
     TCAV computation found as standalone program in 'tcav_gpu_server' directory.
 '''
 
+
 def load_tcavs(model, dataset, tcav_file_name=None):
     '''
     Locates tcav result dict at the default file location and with default file naming convention.
@@ -26,6 +27,3 @@ def load_tcavs(model, dataset, tcav_file_name=None):
             tcav_scores = pickle.load(f)
 
     return tcav_scores
-
-
-
