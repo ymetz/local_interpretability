@@ -19,7 +19,14 @@ from tensorflow_inception_v3 import inception_v3 as inception
 from preprocessing import inception_preprocessing, imagenet
 
 
+'''
+    tensorflow_models.py
+'''
+
 class InceptionModel(ModelPrototype):
+    '''
+        InceptionModel
+    '''
 
     def __init__(self, *args, graph=tf.Graph(), session=None, mode='prediction', **kwargs):
         super(InceptionModel, self).__init__(*args, **kwargs)
@@ -34,7 +41,7 @@ class InceptionModel(ModelPrototype):
         self.mode = mode
         self.image_size = inception.inception_v3.default_image_size
         # For the inception model, logits are shifted by one compared to groundtruth labels
-        # e.g. class 465 has the target logit 466
+        # e.g. class 465 has the target logit 466. 0 is reserved for the background class
         self.logit_shift = 1
 
         self.prepare_model()

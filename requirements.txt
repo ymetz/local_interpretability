@@ -4,3 +4,4 @@ numpy
 tensorflow
 lime
 icrawler
+-e git+https://github.com/marcoancona/DeepExplain.git#egg=deepexplain
