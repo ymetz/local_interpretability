@@ -245,14 +245,14 @@ class TFSlimPublicImageModelWrapper(ImageModelWrapper):
                  endpoints_dict,
                  external_endpoints_dict,
                  scope):
-        super(PublicImageModelWrapper, self).__init__(image_shape)
+        super(TFSlimPublicImageModelWrapper, self).__init__(image_shape)
         self.labels = labels
-        self.ends = PublicImageModelWrapper.extract_endpoints(model,
+        self.ends = TFSlimPublicImageModelWrapper.extract_endpoints(model,
                                                               endpoints_dict,
                                                               external_endpoints_dict,
                                                               self.image_value_range,
                                                               scope=scope)
-        self.bottlenecks_tensors = PublicImageModelWrapper.get_bottleneck_tensors(
+        self.bottlenecks_tensors = TFSlimPublicImageModelWrapper.get_bottleneck_tensors(
             model, scope)
         graph = model.graph
 

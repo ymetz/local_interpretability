@@ -1,14 +1,21 @@
 import os
-import fnmatch
-from model import KerasModel
-import tensorflow as tf
-# noinspection PyPackageRequirements
 from tensorflow_models import InceptionModel
 from dataset import ImageDataset, TextDataset
 from PIL import Image
+from operator import itemgetter
 
-#returns list of available datasets
+'''
+    dataservice.py
+'''
+
+
+# returns list of available datasets
 def get_dataset_list(path):
+    '''
+
+    :param path:
+    :return:
+    '''
     datasets = []
     try:
         dataset_id = 0
@@ -19,11 +26,12 @@ def get_dataset_list(path):
                     file_list = []
                     nr_images = 0
                     for file in os.listdir(dataset_path):
-                        if file.endswith(('.JPEG','.jpg','.png')):
-                            im = Image.open(dataset_path+"/"+file)
+                        if file.endswith(('.JPEG', '.jpg', '.png')):
+                            im = Image.open(dataset_path + "/" + file)
                             nr_images += 1
                             width, height = im.size
                             file_list.append({"src": file, "width": width, "height": height})
+                            file_list = sorted(file_list, key=itemgetter('src'))
                     datasets.append(ImageDataset(dataset_id, dataset_path, subdir.split('_')[1], file_list, nr_images))
                     dataset_id = dataset_id + 1
                 elif subdir.split('_')[0] == 'text':
@@ -32,7 +40,8 @@ def get_dataset_list(path):
                 elif subdir == "tcav_concepts":
                     print("found concept directory for tcav")
                 elif subdir == 'current_explanations':
-                    print("found existing directory for explanation images. Images in the directory may be owerwritten.")
+                    print(
+                        "found existing directory for explanation images. Images in the directory may be owerwritten.")
                 else:
                     print("{0} is not a valid dataset directory".format(subdir))
     except Exception as e:
@@ -40,13 +49,19 @@ def get_dataset_list(path):
     finally:
         return datasets
 
-#returns list of available models
+
+# returns list of available models
 def get_model_list(path):
+    '''
+
+    :param path:
+    :return:
+    '''
     models = []
     try:
         model_id = 0
         for subdir in os.listdir(path):
-            if not subdir.startswith('.'):
+            if not subdir.startswith('.') and not '__init__' in subdir:
                 model_path = os.path.join(path, subdir)
                 if subdir == 'preprocessing':
                     print('preprocessing directory found')
@@ -56,32 +71,30 @@ def get_model_list(path):
                     if subdir.split('_')[1] == 'inception':
                         models.append(InceptionModel(model_id, model_path, subdir.split('_')[1]))
                 else:
-                    raise Exception('Invalid or unsupported model found. Check the name of the folder.')
+                    raise Exception(
+                        'Invalid or unsupported model found: {0} Check the name of the folder.'.format(subdir))
                 model_id = model_id + 1
     except Exception as e:
         print(e)
     finally:
         return models
 
-#get preview thumbnail for list of images
-def get_thumbnails( model, image_list ):
-    return []
 
-#get image in original resolution by id
-def get_original_image( model, image_id ):
-    return None
+# returns dict of ten example images per concept
+def get_tcav_concept_example_images(path):
+    '''
 
-#return the lrp result image of a specific image id
-def get_lrp( model, image_id ):
-    return None
-
-#return the lime result image of specified image id
-def get_lime( model, image_id ):
-    return None
-
-#return image input + edge detection
-def get_edge_image( image_id ):
-    return None
-
-
-
+    :param path:
+    :return:
+    '''
+    concepts = {}
+    for subdir in os.listdir(path):
+        if not subdir.startswith('.') and not '__init__' in subdir:
+            concepts[subdir] = []
+            concept_dir_path = os.path.join(path, subdir)
+            for file in os.listdir(concept_dir_path)[:10]:
+                if file.endswith(('.JPEG', '.jpg', '.png')):
+                    im = Image.open(os.path.join(concept_dir_path, file))
+                    width, height = im.size
+                    concepts[subdir].append({"src": os.path.join(subdir, file), "width": width, "height": height})
+    return concepts

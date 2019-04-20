@@ -15,7 +15,7 @@ import tcav.activation_generator as act_gen
 from prepare_tcav_diretories import create_tcav_dirs
 
 model = InceptionModel(0, "model/inception_v3", "inception_v3", session=session, graph=session.graph)
-dataset = get_dataset_list("datasets")[0]
+dataset = get_dataset_list("../../datasets")[0]
 
 
 def load_tcavs(model, dataset):

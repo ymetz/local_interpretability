@@ -9,18 +9,18 @@ import sys
 from sys import platform
 
 if platform == "win32":
-    sys.path.insert(0, "..\..\models")
+    sys.path.insert(0, "..\models")
 else:
-    sys.path.insert(0, "../../models")
+    sys.path.insert(0, "../models")
 
-from model_handling.model import ModelPrototype
+from model import ModelPrototype
 
 # import specific model (may be done by importlib in future version)
 from tensorflow_inception_v3 import inception_v3 as inception
 from preprocessing import inception_preprocessing
 
 #import tcav wrapper
-from tcav.model import PublicImageModelWrapper
+from tcav.model import TFSlimPublicImageModelWrapper
 
 """
     tensorflow_models.py
@@ -131,7 +131,7 @@ class InceptionModel(TensorflowSlimModel):
                                              **kwargs)
 
 
-class TCAVInceptionWrapperSlim(PublicImageModelWrapper):
+class TCAVInceptionWrapperSlim(TFSlimPublicImageModelWrapper):
     '''
     The wrapper used for TCAV. Necessary as endpoint names vary from model to model.
     '''
@@ -148,13 +148,12 @@ class TCAVInceptionWrapperSlim(PublicImageModelWrapper):
             prediction=model.end_points['Predictions']
         )
         self.sess = sess
-        self.scope = model.scope
         super(TCAVInceptionWrapperSlim, self).__init__(sess,
                                                        model,
                                                        labels,
                                                        image_shape,
                                                        endpoints,
                                                        endpoint_external,
-                                                       scope=self.scope)
+                                                       scope=model.scope)
         self.model_name = 'InceptionV3_Slim'
 
