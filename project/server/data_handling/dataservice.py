@@ -1,5 +1,4 @@
 import os
-from model_handling.model import KerasModel
 from model_handling.tensorflow_models import InceptionModel
 from data_handling.dataset import ImageDataset, TextDataset
 from PIL import Image

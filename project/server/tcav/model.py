@@ -233,6 +233,102 @@ class PublicImageModelWrapper(ImageModelWrapper):
     return myendpoints
 
 
+class TFSlimPublicImageModelWrapper(ImageModelWrapper):
+    """Simple wrapper of the public image models with session object.
+    """
+
+    def __init__(self,
+                 sess,
+                 model,
+                 labels,
+                 image_shape,
+                 endpoints_dict,
+                 external_endpoints_dict,
+                 scope):
+        super(PublicImageModelWrapper, self).__init__(image_shape)
+        self.labels = labels
+        self.ends = PublicImageModelWrapper.extract_endpoints(model,
+                                                              endpoints_dict,
+                                                              external_endpoints_dict,
+                                                              self.image_value_range,
+                                                              scope=scope)
+        self.bottlenecks_tensors = PublicImageModelWrapper.get_bottleneck_tensors(
+            model, scope)
+        graph = model.graph
+
+        # Construct gradient ops.
+        with graph.as_default():
+            self.y_input = tf.placeholder(tf.int64, shape=[None])
+
+            self.pred = tf.expand_dims(self.ends['prediction'][0], 0)
+            self.loss = tf.reduce_mean(
+                tf.nn.softmax_cross_entropy_with_logits_v2(
+                    labels=tf.one_hot(
+                        self.y_input,
+                        self.ends['prediction'].get_shape().as_list()[1]),
+                    logits=self.pred))
+        self._make_gradient_tensors()
+
+    def id_to_label(self, idx):
+        return self.labels[idx]
+
+    def label_to_id(self, label):
+        return list(self.labels.values()).index(label)
+
+    @staticmethod
+    def create_input(t_input, image_value_range):
+        """Create input tensor."""
+
+        def forget_xy(t):
+            """Forget sizes of dimensions [1, 2] of a 4d tensor."""
+            zero = tf.identity(0)
+            return t[:, zero:, zero:, :]
+
+        t_prep_input = t_input
+        if len(t_prep_input.shape) == 3:
+            t_prep_input = tf.expand_dims(t_prep_input, 0)
+        t_prep_input = forget_xy(t_prep_input)
+        lo, hi = image_value_range
+        t_prep_input = lo + t_prep_input * (hi - lo)
+        return t_input, t_prep_input
+
+    # From Alex's code.
+    @staticmethod
+    def get_bottleneck_tensors(model, scope):
+        """Add Inception bottlenecks and their pre-Relu versions to endpoints dict."""
+        graph = model.graph
+        bn_endpoints = {}
+        for op in graph.get_operations():
+            if op.name.startswith(scope + '/') and 'ConcatV2' in op.type:
+                name = op.name.split('/')[2]
+                bn_endpoints[name] = op.outputs[0]
+        return bn_endpoints
+
+    @staticmethod
+    def extract_endpoints(model, endpoints, external_endpoints, image_value_range, scope='init'):
+        graph = model.graph
+        with graph.as_default():
+            t_input = tf.placeholder(np.float32, [None, None, None, 3])
+
+            t_input, t_prep_input = PublicImageModelWrapper.create_input(
+                t_input, image_value_range)
+
+            my_endpoints = {}
+            for endpoint in external_endpoints:
+                my_endpoints[endpoint] = external_endpoints[endpoint]
+            try:
+                for ep in endpoints:
+                        # the operation name is given without the output specifier (:0 corresponds to an output tensor)
+                        op_name = endpoints[ep].split(':')[0]
+                        op = graph.get_operation_by_name(op_name)
+                        my_endpoints[op.name] = op.outputs[0]  # this returns the output tensor we want
+            except KeyError:
+                print("A specified endpoint was not found")
+
+
+        return my_endpoints
+
+
 class GoolgeNetWrapper_public(PublicImageModelWrapper):
 
   def __init__(self, sess, model_saved_path, labels_path):
@@ -259,25 +355,3 @@ class GoolgeNetWrapper_public(PublicImageModelWrapper):
     # Each pred outputs 16, 1008 matrix. The prediction value is the first row.
     # Following tfzoo convention.
     return pred_t[::16]
-
-class InceptionV3Wrapper_public(PublicImageModelWrapper):
-  def __init__(self, sess, model_saved_path, labels_path):
-    self.image_value_range = (-1, 1)
-    image_shape_v3 = [299, 299, 3]
-    endpoints_v3 = dict(
-        input='Mul:0',
-        logit='softmax/logits:0',
-        prediction='softmax:0',
-        pre_avgpool='mixed_10/join:0',
-        logit_weight='softmax/weights:0',
-        logit_bias='softmax/biases:0',
-    )
-
-    self.sess = sess
-    super(InceptionV3Wrapper_public, self).__init__(sess,
-                                                  model_saved_path,
-                                                  labels_path,
-                                                  image_shape_v3,
-                                                  endpoints_v3,
-                                                  scope='v3')
-    self.model_name = 'InceptionV3_public'

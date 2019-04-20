@@ -43,7 +43,7 @@ def create_top_5_predictions(dataset, model):
             for idxPred in range(len(preds)):
                 top_5_labels = []
                 for x in preds.argsort()[idxPred][-5:]:
-                    # if the model logits are shifted compared to the groundtruth lables, add shift here
+                    # if the model logits are shifted compared to the groundtruth labels, add shift here
                     top_5_labels.append({'class': int(x) - model.logit_shift, 'score': float(preds[idxPred, x])})
                 top_preds[file_list[idxPred]] = top_5_labels
             i += 1

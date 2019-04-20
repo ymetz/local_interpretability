@@ -5,18 +5,14 @@ os.environ["CUDA_VISIBLE_DEVICES"]="1" # bzw 0
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.Session(config=config)
-import shutil
-import tcav
 from tcav.tcav import TCAV
-import tcav.custom_model as cm
+import tcav.model as cm
 import tcav.utils as utils
-import json
 import os
 import pickle
-from dataservice import get_model_list, get_dataset_list
-from tensorflow_models import InceptionModel
+from dataservice import get_dataset_list
+from tensorflow_models import InceptionModel, TCAVInceptionWrapperSlim
 import tcav.activation_generator as act_gen
-import random
 
 model = InceptionModel(0, "model/inception_v3", "inception_v3",session=session, graph=session.graph)
 dataset = get_dataset_list("datasets")[0]
@@ -63,11 +59,12 @@ def run_tcav(model, dataset, previous_tcav_dict=None):
         targets.remove(-1)
     print(targets)
 
-    concepts = [dI for dI in os.listdir(concept_directory) if os.path.isdir(os.path.join(concept_directory,dI)) and "random" not in dI and "." not in dI]
+    concepts = [dI for dI in os.listdir(concept_directory) if os.path.isdir(os.path.join(concept_directory, dI))
+                and "random" not in dI and "." not in dI]
 
-    the_model = cm.InceptionV3Wrapper_custom(model.session,
-                                             model,
-                                             id_to_labels)
+    the_model = TCAVInceptionWrapperSlim(model.session,
+                                         model,
+                                         id_to_labels)
 
     act_generator = act_gen.ImageActivationGenerator(the_model, 
                                                      concept_directory, 

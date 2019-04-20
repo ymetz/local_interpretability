@@ -1,34 +1,29 @@
 import tensorflow as tf
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0" # bzw 1
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # bzw 1
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.Session(config=config)
-import shutil
-import tcav
 from tcav.tcav import TCAV
-import tcav.custom_model as cm
+import tcav.model as cm
 import tcav.utils as utils
-import json
-from glob import glob
 import pickle
-from dataservice import get_model_list, get_dataset_list
-from tensorflow_models import InceptionModel
+from dataservice import get_dataset_list
+from tensorflow_models import InceptionModel, TCAVInceptionWrapperSlim
 import tcav.activation_generator as act_gen
 from prepare_tcav_diretories import create_tcav_dirs
-import random
-import logging
 
 model = InceptionModel(0, "model/inception_v3", "inception_v3", session=session, graph=session.graph)
 dataset = get_dataset_list("datasets")[0]
 
+
 def load_tcavs(model, dataset):
     '''
-
-    :param model:
-    :param dataset:
-    :return:
+    Load existing tcav scores from file
+    :param model: Use model name to follow common naming convention
+    :param dataset: Use dataset name for naming convention
+    :return: imported tcav scores as dict
     '''
     tcav_scores = {}
     tcav_file_path = os.path.join("models", dataset.dataset_name + model.model_name + '-tcavscores-1' + '.pkl')
@@ -90,9 +85,9 @@ def run_tcav(model, dataset, previous_tcav_dict=None):
     concepts = [dI for dI in os.listdir(concept_directory)
                 if os.path.isdir(os.path.join(concept_directory, dI)) and "random" not in dI and "." not in dI]
 
-    the_model = cm.InceptionV3Wrapper_custom(model.session,
-                                             model,
-                                             id_to_labels)
+    the_model = TCAVInceptionWrapperSlim(model.session,
+                                         model,
+                                         id_to_labels)
 
     act_generator = act_gen.ImageActivationGenerator(the_model, 
                                                      concept_directory, 

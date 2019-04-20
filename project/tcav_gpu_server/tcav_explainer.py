@@ -1,8 +1,6 @@
-import tcav
 from tcav.tcav import TCAV
-import tcav.custom_model as cm
+import tcav.model as cm
 import tcav.utils as utils
-import json
 import os
 import pickle
 import image_crawler
