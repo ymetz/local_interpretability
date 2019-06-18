@@ -10,17 +10,20 @@ def rchop(string, ending):
     return string[:-len(ending)]
   return string
 
-concept_directory = "../../../datasets/tcav_concepts"
+concept_directory = "../../../datasets/tcav_concepts_test_obustnes"
 
 # concepts = ["smooth texture", "gradient", "dotted", "striped", "zigzagged", "chaos texture", "noise texture",
 #             "random pattern", "colorful", "single color", "monochrome", "photo", "drawing", "employee", "leisure", "man",
 #             "woman", "child", "animal", "land animal", "water animal",
 #             "bird", "wood", "metal material", "plastic", "concrete", "food", "tool", "furniture", "abstract"]
 
-concepts = ["glossy surface", "matt surface", "uneven texture", "wrinkled object", "rectangle pattern", "transparent object",
-            "translucent", "rectangular", "round", "triangular", "complex shape", "spiky surface", "tree", "flower",
-            "plant", "grass/moss", "machine", "machine device", "architecture", "clothes", "animal fur", "fabric clothes",
-            "inside lighting", "nature", "beach", "underwater", "sky"]
+#concepts = ["glossy surface", "matt surface", "uneven texture", "wrinkled object", "rectangle pattern", "transparent object",
+#            "translucent", "rectangular", "round", "triangular", "complex shape", "spiky surface", "tree", "flower",
+#            "plant", "grass/moss", "machine", "machine device", "architecture", "clothes", "animal fur", "fabric clothes",
+#            "inside lighting", "nature", "beach", "underwater", "sky"]
+
+
+concepts = ['tree', 'spiky', 'abstract', 'glossy', 'concrete', 'animal', 'nature', 'inside', 'building', 'smooth texture']
 
 # random_concepts = ["random"]
 
@@ -33,7 +36,7 @@ def crawl_and_process_concepts():
         print(concept)
         if not os.path.isdir(os.path.join(concept_directory, concept)):
             if not os.path.isdir(os.path.join(concept_directory, concept+"_before")):
-                image_crawler.crawl_images(concept_directory, concept, N=100)
+                image_crawler.crawl_images(concept_directory, concept, N=150)
             in_dir = (os.path.join(concept_directory, concept+"_before"))
 
             os.makedirs(os.path.join(rchop(in_dir, "_before")))

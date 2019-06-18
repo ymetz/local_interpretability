@@ -4,6 +4,7 @@ from data_handling.dataset import encode_dataset
 from model_handling.classifier import create_top_5_predictions, check_classifier_performance
 from explanations.tcav_explainer import load_tcavs
 from explanations.lrp_explainer import initialize_lrp_model, create_lrp_explanation
+from explanations.tcav_experiment_handler import TcavExperimentHandler
 from explanations.lime_explainer import create_lime_explanations
 
 '''
@@ -22,6 +23,7 @@ top_preds_for_active_model_dataset = None
 classifier_performance_for_active_model_dataset = None
 tcav_concept_examples = None
 lrp_model, lrp_session, lrp_explainer = None, None, None
+tcav_experiment_handler = None
 
 # this enables the routing functions to be called with prefix get_data/, e.g. localhost:5000/get_data/...
 get_data = Blueprint('get_data', __name__)
@@ -170,10 +172,31 @@ def get_classifier_performance():
     return jsonify(classifier_performance_for_active_model_dataset)
 
 
+@get_data.route("/get_tcav_experiment_list")
+def get_tcav_experiment_list():
+    '''
+    Returns a list of all available tcav evaluation experiments
+    :return: JSON encoded list of available tcav evaluation experiments
+    '''
+    if tcav_experiment_handler:
+        return jsonify(tcav_experiment_handler.return_experiment_list())
+
+
+@get_data.route("/get_tcav_experiment_result")
+def get_tcav_experiment_result():
+    '''
+    Returns the result of a specific tcav evaluation experiment
+    :return: JSON encoded dict containing the results of one particular tcav evaluation experiment
+    '''
+    exp_key = request.args.get('exp_key', default="", type=str)
+    if tcav_experiment_handler:
+        return jsonify(tcav_experiment_handler.return_experiment_result(exp_key))
+
+
 @get_data.route("/get_related_images")
 def get_related_images():
     '''
-
+    Returns a list of 5 related images (images of the same class)
     :return:
     '''
     image = request.args.get('image', default="", type=str)
@@ -187,7 +210,7 @@ def get_related_images():
 @get_data.route("/get_all_class_images")
 def get_all_class_images():
     '''
-
+    Returns the path of all images of a single class
     :return:
     '''
     img_class = request.args.get('class', default=0, type=int)
@@ -200,7 +223,7 @@ def get_all_class_images():
 @get_data.route("get_tcav_concept_examples")
 def get_tcav_concept_examples():
     '''
-
+    Returns a list of image paths to concept images used in tcav experiments (if available)
     :return:
     '''
     concept = request.args.get('concept', default="", type=str)
@@ -223,6 +246,7 @@ def init_data():
     global classifier_performance_for_active_model_dataset
     global tcav_concept_examples
     global lrp_session, lrp_model, lrp_explainer
+    global tcav_experiment_handler
 
     datasets = get_dataset_list("../../datasets/")
 
@@ -250,6 +274,8 @@ def init_data():
     tcav_concept_examples = get_tcav_concept_example_images("../../datasets/tcav_concepts/")
     print("Available TCAV concepts:")
     print(tcav_scores.keys())
+
+    tcav_experiment_handler = TcavExperimentHandler()
 
     print("Initialize E-LRP explainer module")
     lrp_model, lrp_session, lrp_explainer = initialize_lrp_model()

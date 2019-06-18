@@ -8,7 +8,7 @@ import pickle
 '''
 
 
-def load_tcavs(model, dataset, tcav_file_name=None):
+def load_tcavs(model, dataset, tcav_file_name=None, absolute_path=False):
     '''
     Locates tcav result dict at the default file location and with default file naming convention.
     :param model: The model the tcav scores have been computed with
@@ -19,9 +19,11 @@ def load_tcavs(model, dataset, tcav_file_name=None):
     if tcav_file_name == None:
         tcav_file_location = os.path.join(model.model_path, dataset.dataset_name + model.model_name
                                           + '-tcavscores' + '.pkl')
-    else:
+    elif absolute_path == False:
         tcav_file_location = os.path.join(model.model_path, tcav_file_name)
-    print(tcav_file_name)
+    else:
+        tcav_file_location = tcav_file_name
+        print(tcav_file_location)
     if os.path.isfile(tcav_file_location):
         with open(tcav_file_location, 'rb') as f:
             tcav_scores = pickle.load(f)

@@ -1,3 +1,32 @@
 .global_content {
     margin-left: 10px;
 }
+
+.data_dropdown {
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.tcav_eva_container {
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.tcav_eva_chart_container {
+    display: inline-block;
+    width: 60%;
+}
+
+.treeWrapper {
+    display: inline-block;
+    width: 25%;
+}
+
+.dropdown_div {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.description_div {
+    display: inline-block;
+}
