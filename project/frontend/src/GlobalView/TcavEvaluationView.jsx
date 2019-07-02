@@ -63,7 +63,6 @@ export default class TcavEvaluationView extends Component {
 
     getOptionsForExperiments(options, activeExperiment) {
         if (options !== undefined) {
-            console.log(options);
             return options.map(function (option) {
                 return <MenuItem active={option === activeExperiment} eventKey={option} key={option}>{option}</MenuItem>;
             })
@@ -102,7 +101,7 @@ export default class TcavEvaluationView extends Component {
                     </div>
                 </div>
                 <div styleName="tcav_eva_chart_container">
-                    <TcavEvaluationChart experimentData={this.state.experiment_data}/>
+                    <TcavEvaluationChart toggleAnalysisOverlay={this.props.toggleAnalysisOverlay} experimentData={this.state.experiment_data} selectedClasses={this.props.selectedClasses}/>
                 </div>
                 <div styleName="treeWrapper" style={{ width: '600px', height: '600px' }}>
                     <Tree

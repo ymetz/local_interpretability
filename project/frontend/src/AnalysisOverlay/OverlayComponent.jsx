@@ -23,7 +23,7 @@ export default class OverlayComponent extends Component {
             current_image_name: this.props.selectedElements[0].src.split("/").pop(),
             current_image_label: this.props.appState.labels[this.props.selectedElements[0].src.split("/").pop()],
             current_image_class: -1,
-            method: 'lime',
+            method: this.props.method,
             show_explanation_image: false,
             concept_data: {},
             tcav_active_layers: 'combined'

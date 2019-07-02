@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+from matplotlib import cm
 import matplotlib.pyplot as plt
 
 from project.server.explanations.tcav_explainer import load_tcavs
@@ -7,8 +8,6 @@ from project.server.explanations.tcav_explainer import load_tcavs
 tcav_dict = load_tcavs(None, None, tcav_file_name="/Users/yannick/Documents/Studium/interVis/models/"
                                                       "tensorflow_inception_v3/imagenetinception-tcavscores.pkl",
                            absolute_path=True)
-
-print(tcav_dict.keys())
 
 
 def run_experiment():
@@ -21,6 +20,7 @@ def run_experiment():
         concept = score['concept']
         if concept not in concepts:
             concepts.append(concept)
+    concepts.remove('random')
 
 
     layer5ds = np.zeros(shape=(len(tcav_dict.keys()), len(concepts)))
@@ -41,10 +41,12 @@ def run_experiment():
 
         i += 1
 
-    #layer5ds = layer5ds[:, np.median(layer5ds, axis=0).argsort()]
-    #layer7cs = layer7cs[:, np.median(layer7cs, axis=0).argsort()]
-    #concepts = list(np.asarray(concepts)[sort_order])
-
+    sort_order5ds = np.median(layer5ds, axis=0).argsort()
+    sort_order7cs = np.median(layer7cs, axis=0).argsort()
+    layer5ds = layer5ds[:, np.median(layer5ds, axis=0).argsort()]
+    layer7cs = layer7cs[:, np.median(layer7cs, axis=0).argsort()]
+    concepts5ds = list(np.asarray(concepts)[sort_order5ds])
+    concepts7cs = list(np.asarray(concepts)[sort_order7cs])
     avg_distances = np.zeros(len(concepts))
     #for idx, concept in enumerate(concepts):
     #    avg_distances[idx] = np.average(layer5ds[:, idx])
@@ -68,27 +70,31 @@ def run_experiment():
             sum_n += 1
         result_dict['total_dist'][concept] = sum_dist / sum_n
 
-    print(result_dict)
+    fig1, (ax1, ax2) = plt.subplots(2)
+    ax1.set_title('TCAV concept scores at layer 5d')
+    ax1.set_ylabel('concept scores')
+    ax1.set_xlabel('concepts')
+    ax1.boxplot(layer5ds, positions=range(len(concepts5ds)))
+    #locs1, labels1 = plt.xticks()
+    ax1.set_xticklabels(concepts5ds)
+
+    for idx, c in enumerate(concepts5ds):
+        ax1.scatter([c] * len(layer5ds[:, idx]), layer5ds[:, idx], alpha=0.4)
+
+    ax2.set_title('TCAV concept scores at layer 7c')
+    ax2.set_ylabel('concept scores')
+    ax2.set_xlabel('concepts')
+    ax2.boxplot(layer7cs, positions=range(len(concepts7cs)))
+    #locs2, labels2 = plt.xticks()
+    #plt.xticks(locs2, concepts7cs[:10])
+    ax2.set_xticklabels(concepts7cs)
+
+    for idx, c in enumerate(concepts7cs):
+        ax2.scatter([c] * len(layer7cs[:, idx]), layer7cs[:, idx], alpha=0.4)
+
+    plt.show()
 
     return {"exp_info": {"name": "layer scores", "description": "Evaluate the influence of the choice of bottleneck\
      layer for tcav scores. Returns", "nr_of_return_elements": 1}, "exp_result": result_dict}
 
-'''
-fig1, (ax1,ax2) = plt.subplots(2)
-ax1.set_title('TCAV concept scores at layer 5d')
-ax1.set_ylabel('concept scores')
-ax1.set_xlabel('concepts')
-ax1.boxplot(layer5ds[:,:10])
-locs, labels = plt.xticks()
-plt.xticks(locs, concepts[:10])
-
-ax2.set_title('TCAV concept scores at layer 7c')
-ax2.set_ylabel('concept scores')
-ax2.set_xlabel('concepts')
-ax2.boxplot(layer7cs[:,:10])
-locs, labels = plt.xticks()
-plt.xticks(locs, concepts[:10])
-
-
-plt.show()
-'''
+run_experiment()

@@ -79,8 +79,8 @@ export default class DetailConceptTree extends Component {
     }
 
     /**
-     * Combine/Average the scores from different layer to a single score
-     * @param {object} conceptData 
+     * Averages the concept scores over data from different network layers.
+     * @param {Array} conceptData 
      */
     combineLayerScores(conceptData) {
         if (conceptData === undefined)
@@ -89,7 +89,14 @@ export default class DetailConceptTree extends Component {
         let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
         uniqueConcepts.forEach(concept => {
             let singleConceptScores = conceptData.filter(x => x.concept === concept);
-            outData.push({ concept: concept, score: singleConceptScores.map(x => x.score).reduce(function (a, b) { return a + b; }) / singleConceptScores.length, random_score: singleConceptScores[0].random_score });
+            outData.push({
+                concept: concept, score: singleConceptScores.map(x => x.score)
+                    .reduce(function (a, b) { return a + b; }) / singleConceptScores.length
+                , random_score: singleConceptScores[0].random_score, p_val: singleConceptScores
+                    .map(x => x.p_val).reduce((a, b) => { return a + b }) / singleConceptScores.length
+                , estimated_p_val: singleConceptScores.map(x => x.estimated_p_val).some(epv => epv === true)
+
+            });
         });
         return outData;
     }

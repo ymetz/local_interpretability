@@ -9,7 +9,6 @@ class TcavExperimentHandler:
 
     def __init__(self):
         self.experiment_results = rol.run_or_load_tcav_experiments()
-        print(self.experiment_results)
 
     def return_experiment_list(self):
         return list(self.experiment_results.keys())

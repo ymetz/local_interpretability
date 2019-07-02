@@ -57,7 +57,8 @@ export default class App extends Component {
       id_to_label: [],
       tcav_scores: {},
       show_data_browser: true,
-      show_overlay: false
+      show_overlay: false,
+      analysis_method: config.default_analysis_method
     }
   }
 
@@ -130,15 +131,26 @@ export default class App extends Component {
    * When the close button in the overlay window is pushed, change the state variable and 
    * and reset the image selection.
    */
-  toogleOverlay() {
+  toggleOverlay() {
     if (this.state.show_overlay === true) {
       let images_on_display = this.state.images_on_display;
       images_on_display.map((elem) => { elem.selected = false; return elem; })
-      this.setState({ images_on_display: images_on_display });
+      this.setState({ images_on_display: images_on_display, analysis_method: config.default_analysis_method });
     }
-    let showOverlay = !this.state.show_overlay;
-    this.setState({ show_overlay: showOverlay });
+    let show_overlay = !this.state.show_overlay;
+    this.setState({ show_overlay: show_overlay });
   }
+
+  /**
+   * Is called when the Overlay is called from the TCAV anlaysis to jump right into the right view
+   */
+  toggleOverlayFromAnalysis(class_id) {
+    this.updateDisplayImagesByClass([{value: class_id}], function () {
+      this.setState({ analysis_method: 'tcav' }, this.toggleOverlay());
+    });
+  }
+
+
 
   getImagePredictions() {
     let image_name = this.state.current_image_name;
@@ -153,7 +165,7 @@ export default class App extends Component {
    * Update the list of display images according to settings like search, score internval... 
    * Get's called when relevant properties change. Leads to a rerender of the image gallery.
    * */
-  updateImageList() {
+  updateImageList(callback) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     const selectedClasses = image_display_options.display_image_classes;
     const predictionInterval = image_display_options.prediction_interval;
@@ -194,23 +206,22 @@ export default class App extends Component {
     const imgCount = displayed_images.length;
     displayed_images = displayed_images.slice(indices[0], indices[1])
 
-    this.setState({ images_on_display: displayed_images, images_count: imgCount });
-
+    if (callback && typeof callback === 'function')
+      this.setState({ images_on_display: displayed_images, images_count: imgCount }, callback);
+    else
+      this.setState({ images_on_display: displayed_images, images_count: imgCount });
   }
 
   /**
    * Is triggered when the 'show more' button is pressed. Increase the number of displayed images.
    */
-  expandDisplayedImages() {
-
-
-
+  expandDisplayedImages(callback) {
     //creating copy of object
     let image_display_options = Object.assign({}, this.state.image_display_options);
     let images_on_display = this.state.images_on_display;
     //updating value
     image_display_options.indices[1] = image_display_options.indices[1] + config.show_more_expansion_size;
-    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList(callback));
 
   }
 
@@ -219,10 +230,10 @@ export default class App extends Component {
    * as an array.
    * @param {Array} data
    */
-  updateDisplayImagesByClass(data) {
+  updateDisplayImagesByClass(data, callback) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.display_image_classes = data.map(x => Number(x.value));
-    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList(callback));
   }
 
   /**
@@ -233,7 +244,7 @@ export default class App extends Component {
   changeInterval(interval) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.prediction_interval = interval;
-    this.setState({ image_display_options: image_display_options }, () => this.updateImageList());
+    this.setState({ image_display_options: image_display_options }, () => this.updateImageList(callback));
   }
 
   /**
@@ -284,7 +295,7 @@ export default class App extends Component {
           dataset_path={this.state.dataset.dataset_path}
         />
         <FilteringOptions
-          onAnalysisButtonClick={this.toogleOverlay.bind(this)}
+          onAnalysisButtonClick={this.toggleOverlay.bind(this)}
           selectedList={this.state.images_on_display.filter(im => im.selected)}
           onSearchSubmit={this.updateDisplayImagesByClass.bind(this)}
           onIntervallChange={this.changeInterval.bind(this)}
@@ -309,11 +320,16 @@ export default class App extends Component {
                 onClick={this.expandDisplayedImages.bind(this)}>Show More</Button>
             </div> : <GlobalView
               classifierPerformance={this.state.classifier_performance}
-              performanceChartClick={this.renderFilteredGallery.bind(this)} />}
+              selectedClasses={this.state.image_display_options.display_image_classes}
+              performanceChartClick={this.renderFilteredGallery.bind(this)}
+              toggleAnalysisOverlay={this.toggleOverlayFromAnalysis.bind(this)} />}
         </div>
         {this.state.show_overlay ? <OverlayComponent
-          selectedElements={this.state.images_on_display.filter(im => im.selected)}
-          closeModal={this.toogleOverlay.bind(this)}
+          selectedElements={(this.state.images_on_display.filter(im => im.selected).length > 0) 
+            ? this.state.images_on_display.filter(im => im.selected) 
+            : this.state.images_on_display.slice(0,1)}
+          closeModal={this.toggleOverlay.bind(this)}
+          method={this.state.analysis_method}
           appState={this.state} /> : null}
       </div>
     )

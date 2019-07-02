@@ -55,7 +55,10 @@ export default class TcavChart extends Component {
       outData.push({
         concept: concept, score: singleConceptScores.map(x => x.score)
           .reduce(function (a, b) { return a + b; }) / singleConceptScores.length
-        , random_score: singleConceptScores[0].random_score
+        , random_score: singleConceptScores[0].random_score, p_val: singleConceptScores
+          .map(x => x.p_val).reduce((a, b) => { return a + b }) / singleConceptScores.length
+        , estimated_p_val: singleConceptScores.map(x => x.estimated_p_val).some(epv => epv === true)
+
       });
     });
     return outData;
@@ -74,6 +77,7 @@ export default class TcavChart extends Component {
   draw = (props) => {
 
     const data = props.sort(function (a, b) { return b.score - a.score });
+    console.log(data);
 
     const width = 950, height = 280;
     const margin = { top: 10, right: 0, bottom: 40, left: 80 };
@@ -85,7 +89,8 @@ export default class TcavChart extends Component {
 
     this.tooltip = d3Tip()
       .attr('class', 'd3-tip')
-      .html(function (d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Score: </b>" + d.score.toFixed(3); });
+      .html(function (d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Score: </b>" + d.score.toFixed(3)
+                  + "<br>" + "<b>P-Value:</b>" + d.p_val.toFixed(3) ;});
 
     this.random_tooltip = d3Tip()
       .attr('class', 'd3-tip')
@@ -154,6 +159,7 @@ export default class TcavChart extends Component {
       .attr("y", d => y(d.score))
       .attr("height", d => y(0) - y(d.score))
       .attr("width", x.bandwidth())
+      .attr("opacity", x => (x.p_val < 0.05) ? 1.0 : 0.3)
       .on('mouseover', this.tooltip.show)
       .on('mouseout', this.tooltip.hide);
 

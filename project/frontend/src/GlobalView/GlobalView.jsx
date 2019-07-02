@@ -24,7 +24,6 @@ export default class GlobalView extends Component {
   }
 
   render() {
-
     const overallPerformance = this.props.classifierPerformance.overall_performance;
     const top1_accuarcy = (overallPerformance.top_predicted / overallPerformance.n);
     const top5_accuarcy = ((overallPerformance.top_predicted + overallPerformance.top5_predicted) / overallPerformance.n);
@@ -37,7 +36,8 @@ export default class GlobalView extends Component {
         <p><b>Global Classifier Performance </b>
           | <b>Top-1-Acurracy:</b> {top1_accuarcy * 100}%
                   | <b>Top-5-Acurracy:</b> {top5_accuarcy * 100}% </p>
-        <GlobalPerformanceChart classifierPerformance={this.props.classifierPerformance.class_performances}
+        <GlobalPerformanceChart
+          classifierPerformance={this.props.classifierPerformance.class_performances}
           overallAccuracies={{ top1: top1_accuarcy, top5: top5_accuarcy }}
           clickHandler={this.props.performanceChartClick}></GlobalPerformanceChart>
         <h3>TCAV Evaluation</h3>
@@ -45,7 +45,7 @@ export default class GlobalView extends Component {
         validity and robustness of TCAV as an interpretability method. The tree shows the concepts that are available for TCAV testing. By clicking
               on a leaf node, you can inspect some exemplary images for each concept.</p>
         <div id="tcavEvaluationChart">
-          <TcavEvaluationView/> 
+          <TcavEvaluationView toggleAnalysisOverlay={this.props.toggleAnalysisOverlay} selectedClasses={this.props.selectedClasses}/> 
         </div>
       </div>
 
