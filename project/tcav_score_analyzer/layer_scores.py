@@ -96,5 +96,3 @@ def run_experiment():
 
     return {"exp_info": {"name": "layer scores", "description": "Evaluate the influence of the choice of bottleneck\
      layer for tcav scores. Returns", "nr_of_return_elements": 1}, "exp_result": result_dict}
-
-run_experiment()

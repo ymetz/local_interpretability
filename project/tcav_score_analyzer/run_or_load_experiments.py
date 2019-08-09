@@ -2,6 +2,7 @@ import project.tcav_score_analyzer.layer_scores as ls
 import project.tcav_score_analyzer.mixed_bag_concepts as mb
 import project.tcav_score_analyzer.stratified_concept_scores as scs
 import project.tcav_score_analyzer.wordnet_correlation as wc
+import project.tcav_score_analyzer.iter_run_experiment as ir
 import pickle
 import os
 
@@ -40,8 +41,18 @@ def run_or_load_tcav_experiments(rerun_exp=False):
         with open('stratified_sampling_exp.pkl', 'wb') as f:
             pickle.dump(scs_results, f)
 
+    # iteration run experiments
+    ir_results = None
+    if os.path.isfile('iteration_runs_exp.pkl') and not rerun_exp:
+        with open('iteration_runs_exp.pkl', 'rb') as f:
+            ir_results = pickle.load(f)
+    else:
+        ir_results = ir.run_experiment()
+        with open('iteration_runs_exp.pkl', 'wb') as f:
+            pickle.dump(ir_results, f)
 
-    # swordnet correlation scores
+
+    # wordnet correlation scores
     wc_results = None
     if os.path.isfile('wordnet_corr_exp.pkl') and not rerun_exp:
         with open('wordnet_corr_exp.pkl', 'rb') as f:
@@ -55,5 +66,6 @@ def run_or_load_tcav_experiments(rerun_exp=False):
         ls_results['exp_info']['name']: ls_results,
         # mb_results['exp_info']['name']: mb_results,
         scs_results['exp_info']['name']: scs_results,
+        ir_results['exp_info']['name']: ir_results,
         wc_results['exp_info']['name']: wc_results
     }

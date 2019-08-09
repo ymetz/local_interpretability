@@ -20,7 +20,7 @@ export default class DetailConceptTree extends Component {
 
         this.state = {
             tcavLayers: (props.conceptData) ? [...new Set(props.conceptData.map(x => x.bottleneck))] : undefined,
-            tcav_active_layers: 'combined',
+            tcav_active_layers: 'Mixed_7c',
             show_concept_preview_modal: false,
             concept_preview_modal_data: null
 
@@ -79,12 +79,14 @@ export default class DetailConceptTree extends Component {
     }
 
     /**
-     * Averages the concept scores over data from different network layers.
+     * Averages the concept scores over data from different network layers if 'combined' option is selected.
      * @param {Array} conceptData 
      */
-    combineLayerScores(conceptData) {
+    processLayerScores(conceptData) {
         if (conceptData === undefined)
-            return conceptData;
+            return undefined;
+        if (this.state.tcav_active_layers !== 'combined')
+            return this.props.conceptData.filter(x => x.bottleneck === this.state.tcav_active_layers);
         let outData = [];
         let uniqueConcepts = [...new Set(conceptData.map(x => x.concept))];
         uniqueConcepts.forEach(concept => {
@@ -143,9 +145,7 @@ export default class DetailConceptTree extends Component {
             }
         }
 
-        const filtered_concept_data = (this.state.tcav_active_layers === 'combined')
-            ? this.combineLayerScores(this.props.conceptData)
-            : this.props.conceptData.filter(x => x.bottleneck === this.state.tcav_active_layers);
+        const filtered_concept_data = this.processLayerScores(this.props.conceptData);
 
         return (
             <div>

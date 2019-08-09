@@ -106,6 +106,10 @@ class TensorflowSlimModel(ModelPrototype):
         with self.graph.as_default():
             return self.session.run(self.probabilities, feed_dict={self.processed_images: images})
 
+    def get_logits(self, images):
+        with self.graph.as_default():
+            return self.session.run(self.logits, feed_dict={self.processed_images: images})
+
     def classify_single_image(self, dataset_path, image_name):
         with self.graph.as_default():
             image_raw = os.path.join(dataset_path, image_name)

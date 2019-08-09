@@ -2,26 +2,62 @@ import nltk
 import requests
 import itertools
 import numpy as np
+from model_handling import tensorflow_models
+from data_handling.dataservice import get_dataset_list
+import tensorflow as tf
 import random
-from nltk.corpus import wordnet as wn
+#from nltk.corpus import wordnet as wn
 import matplotlib.pyplot as plt
 #from nltk.corpus import wordnet_ic
 import scipy.spatial.distance as ssd
 #brown_ic = wordnet_ic.ic('ic-brown.dat')
+import os
 
 from project.server.explanations.tcav_explainer import load_tcavs
 
 
 def run_experiment():
 
-    d = {}
-    with open("/Users/yannick/Documents/Studium/interVis/project/tcav_score_analyzer/synsets.txt") as f:
-        for i, line in enumerate(f):
-           d[i] = line
+
+    #d = {}
+    #with open("/Users/yannick/Documents/Studium/interVis/project/tcav_score_analyzer/synsets.txt") as f:
+    #    for i, line in enumerate(f):
+    #       d[i] = line
 
     tcav_dict = load_tcavs(None, None, tcav_file_name="/Users/yannick/Documents/Studium/interVis/models/"
                                                       "tensorflow_inception_v3/imagenetinception-tcavscores.pkl",
                            absolute_path=True)
+
+    dataset = get_dataset_list("../../datasets/")[0]
+    the_model = tensorflow_models.InceptionModel(0, "", "") #mode lrp to return logits
+    print(dataset.dataset_name, the_model.model_name)
+
+    tcav_classes = [*tcav_dict]
+    file_list = []
+    for elem in dataset.label_to_elements[65]:
+        if int(elem.split('.')[-2][-8:]) <= 5000:
+            file_list.append(elem)
+
+    transformed_images = the_model.transform_images(
+        [os.path.join(dataset.dataset_path, file) for file in file_list])
+
+    preds0 = the_model.predict_images(transformed_images)[0]
+
+    file_list = []
+    for elem in dataset.label_to_elements[57]:
+        if int(elem.split('.')[-2][-8:]) <= 5000:
+            file_list.append(elem)
+
+    transformed_images = the_model.transform_images(
+        [os.path.join(dataset.dataset_path, file) for file in file_list])
+
+    preds1 = the_model.predict_images(transformed_images)[0]
+
+    sum_diff = ssd.euclidean(preds0, preds1)
+    print(sum_diff, np.average(sum_diff))
+
+
+    return
 
     synsets = {}
     similarities = {}
@@ -31,6 +67,7 @@ def run_experiment():
     concepts = []
     for concept in [result['concept'] for result in list(tcav_dict.values())[0] if result['bottleneck'] == 'Mixed_7c']:
         concepts.append(concept)
+
 
     wordnet_similarities = np.zeros(len([e for e in itertools.combinations(tcav_dict.keys(), r=2)]))
     distances = np.zeros(shape=(len([e for e in itertools.combinations(tcav_dict.keys(), r=2)]), len(concepts)))
@@ -87,6 +124,7 @@ def run_experiment():
 
     return {"exp_info": {"name": "wordnet correlation scores", "description": "Determine the correlation between\
      wordnet similarity scores and tcav score similarity", "nr_of_return_elements": 1}, "exp_result": result_dict}
+
 
     # ind = np.arange(1, len(concepts)+1)
     # print("average significance", np.average(corrs))

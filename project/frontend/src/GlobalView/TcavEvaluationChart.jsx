@@ -52,6 +52,7 @@ export default class TcavEvaluationChart extends Component {
         let total_dists = undefined;
         let class_list = [];
         let bottleneck_list = [];
+        let rd_exp_iter_list = [];
         let colorScale = undefined;
         if (props.exp_info.name === 'wordnet correlation scores') {
             data = [];
@@ -78,11 +79,15 @@ export default class TcavEvaluationChart extends Component {
             if (class_list.length > 0){
                 // get all unqiue bottlenecks we find in one result object (based on existing class_id)
                 bottleneck_list = [...new Set(data[Object.keys(data)[0]][class_list[0]].map(score => score.bottleneck))];
+                // get list of different iteration runs
+                if (props.exp_info.name === 'random experiment iterations')
+                    rd_exp_iter_list = [...new Set(data[Object.keys(data)[0]][class_list[0]].map(score => score.nr_iter))];
             } else {
                 bottleneck_list = [];
             }
             colorScale = d3.scaleOrdinal(d3.schemeCategory10);
         }
+        console.log(class_list, total_dists, data)
 
         const width = 950, height = 600;
         const margin = { top: 10, right: 0, bottom: 40, left: 80 };
@@ -96,6 +101,10 @@ export default class TcavEvaluationChart extends Component {
             this.tooltip = d3Tip()
                 .attr('class', 'd3-tip')
                 .html(function (d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Corr.Coeff.: </b>" + d.corrScore; });
+        } else if (props.exp_info.name === 'random experiment iterations') {
+            this.tooltip = d3Tip()
+                .attr('class', 'd3-tip')
+                .html(function (d) { return "<b>Concept: </b>" + d.concept + "<br>" + "<b>Score: </b>" + d.score.toFixed(3) + "<br>" + "<b>Class: </b>" + d.class + "<br>" + "<b>#Iter: </b>" + d.nr_iter; });      
         } else {
             this.tooltip = d3Tip()
                 .attr('class', 'd3-tip')
@@ -235,6 +244,46 @@ export default class TcavEvaluationChart extends Component {
                 .attr("stroke", d => ((d[0].score - d[1].score) < 0.0) ? "#f44941" : "#a3f441")
                 .attr("stroke-width", "2px")
                 .attr("opacity", d => Math.abs(d[0].score - d[1].score));
+        } else if (props.exp_info.name === 'random experiment iterations') {
+
+            data_g.selectAll(".concept-circle").data(d => d).enter().append("circle")
+                .attr("class", "concept-circle")
+                .attr("cx", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1))
+                .attr("cy", d => y(d.score))
+                .attr("fill", d => colorScale(rd_exp_iter_list.indexOf(d.nr_iter)))
+                .attr("r", "2.5")
+                .on('mouseover', this.tooltip.show)
+                .on('mouseout', this.tooltip.hide)
+                .on('click', d => clickFunction(d.class));
+
+            data_g.selectAll(".ls-random-line").data(d => d).enter().append("line")
+                .attr("class", "ls-random-line")
+                .attr("x1", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1) -3)
+                .attr("x2", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1) + 3)
+                .attr("y1", d => y(d.random_score))
+                .attr("y2", d => y(d.random_score))
+                .attr("stroke", d => colorScale(rd_exp_iter_list.indexOf(d.nr_iter)));
+
+            data_g
+                .append("line")
+                .attr("class", "ls-seperator-line")
+                .attr("x1", d => x(d[0].concept))
+                .attr("x2", d => x(d[1].concept))
+                .attr("y1", y(0))
+                .attr("y2", y(1))
+                .attr("stroke", "rgba(128,128,128,0.5)");
+
+            data_g
+                .append("line")
+                .attr("class", "ls-concept-line")
+                .attr("x1", d => (x(d[0].concept) + class_width * (class_list.indexOf(d[0].class) + 1)))
+                .attr("x2", d => (x(d[1].concept) + class_width * (class_list.indexOf(d[1].class) + 1)))
+                .attr("y1", d => y(Math.min(...d.map(x => x.score))))
+                .attr("y2", d => y(Math.max(...d.map(x => x.score))))
+                .attr("stroke-width", "2px")
+                .attr("stroke", "gray")
+                .attr("opacity", d => Math.max(...d.map(x => x.score)) - Math.min(...d.map(x => x.score)));
+
         } else if (props.exp_info.name === "stratified concept sampling") {
 
             data_g
@@ -256,6 +305,15 @@ export default class TcavEvaluationChart extends Component {
                 .on('mouseover', this.tooltip.show)
                 .on('mouseout', this.tooltip.hide)
                 .on('click', d => clickFunction(d.class));
+
+            data_g
+                .append("line")
+                .attr("class", "scc-random-line")
+                .attr("x1", d => x(d[0].concept.split('_')[0]) + class_width * (class_list.indexOf(d[0].class) + 1) -3)
+                .attr("x2", d => x(d[1].concept.split('_')[0]) + class_width * (class_list.indexOf(d[1].class) + 1) + 3)
+                .attr("y1", d => y(d[0].random_score))
+                .attr("y2", d => y(d[0].random_score))
+                .attr("stroke", "blue");
 
             data_g
                 .append("line")
@@ -306,7 +364,9 @@ export default class TcavEvaluationChart extends Component {
             svg.selectAll(".ls-concept-line").attr("x1", d => (x(d[0].concept) + class_width * (class_list.indexOf(d[0].class) + 1)))
                 .attr("x2", d => (x(d[1].concept) + class_width * (class_list.indexOf(d[1].class) + 1)));
             svg.selectAll(".ls-random-line").attr("x1", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1) -3)
-            .attr("x2", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1) + 3)
+            .attr("x2", d => x(d.concept) + class_width * (class_list.indexOf(d.class) + 1) + 3);
+            svg.selectAll(".scc-random-line").attr("x1", d => x(d[0].concept) + class_width * (class_list.indexOf(d[0].class) + 1) -3)
+            .attr("x2", d => x(d[0].concept) + class_width * (class_list.indexOf(d[0].class) + 1) + 3);
             svg.selectAll(".scc-seperator-line").attr("x1", d => x(d.concept)).attr("x2", d => x(d.concept));
             svg.selectAll(".ls-seperator-line").attr("x1", d => (x(d[0].concept))).attr("x2", d => (x(d[1].concept)));
             svg.selectAll(".scc-concept-line").attr("x1", d => x(d[0].concept.split('_')[0]) + class_width * (class_list.indexOf(d[0].class) + 1))

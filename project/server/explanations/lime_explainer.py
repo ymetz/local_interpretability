@@ -19,7 +19,7 @@ def create_lime_explanations(dataset, model, top_preds):
     :return:
     '''
     file_list = []
-    for file in dataset.file_list[:25]:
+    for file in dataset.file_list[15:30]:
         file_list.append(file['src'].split('/')[-1])
     transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
 

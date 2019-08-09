@@ -26,7 +26,7 @@ export default class OverlayComponent extends Component {
             method: this.props.method,
             show_explanation_image: false,
             concept_data: {},
-            tcav_active_layers: 'combined'
+            tcav_active_layers: 'Mixed_7c'
         }
 
     }

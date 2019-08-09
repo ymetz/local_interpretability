@@ -241,7 +241,7 @@ export default class App extends Component {
    * prediction score.
    * @param {Array} interval 
    */
-  changeInterval(interval) {
+  changeInterval(interval, callback) {
     let image_display_options = Object.assign({}, this.state.image_display_options);
     image_display_options.prediction_interval = interval;
     this.setState({ image_display_options: image_display_options }, () => this.updateImageList(callback));
