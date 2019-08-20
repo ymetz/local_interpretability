@@ -279,8 +279,6 @@ def init_data():
 
     print("Initialize E-LRP explainer module")
     lrp_model, lrp_session, lrp_explainer = initialize_lrp_model()
-    # create_lrp_explanation(active_dataset, active_dataset.file_list[:25], lrp_session, lrp_model,
-    #                        top_preds_for_active_model_dataset)
 
     print("Creating Lime explanations")
     # create_lime_explanations(active_dataset, active_model, top_preds_for_active_model_dataset)

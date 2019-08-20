@@ -19,8 +19,9 @@ def create_lime_explanations(dataset, model, top_preds):
     :return:
     '''
     file_list = []
-    for file in dataset.file_list[15:30]:
-        file_list.append(file['src'].split('/')[-1])
+    for file in dataset.label_to_elements[327]:
+        # file_list.append(file['src'].split('/')[-1])
+        file_list.append(file)
     transformed_images = model.transform_images([os.path.join(dataset.dataset_path, file) for file in file_list])
 
     explanation_directory = os.path.join(dataset.dataset_path, 'current_explanations')
@@ -29,7 +30,7 @@ def create_lime_explanations(dataset, model, top_preds):
 
     explainer = lime_image.LimeImageExplainer()
     for idxExpl in range(len(transformed_images)):
-        explanation = explainer.explain_instance(transformed_images[idxExpl], model.predict_images,
+        explanation, segments = explainer.explain_instance(transformed_images[idxExpl], model.predict_images,
                                                  labels=[label['class'] + model.logit_shift for label in
                                                          top_preds[file_list[idxExpl]]]
                                                  , hide_color=0, num_samples=1500)

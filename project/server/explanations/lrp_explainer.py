@@ -23,7 +23,8 @@ def initialize_lrp_model():
         the_model = InceptionModel(0, "", "", session=lrp_session, graph=lrp_session.graph, mode='lrp')
 
         # First create an explainer
-        explainer = de.get_explainer('elrp', the_model.logits, the_model.processed_images)
+        # explainer = de.get_explainer('elrp', the_model.probabilities, the_model.processed_images)
+        explainer = de. get_explainer('deeplift', the_model.logits, the_model.processed_images)
 
     return the_model, lrp_session, explainer
 

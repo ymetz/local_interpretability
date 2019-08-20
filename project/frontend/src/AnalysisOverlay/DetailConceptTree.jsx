@@ -48,12 +48,14 @@ export default class DetailConceptTree extends Component {
                 else if (typeof obj === "object" && k === "name") {
                     if (conceptData.map(x => x.concept).includes(obj.name)) {
                         let filteredConceptData = conceptData.filter(x => x.concept === obj.name);
+                        let p_val = filteredConceptData[0].p_val;
                         let conceptLayerSum = filteredConceptData.map(x => x.score).reduce(function (a, b) { return a + b; });
                         obj.scoreSum.scores.push(conceptLayerSum / filteredConceptData.length);
                         obj.scoreSum.n += 1;
                         obj.nodeSvgShape = {
                             shapeProps: {
                                 fill: interpolateOrRd(obj.scoreSum.scores[0]),
+                                strokeDasharray: (p_val > 0.05) ? '5,5' : '0',
                                 r: "12px"
                             }
                         }
