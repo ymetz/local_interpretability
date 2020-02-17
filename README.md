@@ -1,5 +1,9 @@
 # Local intepretability for global trust
-Bachelor-Project
+
+Interactive Tool for local interpretability with TCAV, LIME, LRP & Co.
+
+Contains server backend to load Tensorflow Models, Datasets and run background analysis.
+React-Based Frontend to browse image datasets, and apply local interpretabilty methods.
 
 
 
