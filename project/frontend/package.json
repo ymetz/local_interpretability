@@ -27,7 +27,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": ">=0.21.1",
     "babel-plugin-react-css-modules": "^5.0.0",
     "clone": "^2.1.2",
     "d3": "^5.7.0",
